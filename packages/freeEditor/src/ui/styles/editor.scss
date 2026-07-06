@@ -1,0 +1,185 @@
+@use "./editor_content.scss";
+@use "./editor_toolbar.scss";
+@use "./mediaNode.scss";
+@use "./linkDialog.scss";
+@use "./floatingToolbar.scss";
+@use "./select.scss";
+@use "./colorPickerDropdown.scss";
+
+/**
+ * 全局主题变量
+ */
+:root,
+:root[data-theme="light"] {
+  /**
+   * 编辑区文字默认颜色
+   */
+  --editor-text-default: none;
+
+  /**
+   * 光标颜色
+   */
+  --editor-cursor-color: none;
+
+  /**
+   * 鼠标悬停背景
+   */
+  --editor-hover-bg: #f5f7fa;
+
+  /**
+   * 主要颜色
+   */
+  --editor-color-primary: #57abff;
+
+  /**
+   * 危险颜色
+   */
+  --editor-color-danger: #f56c6c;
+
+  /**
+   * 信息颜色
+   */
+  --editor-color-info: #909399;
+
+  /**
+   * 边框颜色
+   */
+  --editor-border-color: #dcdfe6;
+
+  /**
+   * 圆角
+   */
+  --editor-border-radius: 8px;
+
+  /**
+   * 工具栏背景
+   */
+  --editor-toolbar-bg: #f5f7fa;
+
+  /**
+   * 浮动工具栏背景
+   */
+  --editor-floating-bg: rgba(255, 255, 255, 0.96);
+
+  /**
+   * 图标颜色
+   */
+  --editor-icon-color: #606266;
+
+  /**
+   * 编辑区背景
+   */
+  --editor-content-bg: #ffffff;
+
+  /**
+   * 阴影
+   */
+  --editor-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/**
+ * dark
+ */
+:root[data-theme="dark"] {
+  /**
+   * 编辑区文字默认颜色
+   */
+  --editor-text-default: #ffffff;
+
+  /**
+   * 光标颜色
+   */
+  --editor-cursor-color: #ffffff;
+
+  /**
+   * 鼠标悬停背景
+   */
+  --editor-hover-bg: #18222b;
+
+  /**
+   * 边框颜色
+   */
+  --editor-border-color: #4c4d4f;
+
+  /**
+   * 工具栏背景
+   */
+  --editor-toolbar-bg: #141414;
+
+  /**
+   * 浮动工具栏背景
+   */
+  --editor-floating-bg: rgba(48, 47, 47, 0.96);
+
+  /**
+   * 编辑区背景
+   */
+  --editor-content-bg: #222222;
+
+  /**
+   * 图标颜色
+   */
+  --editor-icon-color: #adb5bd;
+
+  /**
+   * 阴影
+   */
+  --editor-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/**
+ * 编辑器容器
+ */
+.free-editor__container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--editor-border-color);
+
+  border-radius: var(--editor-border-radius);
+
+  overflow: hidden;
+
+  background: var(--editor-content-bg);
+
+  color: var(--editor-text-default);
+
+  box-sizing: border-box;
+
+  /**
+   * 滚动条
+   */
+  scrollbar-width: thin;
+
+  scrollbar-color: rgba(197, 194, 194, 0.6) transparent;
+}
+.free-editor__button {
+  button {
+    outline: none;
+    box-shadow: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  button[disabled] {
+    filter: opacity(0.6);
+    cursor: not-allowed;
+  }
+  button:not([disabled]):hover {
+    filter: opacity(0.8);
+  }
+  button[primary] {
+    background-color: var(--editor-color-primary);
+    border: 1px solid var(--editor-color-primary);
+    color: #fff;
+  }
+  button[danger] {
+    background-color: var(--editor-color-danger);
+    border: 1px solid var(--editor-color-danger);
+    color: #fff;
+  }
+  button[info] {
+    background-color: var(--editor-color-info);
+    border: 1px solid var(--editor-color-info);
+    color: #fff;
+  }
+}

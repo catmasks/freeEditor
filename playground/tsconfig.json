@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    /**
+     * 编译目标
+     */
+    "target": "ESNext",
+
+    /**
+     * 模块系统
+     */
+    "module": "ESNext",
+
+    /**
+     * bundler 模式
+     */
+    "moduleResolution": "Bundler",
+
+    /**
+     * 严格模式
+     */
+    "strict": true,
+
+    /**
+     * 不输出
+     */
+    "noEmit": true,
+
+    /**
+     * DOM 类型
+     */
+    "lib": ["ESNext", "DOM"],
+
+    /**
+     * vite + node 类型
+     */
+    "types": ["vite/client", "node"],
+
+    /**
+     * 路径基准
+     */
+    "baseUrl": "."
+  },
+
+  "include": ["src", "vite.config.ts"]
+}

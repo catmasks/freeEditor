@@ -1,0 +1,70 @@
+{
+  "name": "@catmasks/freeEditor",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "A lightweight open-source rich text editor based on TipTap",
+  "author": "catmasks",
+  "keywords": [
+    "editor",
+    "tiptap",
+    "rich-text",
+    "catmasks",
+    "vue-editor"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/index.umd.cjs",
+  "jsdelivr": "./dist/index.umd.cjs",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/catmasks/freeEditor.git"
+  },
+  "homepage": "https://github.com/catmasks/freeEditor#readme",
+  "bugs": {
+    "url": "https://github.com/catmasks/freeEditor/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css",
+      "default": "./dist/style.css"
+    }
+  },
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss"
+  ],
+  "peerDependencies": {
+    "@tiptap/core": "^3.26.1",
+    "@tiptap/pm": "^3.26.1",
+    "@tiptap/extension-gapcursor": "^3.26.1"
+  },
+  "devDependencies": {
+    "vite": "^8.0.12",
+    "vite-plugin-dts": "^5.0.2",
+    "typescript": "~6.0.2",
+    "@types/node": "^24.12.3",
+    "sass-embedded": "^1.100.0",
+    "@tiptap/core": "^3.26.1",
+    "@tiptap/pm": "^3.26.1",
+    "@tiptap/extension-gapcursor": "^3.26.1"
+  }
+}

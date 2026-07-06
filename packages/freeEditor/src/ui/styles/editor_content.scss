@@ -1,0 +1,45 @@
+.free-editor__content {
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: auto;
+  min-height: 100px;
+  outline: none;
+  background: var(--editor-content-bg);
+  color: var(--editor-text-default);
+  // 滚动条
+  scrollbar-width: thin;
+  // 滚动条颜色
+  scrollbar-color: rgba(197, 194, 194, 0.6) transparent;
+  // 光标颜色
+  .ProseMirror-gapcursor::after {
+    border-color: var(--editor-cursor-color);
+  }
+  .ProseMirror {
+    position: relative;
+    caret-color: var(--editor-cursor-color);
+    outline: none;
+
+    p {
+      margin: 0;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: var(--editor-border-radius);
+      overflow-x: auto;
+    }
+
+    video,
+    img {
+      max-width: 100%;
+    }
+    .is-empty::before {
+      content: attr(data-placeholder);
+      color: #adb5bd;
+      float: left;
+      pointer-events: none;
+      height: 0;
+    }
+  }
+}

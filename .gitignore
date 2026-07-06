@@ -1,0 +1,52 @@
+# 版本控制和系统文件
+.git
+.svn
+*.DS_Store
+*.db-*
+*.db
+
+# 依赖和构建目录
+node_modules
+dist
+build
+coverage
+out
+public/version.json
+auto-imports.d.ts
+components.d.ts
+eslintrc-auto-imports.json
+# 日志文件
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+selenium-debug.log
+**/*.log
+**/*.tmp
+*.mjs
+stats.html
+# 开发工具和配置
+.idea
+.vscode
+.github
+.lingma
+.trae
+    
+# IDE 项目文件
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.local
+      
+# 临时文件
+*.swp
+*.swo
+*.tmp
+*.temp
+    
+# 测试相关
+test-results
+playwright-report
+cypress/videos
+cypress/screenshots

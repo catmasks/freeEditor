@@ -1,0 +1,319 @@
+/**
+ * ============================
+ * Media Node 样式
+ * ============================
+ */
+
+.free-editor__media-node {
+  display: inline;
+  max-width: 100%;
+}
+
+/**
+ * 外层容器（控制选中边框 + 定位）
+ */
+.free-editor__media-resizer {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: middle;
+  line-height: 0;
+
+  user-select: none;
+
+  transition: outline 0.15s ease;
+}
+
+/**
+ * 选中态
+ */
+.free-editor__media-resizer.free-editor__selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/**
+ * loading 容器
+ */
+.free-editor__media-loading {
+  width: 150px;
+  height: 150px;
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  background: #dadcdf;
+  border-radius: 8px;
+
+  color: #6b7280;
+}
+
+/**
+ * spinner
+ */
+.free-editor__spinner {
+  width: 18px;
+
+  height: 18px;
+
+  border-radius: 50%;
+
+  border: 2px solid rgba(255, 255, 255, 0.2);
+
+  border-top-color: #409eff;
+
+  animation: media-spin 0.8s linear infinite;
+
+  flex-shrink: 0;
+}
+@keyframes media-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+/**
+ * 进度
+ */
+.free-editor__progress {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/**
+ * error 状态
+ */
+.free-editor__media-error {
+  width: 150px;
+  height: 150px;
+
+  display: inline-flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  justify-content: center;
+
+  background: #fee2e2;
+  border-radius: 8px;
+
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
+
+  position: relative;
+}
+
+/**
+ * media 本体
+ */
+.free-editor__media-resizer img,
+.free-editor__media-resizer video {
+  display: block;
+  max-width: 100%;
+  border-radius: 4px;
+  user-select: none;
+  pointer-events: auto;
+}
+
+/**
+ * toolbar 按钮
+ */
+.free-editor__media-node__action {
+  cursor: pointer;
+
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  font-size: 13px;
+  color: var(--editor-icon-color);
+
+  transition: all 0.15s ease;
+
+  white-space: nowrap;
+
+  &.danger {
+    color: var(--editor-color-danger);
+  }
+
+  &.primary {
+    color: var(--editor-color-primary);
+  }
+  &:hover {
+    filter: opacity(0.8);
+  }
+}
+
+/**
+ * ============================
+ * resize handles
+ * ============================
+ */
+
+.free-editor__resize-handle {
+  position: absolute;
+
+  width: 10px;
+  height: 10px;
+
+  background: #3b82f6;
+  border: 2px solid #fff;
+
+  border-radius: 50%;
+
+  z-index: 20;
+
+  box-sizing: border-box;
+
+  opacity: 0;
+
+  transition: opacity 0.15s ease;
+}
+
+/**
+ * hover / selected 才显示 handle
+ */
+.free-editor__media-resizer:hover .free-editor__resize-handle,
+.free-editor__media-resizer.free-editor__selected .free-editor__resize-handle {
+  opacity: 1;
+}
+
+/**
+ * resize handle
+ */
+.free-editor__resize-handle {
+  position: absolute;
+
+  width: 12px;
+
+  height: 12px;
+
+  border-radius: 50%;
+
+  background: #409eff;
+
+  border: 2px solid #fff;
+
+  box-sizing: border-box;
+
+  z-index: 10;
+
+  opacity: 0;
+
+  transition: opacity 0.2s;
+}
+
+/**
+ * 左上
+ */
+.free-editor__top-left {
+  top: -6px;
+
+  left: -6px;
+
+  cursor: nwse-resize;
+}
+
+/**
+ * 上
+ */
+.free-editor__top {
+  top: -6px;
+
+  left: 50%;
+
+  transform: translate(-50%, 0);
+
+  cursor: ns-resize;
+}
+
+/**
+ * 右上
+ */
+.free-editor__top-right {
+  top: -6px;
+
+  right: -6px;
+
+  cursor: nesw-resize;
+}
+
+/**
+ * 右
+ */
+.free-editor__right {
+  top: 50%;
+
+  right: -6px;
+
+  transform: translate(0, -50%);
+
+  cursor: ew-resize;
+}
+
+/**
+ * 右下
+ */
+.free-editor__bottom-right {
+  right: -6px;
+
+  bottom: -6px;
+
+  cursor: nwse-resize;
+}
+
+/**
+ * 下
+ */
+.free-editor__bottom {
+  left: 50%;
+
+  bottom: -6px;
+
+  transform: translate(-50%, 0);
+
+  cursor: ns-resize;
+}
+
+/**
+ * 左下
+ */
+.free-editor__bottom-left {
+  left: -6px;
+
+  bottom: -6px;
+
+  cursor: nesw-resize;
+}
+
+/**
+ * 左
+ */
+.free-editor__left {
+  top: 50%;
+
+  left: -6px;
+
+  transform: translate(0, -50%);
+
+  cursor: ew-resize;
+}
+
+/**
+ * ============================
+ * 动画
+ * ============================
+ */
+
+@keyframes media-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

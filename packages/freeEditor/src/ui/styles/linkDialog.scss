@@ -1,0 +1,32 @@
+/**
+ * link dialog
+ */
+.free-editor__link-dialog {
+  .free-editor__link-dialog__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--editor-icon-color);
+    margin-bottom: 10px;
+  }
+  label {
+    flex-shrink: 0;
+  }
+  input {
+    flex: 1;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--editor-border-color);
+    border-radius: 6px;
+    outline: none;
+    background-color: var(--editor-content-bg);
+    color: var(--editor-text-default);
+  }
+  .free-editor__link-dialog__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+}

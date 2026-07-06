@@ -1,0 +1,143 @@
+/**
+ * Select
+ */
+.free-select {
+  position: relative;
+
+  font-size: 14px;
+
+  user-select: none;
+
+  color: var(--editor-icon-color);
+}
+
+/**
+ * trigger
+ */
+.free-select__trigger {
+  position: relative;
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  width: 100%;
+
+  padding: 0 6px;
+
+  box-sizing: border-box;
+
+  border-radius: 4px;
+
+  color: var(--editor-icon-color);
+
+  cursor: pointer;
+  &:hover .free-editor__tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  &:hover {
+    .free-select__arrow {
+      color: var(--editor-color-primary);
+    }
+    color: var(--editor-color-primary);
+  }
+}
+
+/**
+ * value
+ */
+.free-select__value {
+  flex: 1;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+/**
+ * placeholder
+ */
+.free-select__value:empty::before {
+  content: attr(data-placeholder);
+
+  color: #86909c;
+}
+
+/**
+ * arrow
+ */
+.free-select__arrow {
+  font-size: 8px;
+
+  color: var(--editor-icon-color);
+
+  transition: transform 0.25s;
+
+  &.is-reverse {
+    transform: rotate(180deg);
+  }
+}
+
+/**
+ * dropdown
+ */
+.free-select__dropdown {
+  margin: 0;
+
+  overflow-y: auto;
+
+  max-height: 240px;
+
+  scrollbar-width: thin;
+
+  scrollbar-color: rgba(197, 194, 194, 0.6) transparent;
+}
+
+/**
+ * option
+ */
+.free-select__option {
+  padding: 5px 8px;
+
+  line-height: 1.5;
+
+  border-radius: 6px;
+
+  font-size: 14px;
+
+  color: var(--editor-icon-color);
+
+  cursor: pointer;
+
+  word-break: break-word;
+
+  transition:
+    background 0.12s,
+    color 0.12s;
+
+  &:hover {
+    background: var(--editor-hover-bg);
+  }
+
+  &.is-active {
+    color: var(--editor-color-primary);
+
+    font-weight: 500;
+  }
+}
+
+/**
+ * empty
+ */
+.free-select__option--empty {
+  color: #999999;
+
+  cursor: default;
+}

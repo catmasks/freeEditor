@@ -1,0 +1,62 @@
+/**
+ * 浮动工具栏
+ */
+.floating-toolbar {
+  position: fixed;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 6px;
+
+  border-radius: var(--editor-border-radius);
+
+  background: var(--editor-floating-bg);
+
+  border: 1px solid var(--editor-border-color);
+
+  box-shadow: var(--editor-shadow);
+
+  color: var(--editor-icon-color);
+
+  z-index: 2001;
+
+  white-space: nowrap;
+
+  box-sizing: border-box;
+
+  will-change: transform, opacity, top, left;
+
+  pointer-events: auto;
+
+  backdrop-filter: blur(8px);
+
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/**
+ * floating animation
+ */
+.floating-toolbar-enter-active,
+.floating-toolbar-leave-active {
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.floating-toolbar-enter-from,
+.floating-toolbar-leave-to {
+  opacity: 0;
+
+  transform: scale(0.92) translateY(4px);
+}
+
+.floating-toolbar-enter-to,
+.floating-toolbar-leave-from {
+  opacity: 1;
+
+  transform: scale(1) translateY(0);
+}
