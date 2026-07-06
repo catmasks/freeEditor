@@ -6,13 +6,13 @@
     "dev": "vite",
     "build": "vite build"
   },
-  "dependencies": {
-    "@cat/free-editor": "file:..\\packages\\free-editor\\cat-free-editor-0.0.1.tgz"
-  },
   "devDependencies": {
     "@types/node": "^24.12.3",
     "sass-embedded": "^1.100.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "@catmasks/free-editor": "file:..\\packages\\freeEditor\\catmasks-free-editor-0.0.2.tgz"
   }
 }

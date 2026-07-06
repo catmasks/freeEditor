@@ -1,6 +1,6 @@
 {
-  "name": "@catmasks/freeEditor",
-  "version": "0.0.1",
+  "name": "@catmasks/free-editor",
+  "version": "0.0.2",
   "type": "module",
   "description": "A lightweight open-source rich text editor based on TipTap",
   "author": "catmasks",

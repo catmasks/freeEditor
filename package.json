@@ -10,6 +10,6 @@
   ],
   "scripts": {
     "dev": "pnpm --filter playground dev",
-    "build": "pnpm --filter @cat/free-editor build"
+    "build": "pnpm --filter @catmasks/free-editor build"
   }
 }

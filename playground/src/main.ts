@@ -1,6 +1,6 @@
-import { Editor } from "@cat/free-editor";
-import type { UploadResult, UploadContext } from "@cat/free-editor";
-import "@cat/free-editor/style.css";
+import { Editor } from "@catmasks/free-editor";
+import type { UploadResult, UploadContext } from "@catmasks/free-editor";
+import "@catmasks/free-editor/style.css";
 let editor: Editor | null = null;
 
 /**

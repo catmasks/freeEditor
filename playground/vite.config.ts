@@ -11,10 +11,10 @@ export default defineConfig({
       /**
        * 直接指向源码
        */
-      // "@cat/free-editor": path.resolve(
+      // "@catmasks/free-editor": path.resolve(
       //   __dirname,
-      //   "../packages/free-editor/src",
-      //   // "../packages/free-editor/dist",
+      //   "../packages/freeEditor/src",
+      //   // "../packages/freeEditor/dist",
       // ),
     },
 
@@ -28,7 +28,7 @@ export default defineConfig({
     /**
      * 不预构建 workspace editor
      */
-    exclude: ["@cat/free-editor"],
+    exclude: ["@catmasks/free-editor"],
   },
 
   server: {

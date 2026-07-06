@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  packages/free-editor:
+  packages/freeEditor:
     devDependencies:
       '@tiptap/core':
         specifier: ^3.26.1
@@ -37,9 +37,9 @@ importers:
 
   playground:
     dependencies:
-      '@cat/free-editor':
-        specifier: file:..\packages\free-editor\cat-free-editor-0.0.1.tgz
-        version: file:packages/free-editor/cat-free-editor-0.0.1.tgz(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/extension-gapcursor@3.27.1(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)))(@tiptap/pm@3.27.1)
+      '@catmasks/free-editor':
+        specifier: file:..\packages\freeEditor\catmasks-free-editor-0.0.2.tgz
+        version: file:packages/freeEditor/catmasks-free-editor-0.0.2.tgz(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/extension-gapcursor@3.27.1(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)))(@tiptap/pm@3.27.1)
     devDependencies:
       '@types/node':
         specifier: ^24.12.3
@@ -59,9 +59,9 @@ packages:
   '@bufbuild/protobuf@2.12.1':
     resolution: {integrity: sha512-BvAMfS6LrgZiryOAZ4pBYucu4wG/Ei/9o9DZ9akbREnMLbPJiom2i8b9C8IsKErQoiKqVhrerzt3kOT/RrzLHg==}
 
-  '@cat/free-editor@file:packages/free-editor/cat-free-editor-0.0.1.tgz':
-    resolution: {integrity: sha512-zSs79fnTQ64e6AUJb9K5FeL7QePf4ZaRBy8xiQCnMOE50j7MheR8sEy+DyeDFQuDYdEMeGEMwdv5AzPOvmYhmg==, tarball: file:packages/free-editor/cat-free-editor-0.0.1.tgz}
-    version: 0.0.1
+  '@catmasks/free-editor@file:packages/freeEditor/catmasks-free-editor-0.0.2.tgz':
+    resolution: {integrity: sha512-B1eAeYPk6vc0bFWPXfLkQZkoIDtFgxEnctC1Rtopz6WeMXOE1vVAFWk4i7DXtCZb+I3VS6ZjfwiJhEBtI9oeug==, tarball: file:packages/freeEditor/catmasks-free-editor-0.0.2.tgz}
+    version: 0.0.2
     peerDependencies:
       '@tiptap/core': ^3.26.1
       '@tiptap/extension-gapcursor': ^3.26.1
@@ -833,7 +833,7 @@ snapshots:
 
   '@bufbuild/protobuf@2.12.1': {}
 
-  '@cat/free-editor@file:packages/free-editor/cat-free-editor-0.0.1.tgz(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/extension-gapcursor@3.27.1(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)))(@tiptap/pm@3.27.1)':
+  '@catmasks/free-editor@file:packages/freeEditor/catmasks-free-editor-0.0.2.tgz(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/extension-gapcursor@3.27.1(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1)))(@tiptap/pm@3.27.1)':
     dependencies:
       '@tiptap/core': 3.27.1(@tiptap/pm@3.27.1)
       '@tiptap/extension-gapcursor': 3.27.1(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))
