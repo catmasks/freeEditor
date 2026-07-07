@@ -1,6 +1,8 @@
 import type { Editor } from "@tiptap/core";
 import { createSimpleToolbar } from "../toolbar";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 粗体图标 SVG / Bold icon SVG
  */
@@ -30,7 +32,7 @@ export function createBoldToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: BOLD_ICON,
-    tooltip: "粗体",
+    tooltip: i18n.t("toolbar.bold"),
     isActive: () => editor.isActive("bold"),
     onClick: () => editor.commands.setBold(),
   });

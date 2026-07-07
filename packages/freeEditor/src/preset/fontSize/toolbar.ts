@@ -2,11 +2,13 @@ import type { Editor } from "@tiptap/core";
 import { createSelectToolbar } from "../toolbar";
 import type { SelectOption } from "../../ui/index";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 字号下拉选项 / Font size dropdown options
  */
-const fontSizeOptions: SelectOption[] = [
-  { value: null, label: "默认字号" },
+const getFontSizeOptions = (): SelectOption[] => [
+  { value: null, label: i18n.t("fontSize.default") },
   { value: "12px", label: "12px" },
   { value: "16px", label: "16px" },
   { value: "24px", label: "24px" },
@@ -21,8 +23,8 @@ const fontSizeOptions: SelectOption[] = [
 export function createFontSizeToolbar(editor: Editor) {
   return createSelectToolbar({
     editor,
-    options: fontSizeOptions,
-    tooltip: "字号",
+    options: getFontSizeOptions(),
+    tooltip: i18n.t("toolbar.fontSize"),
     width: "auto",
     dropdownWidth: "72px",
     getValue: () => editor.getAttributes("style").fontSize || null,

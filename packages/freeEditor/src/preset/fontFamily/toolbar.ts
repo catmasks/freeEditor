@@ -2,13 +2,15 @@ import type { Editor } from "@tiptap/core";
 import { createSelectToolbar } from "../toolbar";
 import type { SelectOption } from "../../ui/index";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 字体下拉选项 / Font family dropdown options
  */
-const fontFamilyOptions: SelectOption[] = [
-  { value: null, label: "默认字体" },
-  { value: "sans-serif", label: "无衬线体" },
-  { value: "serif", label: "衬线体" },
+const getFontFamilyOptions = (): SelectOption[] => [
+  { value: null, label: i18n.t("fontFamily.default") },
+  { value: "sans-serif", label: i18n.t("fontFamily.sansSerif") },
+  { value: "serif", label: i18n.t("fontFamily.serif") },
 ];
 
 /**
@@ -20,8 +22,8 @@ const fontFamilyOptions: SelectOption[] = [
 export function createFontFamilyToolbar(editor: Editor) {
   return createSelectToolbar({
     editor,
-    options: fontFamilyOptions,
-    tooltip: "字体",
+    options: getFontFamilyOptions(),
+    tooltip: i18n.t("toolbar.fontFamily"),
     width: "auto",
     dropdownWidth: "72px",
     getValue: () => editor.getAttributes("style").fontFamily || null,

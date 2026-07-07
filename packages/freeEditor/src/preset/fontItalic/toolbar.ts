@@ -1,6 +1,8 @@
 import type { Editor } from "@tiptap/core";
 import { createSimpleToolbar } from "../toolbar";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 斜体图标 SVG / Italic icon SVG
  */
@@ -30,7 +32,7 @@ export function createItalicToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: ITALIC_ICON,
-    tooltip: "斜体",
+    tooltip: i18n.t("toolbar.italic"),
     isActive: () => editor.isActive("italic"),
     onClick: () => editor.commands.setItalic(),
   });

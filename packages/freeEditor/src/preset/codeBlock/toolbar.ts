@@ -1,6 +1,8 @@
 import type { Editor } from "@tiptap/core";
 import { createSimpleToolbar } from "../toolbar";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 代码块图标 SVG / Code block icon SVG
  */
@@ -32,7 +34,7 @@ export function createCodeBlockToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: CODE_BLOCK_ICON,
-    tooltip: "代码块",
+    tooltip: i18n.t("toolbar.codeBlock"),
     isActive: () => editor.isActive("codeBlock"),
     onClick: () => editor.commands.setCodeBlock(),
   });

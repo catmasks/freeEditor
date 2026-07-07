@@ -3,6 +3,11 @@ import type { Editor, AnyExtension } from "@tiptap/core";
 import type { MediaEngine } from "../utils/index";
 
 /**
+ * 语言类型 / Locale type
+ */
+export type Locale = "zh-CN" | "en" | "ja-JP";
+
+/**
  * 编辑器选项 / Editor options
  */
 export interface EditorOptions {
@@ -15,6 +20,11 @@ export interface EditorOptions {
    * 主题 / Theme
    */
   theme?: EditorTheme;
+
+  /**
+   * 语言 / Locale
+   */
+  locale?: Locale;
 
   /**
    * 占位符文本 / Placeholder text
@@ -515,6 +525,11 @@ export interface CreateEditorPluginsOptions {
    * 上传配置 / Upload configuration
    */
   uploader?: any;
+
+  /**
+   * 语言 / Locale
+   */
+  locale?: Locale;
 
   /**
    * 占位符文本 / Placeholder text

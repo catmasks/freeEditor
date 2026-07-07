@@ -2,6 +2,8 @@ import { FloatingToolbar, type FloatingPlacement } from "../FloatingToolbar";
 
 import { createToolbarButton } from "../button";
 
+import { i18n } from "../../../core/utils/index";
+
 /**
  * 选择器选项 / Select option
  */
@@ -113,7 +115,7 @@ export class Select {
 
       value: null,
 
-      placeholder: "请选择",
+      placeholder: i18n.t("common.selectPlaceholder"),
 
       tooltip: "",
 
@@ -224,7 +226,7 @@ export class Select {
 
       empty.className = "free-select__option free-select__option--empty";
 
-      empty.textContent = "暂无选项";
+      empty.textContent = i18n.t("common.noOptions");
 
       this.dropdownEl.appendChild(empty);
 

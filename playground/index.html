@@ -33,6 +33,13 @@
         background: #141414;
       }
 
+      .toolbar-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
       .theme-toggle {
         padding: 8px 16px;
         font-size: 14px;
@@ -46,15 +53,81 @@
         background: #f5f5f5;
       }
 
+      .theme-toggle.active {
+        background: #409eff;
+        color: white;
+        border-color: #409eff;
+      }
+      .theme-text {
+        font-size: 14px;
+        color: #606266;
+      }
       #app.dark .theme-toggle {
         background: #2a2a2a;
         color: white;
         border-color: #444;
       }
+      #app.dark .theme-text {
+        color: #a0a0a0;
+      }
 
       #app.dark .theme-toggle:hover {
         background: #3a3a3a;
       }
+
+      #app.dark .theme-toggle.active {
+        background: #409eff;
+        border-color: #409eff;
+      }
+
+      .divider {
+        width: 1px;
+        height: 24px;
+        background: #ddd;
+      }
+
+      #app.dark .divider {
+        background: #444;
+      }
+
+      .demo-section {
+        padding: 16px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+
+      #app.dark .demo-section {
+        border-color: #444;
+        color: #e0e0e0;
+      }
+
+      .demo-section h3 {
+        margin-bottom: 12px;
+        font-size: 16px;
+      }
+
+      .demo-section p {
+        margin: 6px 0;
+        font-size: 14px;
+        color: #606266;
+      }
+
+      #app.dark .demo-section p {
+        color: #a0a0a0;
+      }
+
+      .demo-section code {
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      #app.dark .demo-section code {
+        background: #2a2a2a;
+        color: #e0e0e0;
+      }
+
       #preview {
         width: 100%;
 
@@ -73,10 +146,61 @@
   <body>
     <div id="app">
       <div id="editor-container"></div>
-      <div>
+
+      <div class="toolbar-row">
         <button class="theme-toggle" id="theme-toggle">切换主题</button>
         <button class="theme-toggle" id="get-html-btn">获取HTML</button>
+
+        <div class="divider"></div>
+
+        <span id="locale-label" class="theme-text">语言切换：</span>
+        <button class="theme-toggle locale-btn active" data-locale="zh-CN">
+          中文
+        </button>
+        <button class="theme-toggle locale-btn" data-locale="en">
+          English
+        </button>
+        <button class="theme-toggle locale-btn" data-locale="ja-JP">
+          日本語
+        </button>
+
+        <div class="divider"></div>
+
+        <button class="theme-toggle" id="extend-i18n-btn">自定义文案</button>
       </div>
+
+      <div class="demo-section">
+        <h3 id="demo-title">国际化功能演示</h3>
+        <p>
+          <strong id="current-locale-label">当前语言：</strong
+          ><span id="current-locale">zh-CN</span>
+        </p>
+        <p>
+          <strong id="bold-label">粗体按钮 tooltip：</strong
+          ><code id="demo-bold">toolbar.bold</code>
+        </p>
+        <p>
+          <strong id="italic-label">斜体按钮 tooltip：</strong
+          ><code id="demo-italic">toolbar.italic</code>
+        </p>
+        <p>
+          <strong id="placeholder-label">占位符文本：</strong
+          ><code id="demo-placeholder">common.placeholder</code>
+        </p>
+        <p>
+          <strong id="confirm-label">确认按钮：</strong
+          ><code id="demo-confirm">common.confirm</code>
+        </p>
+        <p>
+          <strong id="cancel-label">取消按钮：</strong
+          ><code id="demo-cancel">common.cancel</code>
+        </p>
+        <p>
+          <strong id="heading-label">标题下拉：</strong
+          ><code id="demo-heading-body">heading.body</code>
+        </p>
+      </div>
+
       <div id="preview"></div>
     </div>
     <script type="module" src="/src/main.ts"></script>

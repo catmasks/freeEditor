@@ -1,10 +1,12 @@
 import { createToolbar } from "./ui/toolbar/index";
 import { createEditorPlugins, CoreEditor } from "./core/editorPlugins";
+import { i18n } from "./core/utils/index";
 
 import type {
   CreateEditorPluginsResult,
   EditorOptions,
   EditorTheme,
+  Locale,
 } from "./core/types/index";
 
 /**
@@ -52,11 +54,19 @@ export class Editor {
   private destroyHooks: (() => void)[] = [];
 
   /**
+   * 当前语言 / Current locale
+   */
+  private currentLocale: Locale;
+
+  /**
    * 构造函数 / Constructor
    * @param el - 挂载的 DOM 元素 / DOM element to mount
    * @param options - 编辑器配置选项 / Editor configuration options
    */
   constructor(el: HTMLElement, options: EditorOptions = {}) {
+    this.currentLocale = options.locale || "zh-CN";
+    i18n.setLocale(this.currentLocale);
+
     this.root = document.createElement("div");
     this.root.className = "free-editor__container";
 
@@ -71,6 +81,7 @@ export class Editor {
     this.pluginResult = createEditorPlugins({
       include: options.include || [],
       exclude: options.exclude || [],
+      locale: this.currentLocale,
       placeholder: options.placeholder,
       uploader: options.uploader,
     });
@@ -139,6 +150,59 @@ export class Editor {
    */
   toggleTheme() {
     this.setTheme(this.isDark ? "light" : "dark");
+  }
+
+  /**
+   * 获取当前语言 / Get current locale
+   * @returns 当前语言 / Current locale
+   */
+  get locale(): Locale {
+    return this.currentLocale;
+  }
+
+  /**
+   * 设置语言 / Set locale
+   * @param locale - 语言 / Locale
+   */
+  setLocale(locale: Locale) {
+    if (this.destroyed) {
+      return;
+    }
+
+    if (this.currentLocale === locale) {
+      return;
+    }
+
+    this.currentLocale = locale;
+    i18n.setLocale(locale);
+    this.rebuildToolbar();
+    this.refreshPlaceholder();
+  }
+
+  /**
+   * 刷新占位符显示 / Refresh placeholder display
+   */
+  private refreshPlaceholder() {
+    const editor = this.core.editor;
+    if (!editor || editor.isDestroyed) {
+      return;
+    }
+
+    const { state, view } = editor;
+    view.dispatch(state.tr);
+  }
+
+  /**
+   * 重新构建工具栏 / Rebuild toolbar
+   */
+  private rebuildToolbar() {
+    if (!this.toolbar || !this.root) {
+      return;
+    }
+
+    const oldToolbar = this.toolbar;
+    this.toolbar = createToolbar(this.core.editor, this.pluginResult.toolbars);
+    this.root.replaceChild(this.toolbar, oldToolbar);
   }
 
   /**

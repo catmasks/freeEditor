@@ -1,6 +1,8 @@
 import type { Editor } from "@tiptap/core";
 import { createColorPickerToolbar } from "../toolbar";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 文本高亮图标 SVG / Font highlight icon SVG
  */
@@ -32,7 +34,7 @@ export function createFontHighlightToolbar(editor: Editor) {
   return createColorPickerToolbar({
     editor,
     iconSvg: FONT_HIGHLIGHT_ICON,
-    tooltip: "背景高亮",
+    tooltip: i18n.t("toolbar.fontHighlight"),
     getCurrentColor: () =>
       editor.getAttributes("style").backgroundColor || null,
     setColor: (color) => {

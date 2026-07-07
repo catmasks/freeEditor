@@ -2,6 +2,8 @@ import type { Editor } from "@tiptap/core";
 
 import { createSimpleToolbar } from "../toolbar";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 视频图标 SVG / Video icon SVG
  */
@@ -72,7 +74,7 @@ export function createVideoToolbar(editor: Editor) {
 
     iconSvg: VIDEO_ICON,
 
-    tooltip: "视频",
+    tooltip: i18n.t("toolbar.video"),
 
     onClick: () => {
       input.click();

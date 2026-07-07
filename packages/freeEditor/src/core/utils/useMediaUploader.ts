@@ -12,6 +12,8 @@ import type {
   UploadGenerator,
 } from "../types";
 
+import { i18n } from "../i18n";
+
 /**
  * 媒体上传错误码 / Media upload error codes
  */
@@ -71,7 +73,7 @@ export const handleUploadFiles = async (
   if (!uploader || typeof uploader.upload !== "function") {
     throw new MediaUploadError(
       MEDIA_UPLOAD_ERROR_CODE.MISSING_ACTION,
-      "mediaUploader not initialized",
+      i18n.t("upload.missingAction"),
     );
   }
 
@@ -171,7 +173,7 @@ async function defaultUploadHandler(
   if (!action) {
     throw new MediaUploadError(
       MEDIA_UPLOAD_ERROR_CODE.MISSING_ACTION,
-      "Upload action is required",
+      i18n.t("upload.missingAction"),
     );
   }
 
@@ -197,7 +199,7 @@ async function defaultUploadHandler(
   if (!response.ok) {
     throw new MediaUploadError(
       MEDIA_UPLOAD_ERROR_CODE.REQUEST_FAILED,
-      `Upload failed: ${response.status}`,
+      `${i18n.t("upload.requestFailed")}: ${response.status}`,
     );
   }
 
@@ -214,7 +216,7 @@ async function defaultUploadHandler(
   if (!url || typeof url !== "string") {
     throw new MediaUploadError(
       MEDIA_UPLOAD_ERROR_CODE.INVALID_RESPONSE_URL,
-      "Invalid response url",
+      i18n.t("upload.invalidResponseUrl"),
     );
   }
 
@@ -227,14 +229,14 @@ async function defaultUploadHandler(
 
         return u.protocol === "http:" || u.protocol === "https:";
       } catch {
-          return false;
+        return false;
       }
     })();
 
   if (!isValidUrl) {
     throw new MediaUploadError(
       MEDIA_UPLOAD_ERROR_CODE.INVALID_URL_FORMAT,
-      "Invalid url format",
+      i18n.t("upload.invalidUrlFormat"),
     );
   }
 
@@ -376,7 +378,7 @@ export function useMediaUploader(
       if (!ok) {
         const err = new MediaUploadError(
           MEDIA_UPLOAD_ERROR_CODE.FILE_TYPE_INVALID,
-          `Unsupported file type: ${file.type || file.name}`,
+          `${i18n.t("upload.fileTypeInvalid")}: ${file.type || file.name}`,
         );
 
         config.onTypeError?.(err, file);
@@ -388,7 +390,7 @@ export function useMediaUploader(
     if (config.maxSize && file.size > config.maxSize) {
       const err = new MediaUploadError(
         MEDIA_UPLOAD_ERROR_CODE.FILE_SIZE_EXCEEDED,
-        "File too large",
+        i18n.t("upload.fileSizeExceeded"),
       );
 
       config.onSizeError?.(err, file);
@@ -505,7 +507,7 @@ export function useMediaUploader(
 
               task.error = new MediaUploadError(
                 MEDIA_UPLOAD_ERROR_CODE.UPLOAD_ABORTED,
-                "Upload aborted",
+                i18n.t("upload.uploadAborted"),
               );
 
               updateMediaNode(editor, nodeId, {

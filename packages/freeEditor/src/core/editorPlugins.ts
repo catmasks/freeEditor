@@ -7,7 +7,7 @@ import type {
   CreateEditorPluginsOptions,
 } from "./types/index";
 
-import { MediaEngine, useMediaUploader } from "./utils/index";
+import { MediaEngine, useMediaUploader, i18n } from "./utils/index";
 
 import Gapcursor from "@tiptap/extension-gapcursor";
 
@@ -50,14 +50,14 @@ export const editorPluginRegistry: EditorPlugin[] = [
  * @param placeholder 占位符文本 / Placeholder text
  * @returns 基础扩展数组 / Base extensions array
  */
-function createBaseExtensions(placeholder: string): AnyExtension[] {
+function createBaseExtensions(placeholder?: string): AnyExtension[] {
   return [
     CustomDocument,
     CustomParagraph,
     CustomText,
     Gapcursor,
     PlaceholderPlugin.configure({
-      placeholder,
+      placeholder: placeholder || "",
     }),
   ];
 }
@@ -103,12 +103,11 @@ function mergeEditorProps(propsList: EditorProps[]): EditorProps {
 export function createEditorPlugins(
   options: CreateEditorPluginsOptions = {},
 ): CreateEditorPluginsResult {
-  const {
-    include = [],
-    exclude = [],
-    uploader,
-    placeholder = "请输入内容...",
-  } = options;
+  const { include = [], exclude = [], uploader, locale, placeholder } = options;
+
+  if (locale) {
+    i18n.setLocale(locale);
+  }
 
   const baseExtensions = createBaseExtensions(placeholder);
 

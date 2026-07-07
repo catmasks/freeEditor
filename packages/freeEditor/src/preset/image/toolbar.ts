@@ -2,6 +2,8 @@ import type { Editor } from "@tiptap/core";
 
 import { createSimpleToolbar } from "../toolbar";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 图片图标 SVG / Image icon SVG
  */
@@ -70,7 +72,7 @@ export function createImageToolbar(editor: Editor) {
 
     iconSvg: IMAGE_ICON,
 
-    tooltip: "图片",
+    tooltip: i18n.t("toolbar.image"),
 
     onClick: () => {
       input.click();

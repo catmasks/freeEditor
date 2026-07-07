@@ -4,6 +4,8 @@ import { Plugin, PluginKey } from "@tiptap/pm/state";
 
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 占位符扩展 / Placeholder extension
  *
@@ -22,7 +24,7 @@ export const PlaceholderPlugin = Extension.create({
       /**
        * 占位文本 / Placeholder text
        */
-      placeholder: "请输入内容",
+      placeholder: "",
     };
   },
 
@@ -32,6 +34,8 @@ export const PlaceholderPlugin = Extension.create({
    * @returns 插件数组 / Plugin array
    */
   addProseMirrorPlugins() {
+    const placeholderOption = this.options.placeholder;
+
     return [
       new Plugin({
         key: new PluginKey("placeholder"),
@@ -46,6 +50,9 @@ export const PlaceholderPlugin = Extension.create({
           decorations: ({ doc }) => {
             const decorations: Decoration[] = [];
 
+            const placeholderText =
+              placeholderOption || i18n.t("common.placeholder");
+
             doc.descendants((node, pos) => {
               if (!node.isTextblock) {
                 return;
@@ -59,7 +66,7 @@ export const PlaceholderPlugin = Extension.create({
                 Decoration.node(pos, pos + node.nodeSize, {
                   class: "is-empty",
 
-                  "data-placeholder": this.options.placeholder,
+                  "data-placeholder": placeholderText,
                 }),
               );
             });

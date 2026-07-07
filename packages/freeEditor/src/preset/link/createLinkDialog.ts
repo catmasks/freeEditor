@@ -2,6 +2,8 @@ import type { Editor } from "@tiptap/core";
 
 import { FloatingToolbar, type FloatingPlacement } from "../../ui/index";
 
+import { i18n } from "../../core/utils/index";
+
 /**
  * 选区范围类型 / Selection range type
  */
@@ -97,11 +99,11 @@ export class LinkDialog {
 
     const textLabel = document.createElement("label");
 
-    textLabel.textContent = "链接文本";
+    textLabel.textContent = i18n.t("link.linkText");
 
     this.textInput = document.createElement("input");
 
-    this.textInput.placeholder = "显示文字";
+    this.textInput.placeholder = i18n.t("link.linkTextPlaceholder");
 
     textRow.append(textLabel, this.textInput);
 
@@ -111,11 +113,11 @@ export class LinkDialog {
 
     const urlLabel = document.createElement("label");
 
-    urlLabel.textContent = "链接地址";
+    urlLabel.textContent = i18n.t("link.linkUrl");
 
     this.urlInput = document.createElement("input");
 
-    this.urlInput.placeholder = "链接地址";
+    this.urlInput.placeholder = i18n.t("link.linkUrlPlaceholder");
 
     urlRow.append(urlLabel, this.urlInput);
 
@@ -127,19 +129,19 @@ export class LinkDialog {
 
     confirmButton.setAttribute("primary", "");
 
-    confirmButton.textContent = "确定";
+    confirmButton.textContent = i18n.t("common.confirm");
 
     this.removeButton = document.createElement("button");
 
     this.removeButton.setAttribute("danger", "");
 
-    this.removeButton.textContent = "移除链接";
+    this.removeButton.textContent = i18n.t("link.removeLink");
 
     const cancelButton = document.createElement("button");
 
     cancelButton.setAttribute("info", "");
 
-    cancelButton.textContent = "取消";
+    cancelButton.textContent = i18n.t("common.cancel");
 
     actions.append(confirmButton, this.removeButton, cancelButton);
 
@@ -294,7 +296,7 @@ export class LinkDialog {
     }
 
     if (!this.isSafeHref(url)) {
-      throw new Error("非安全链接: " + url);
+      throw new Error(i18n.t("link.unsafeLink") + ": " + url);
     }
 
     const displayText = text || url;
