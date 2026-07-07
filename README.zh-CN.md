@@ -3,7 +3,6 @@
 <p align="center">
   <img src="./playground/src/assets/logo.png" alt="logo">
 </p>
-<br/>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">一个基于TipTap内核开发的轻量级富文本编辑器</h4>
 <h4 align="center">开箱即用、支持所有前端框架</h4>

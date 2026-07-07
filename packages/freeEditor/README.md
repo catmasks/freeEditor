@@ -3,7 +3,6 @@
 <p align="center">
   <img src="./playground/src/assets/logo.png" alt="logo">
 </p>
-<br/>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">A lightweight rich text editor built on the TipTap core</h4>
 <h4 align="center">Ready to use, supports all frontend frameworks</h4>

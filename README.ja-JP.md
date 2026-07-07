@@ -3,7 +3,6 @@
 <p align="center">
   <img src="./playground/src/assets/logo.png" alt="logo">
 </p>
-<br/>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">TipTap コアをベースに構築された軽量リッチテキストエディタ</h4>
 <h4 align="center">すぐに使えて、すべてのフロントエンドフレームワークに対応</h4>

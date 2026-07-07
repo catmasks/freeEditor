@@ -23,7 +23,6 @@ yarn-error.log*
 selenium-debug.log
 **/*.log
 **/*.tmp
-*.mjs
 stats.html
 # 开发工具和配置
 .idea
