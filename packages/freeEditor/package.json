@@ -1,6 +1,6 @@
 {
   "name": "@catmasks/free-editor",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "description": "A lightweight open-source rich text editor based on TipTap",
   "author": "catmasks",
@@ -18,10 +18,16 @@
   "jsdelivr": "./dist/index.umd.cjs",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "README.zh-CN.md",
+    "README.ja-JP.md",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "vite build"
+    "copy-readme": "node scripts/copy-readme.mjs",
+    "check-package": "node scripts/check-package.mjs",
+    "build": "pnpm run copy-readme && vite build && pnpm run check-package",
+    "prepack": "pnpm run copy-readme"
   },
   "repository": {
     "type": "git",

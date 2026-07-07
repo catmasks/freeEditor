@@ -3,15 +3,11 @@ import dts from "vite-plugin-dts";
 import path from "node:path";
 
 /**
- * =========================
  * FreeEditor Library Build
- * =========================
  */
 export default defineConfig({
   /**
-   * =========================
    * Vite 构建配置
-   * =========================
    */
   build: {
     lib: {
@@ -51,21 +47,15 @@ export default defineConfig({
     outDir: "dist",
 
     /**
-     * =========================
      * Rollup 核心配置
-     * =========================
      */
     rollupOptions: {
-      /**
-       * ❗ 关键：彻底 external（解决 plugin$）
-       */
       external: (id) => {
         const externalPkgs = [
           "@tiptap/core",
           "@tiptap/pm",
           "@tiptap/extension-gapcursor",
 
-          // prosemirror 全家桶（必须）
           "prosemirror-state",
           "prosemirror-view",
           "prosemirror-model",
@@ -79,7 +69,7 @@ export default defineConfig({
 
       output: {
         /**
-         * 保持 ES named export（tree-shaking）
+         * 保持 ES named export
          */
         exports: "named",
 
@@ -97,7 +87,7 @@ export default defineConfig({
         },
 
         /**
-         * UMD 全局映射（CDN 必备）
+         * UMD 全局映射
          */
         globals: {
           "@tiptap/core": "TiptapCore",
@@ -114,9 +104,7 @@ export default defineConfig({
   },
 
   /**
-   * =========================
    * 插件
-   * =========================
    */
   plugins: [
     /**
@@ -135,9 +123,7 @@ export default defineConfig({
   ],
 
   /**
-   * =========================
-   * 依赖去重（运行时稳定性）
-   * =========================
+   * 依赖去重
    */
   resolve: {
     dedupe: [
@@ -152,9 +138,7 @@ export default defineConfig({
   },
 
   /**
-   * =========================
-   * ❗ 防止 Vite 预打包污染
-   * =========================
+   * 防止 Vite 预打包污染
    */
   optimizeDeps: {
     exclude: [
