@@ -34,6 +34,7 @@
     "url": "https://github.com/catmasks/freeEditor.git"
   },
   "homepage": "https://github.com/catmasks/freeEditor#readme",
+  "license": "Apache",
   "bugs": {
     "url": "https://github.com/catmasks/freeEditor/issues"
   },

@@ -1,7 +1,7 @@
 <h4 align="right"><a href="./README.md">English</a> | <strong>简体中文</strong> | <a href="./README.ja-JP.md">日本語</a></h4>
 <br/>
 <p align="center">
-  <img src="./playground/src/assets/logo.svg" alt="logo">
+  <img src="./playground/src/assets/logo.png" alt="logo">
 </p>
 <br/>
 <h1 align="center">FreeEditor</h1>
