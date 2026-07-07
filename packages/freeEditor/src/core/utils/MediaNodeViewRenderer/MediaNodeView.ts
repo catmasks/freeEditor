@@ -1,4 +1,5 @@
 import { FloatingToolbar } from "../../../ui/index";
+import { i18n } from "../index";
 import type { MediaNodeAttrs } from "./types";
 
 /**
@@ -93,6 +94,11 @@ class MediaToolbarController {
   onDelete = () => {};
 
   /**
+   * 取消语言变化监听 / Unsubscribe locale change
+   */
+  private offLocaleChange: (() => void) | null = null;
+
+  /**
    * 构造函数 / Constructor
    * @param getTarget 获取目标元素函数 / Get target element function
    */
@@ -121,6 +127,39 @@ class MediaToolbarController {
 
       content: this.createContent(),
     });
+
+    this.offLocaleChange = i18n.onLocaleChange(() => {
+      this.refreshContent();
+    });
+  }
+
+  /**
+   * 刷新工具栏内容（语言切换时调用） / Refresh toolbar content (called on locale change)
+   */
+  refreshContent() {
+    if (!this.toolbar) {
+      return;
+    }
+
+    const target = this.getTarget();
+    if (!target) {
+      return;
+    }
+
+    const wasVisible = this.toolbar.isVisible();
+    this.toolbar.destroy();
+
+    this.toolbar = new FloatingToolbar({
+      target,
+      placement: "top-center",
+      offset: 8,
+      closeOnEsc: true,
+      content: this.createContent(),
+    });
+
+    if (wasVisible) {
+      this.toolbar.show();
+    }
   }
 
   /**
@@ -164,9 +203,13 @@ class MediaToolbarController {
 
     wrap.appendChild(btn("100%", () => this.onPreset(1), "primary"));
 
-    wrap.appendChild(btn("还原", () => this.onReset(), "primary"));
+    wrap.appendChild(
+      btn(i18n.t("media.resetSize"), () => this.onReset(), "primary"),
+    );
 
-    wrap.appendChild(btn("删除", () => this.onDelete(), "danger"));
+    wrap.appendChild(
+      btn(i18n.t("common.remove"), () => this.onDelete(), "danger"),
+    );
 
     return wrap;
   }
@@ -202,6 +245,9 @@ class MediaToolbarController {
    * 销毁工具栏 / Destroy toolbar
    */
   destroy() {
+    this.offLocaleChange?.();
+    this.offLocaleChange = null;
+
     this.toolbar?.destroy();
 
     this.toolbar = null;
@@ -253,6 +299,11 @@ export class MediaNodeView {
   private toolbarController: MediaToolbarController | null = null;
 
   /**
+   * 取消语言变化监听 / Unsubscribe locale change
+   */
+  private offLocaleChange: (() => void) | null = null;
+
+  /**
    * 构造函数 / Constructor
    * @param options 媒体节点选项 / Media node options
    */
@@ -262,6 +313,34 @@ export class MediaNodeView {
     this.render();
 
     this.initToolbar();
+
+    this.offLocaleChange = i18n.onLocaleChange(() => {
+      this.refreshLocale();
+    });
+  }
+
+  /**
+   * 刷新语言（语言切换时重新渲染内容） / Refresh locale (re-render content on locale change)
+   */
+  private refreshLocale() {
+    const { attrs } = this.options;
+
+    this.wrapper.innerHTML = "";
+
+    if (attrs.loading) {
+      this.renderLoading();
+    } else if (attrs.error) {
+      this.renderError();
+    } else {
+      this.renderMedia();
+      this.renderResizeHandles();
+    }
+
+    if (this.options.selected) {
+      this.wrapper.classList.add("free-editor__selected");
+    }
+
+    this.toolbarController?.syncTarget();
   }
 
   /**
@@ -344,7 +423,7 @@ export class MediaNodeView {
 
     cancel.style.marginTop = "8px";
 
-    cancel.textContent = "取消上传";
+    cancel.textContent = i18n.t("media.cancelUpload");
 
     cancel.onclick = (e) => {
       e.stopPropagation();
@@ -375,7 +454,7 @@ export class MediaNodeView {
 
     box.className = "free-editor__media-error";
 
-    box.textContent = "上传失败";
+    box.textContent = i18n.t("media.uploadFailed");
 
     const toolbar = document.createElement("div");
 
@@ -391,7 +470,7 @@ export class MediaNodeView {
 
     retry.className = "free-editor__media-node__action primary";
 
-    retry.textContent = "重试";
+    retry.textContent = i18n.t("media.retry");
 
     retry.onclick = (e) => {
       e.stopPropagation();
@@ -405,7 +484,7 @@ export class MediaNodeView {
 
     remove.className = "free-editor__media-node__action danger";
 
-    remove.textContent = "删除";
+    remove.textContent = i18n.t("common.remove");
 
     remove.onclick = (e) => {
       e.stopPropagation();
@@ -849,6 +928,9 @@ export class MediaNodeView {
    * 销毁节点视图 / Destroy node view
    */
   destroy() {
+    this.offLocaleChange?.();
+    this.offLocaleChange = null;
+
     this.stopResize();
 
     this.toolbarController?.destroy();

@@ -3,6 +3,7 @@ export default {
     confirm: "确定",
     cancel: "取消",
     remove: "移除",
+    clear: "清除",
     placeholder: "请输入内容",
     selectPlaceholder: "请选择",
     noOptions: "暂无选项",
@@ -61,5 +62,11 @@ export default {
     fileValidateFailed: "文件验证失败",
     uploadAborted: "上传已取消",
     uploadFailed: "上传失败",
+  },
+  media: {
+    resetSize: "还原",
+    cancelUpload: "取消上传",
+    uploadFailed: "上传失败",
+    retry: "重试",
   },
 };

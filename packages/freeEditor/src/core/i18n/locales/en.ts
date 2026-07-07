@@ -3,6 +3,7 @@ export default {
     confirm: "Confirm",
     cancel: "Cancel",
     remove: "Remove",
+    clear: "Clear",
     placeholder: "Enter content...",
     selectPlaceholder: "Please select",
     noOptions: "No options",
@@ -61,5 +62,11 @@ export default {
     fileValidateFailed: "File validation failed",
     uploadAborted: "Upload aborted",
     uploadFailed: "Upload failed",
+  },
+  media: {
+    resetSize: "Reset",
+    cancelUpload: "Cancel upload",
+    uploadFailed: "Upload failed",
+    retry: "Retry",
   },
 };

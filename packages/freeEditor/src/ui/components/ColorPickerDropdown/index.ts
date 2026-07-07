@@ -1,5 +1,6 @@
 import { FloatingToolbar, type FloatingPlacement } from "../FloatingToolbar";
 import { hexToHsv, hsvToHex } from "./color";
+import { i18n } from "../../../core/utils/index";
 
 /**
  * HSV 颜色对象 / HSV color object
@@ -138,7 +139,7 @@ export class ColorPickerDropdown {
     clearButton.className = "free-editor__button free-editor__cp-clear";
     clearButton.type = "button";
     clearButton.setAttribute("info", "");
-    clearButton.textContent = "清 除";
+    clearButton.textContent = i18n.t("common.clear");
 
     preview.append(this.previewColor, this.previewText, clearButton);
 

@@ -3,6 +3,7 @@ export default {
     confirm: "確定",
     cancel: "キャンセル",
     remove: "削除",
+    clear: "クリア",
     placeholder: "内容を入力してください",
     selectPlaceholder: "選択してください",
     noOptions: "オプションなし",
@@ -61,5 +62,11 @@ export default {
     fileValidateFailed: "ファイルの検証に失敗しました",
     uploadAborted: "アップロードがキャンセルされました",
     uploadFailed: "アップロードに失敗しました",
+  },
+  media: {
+    resetSize: "リセット",
+    cancelUpload: "アップロードをキャンセル",
+    uploadFailed: "アップロードに失敗しました",
+    retry: "再試行",
   },
 };
