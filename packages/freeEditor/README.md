@@ -5,9 +5,9 @@
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">A lightweight rich text editor built on the TipTap core</h4>
-<h4 align="center">Ready to use, supports all frontend frameworks</h4>
+<h4 align="center">Out-of-the-box, supports all frontend frameworks, built-in Chinese, English, and Japanese</h4>
 
-### Start following and using
+### Get started and use it
 
 If this helps you, please give us a star so you can be notified when new versions are released.
 
@@ -15,7 +15,7 @@ If this helps you, please give us a star so you can be notified when new version
 npm install @catmasks/free-editor
 ```
 
-Or
+or
 
 ```bash
 pnpm add @catmasks/free-editor
@@ -23,23 +23,29 @@ pnpm add @catmasks/free-editor
 
 ## Navigation
 
-The editor comes with the following built-in plugins:
+### Built-in Plugins:
 
 `EditorPluginKey`:
 
-| Plugin Key                 | Name        | Description                                          |
-| -------------------------- | ----------- | ---------------------------------------------------- |
-| `heading`                  | Heading     | Supports H1–H6 headings                              |
-| `fontBold`                 | Bold        | Bold / un‑bold text                                  |
-| `fontItalic`               | Italic      | Italicise / un‑italicise text                        |
-| `fontColor`                | Font Color  | Set text color                                       |
-| `fontHighlight`            | Highlight   | Set text background highlight                        |
-| `fontFamily`               | Font Family | Set font family                                      |
-| `fontSize`                 | Font Size   | Set font size                                        |
-| `link`                     | Link        | Insert / edit / remove links                         |
-| `codeBlock`                | Code Block  | Insert code blocks                                   |
-| [`image`](#2-media-upload) | Image       | Insert images, supports drag‑and‑drop / paste upload |
-| [`video`](#2-media-upload) | Video       | Insert videos, supports drag‑and‑drop / paste upload |
+| Plugin Key                                                  | Name        | Description                                         |
+| ----------------------------------------------------------- | ----------- | --------------------------------------------------- |
+| `heading`                                                   | Heading     | Supports H1–H6 headings                             |
+| `fontBold`                                                  | Bold        | Toggle bold                                         |
+| `fontItalic`                                                | Italic      | Toggle italic                                       |
+| `fontColor`                                                 | Font Color  | Set text color                                      |
+| `fontHighlight`                                             | Highlight   | Set text background highlight                       |
+| `fontFamily`                                                | Font Family | Set font family                                     |
+| `fontSize`                                                  | Font Size   | Set font size                                       |
+| `link`                                                      | Link        | Insert/edit/remove link                             |
+| `codeBlock`                                                 | Code Block  | Insert code block                                   |
+| [<span style="color:#4695db">image</span>](#2-media-upload) | Image       | Insert image, supports drag‑and‑drop / paste upload |
+| [<span style="color:#4695db">video</span>](#2-media-upload) | Video       | Insert video, supports drag‑and‑drop / paste upload |
+
+### Internationalization:
+
+See [<span style="color:#4695db">Chapter 3 – i18n</span>](#3-internationalizationi18n) for details.
+
+---
 
 ## 1. Quick Start
 
@@ -58,7 +64,7 @@ const editor = new Editor(document.getElementById("editor"), {
 
 ### 1.2 Editor Constructor
 
-**Function signature:**
+**Signature:**
 
 ```typescript
 constructor(el: HTMLElement, options?: EditorOptions)
@@ -66,12 +72,12 @@ constructor(el: HTMLElement, options?: EditorOptions)
 
 **Parameters:**
 
-| Parameter | Type            | Description                             |
-| --------- | --------------- | --------------------------------------- |
-| `el`      | `HTMLElement`   | DOM element to mount the editor on      |
-| `options` | `EditorOptions` | Editor configuration options (optional) |
+| Parameter | Type            | Description                        |
+| --------- | --------------- | ---------------------------------- |
+| `el`      | `HTMLElement`   | DOM element to mount the editor on |
+| `options` | `EditorOptions` | Editor configuration (optional)    |
 
-### 1.3 Configuration Options – EditorOptions
+### 1.3 Configuration Options – `EditorOptions`
 
 #### `content`
 
@@ -79,9 +85,18 @@ constructor(el: HTMLElement, options?: EditorOptions)
 content?: string
 ```
 
-Initial editor content as an HTML string.
+Initial HTML content of the editor.
 
-**Default:** `undefined`
+#### `locale`
+
+```typescript
+locale?: Locale
+```
+
+Initial locale for the editor.
+
+**Default:** `"zh-CN"`  
+**Allowed values:** `"zh-CN"` | `"en"` | `"ja-JP"`
 
 #### `theme`
 
@@ -91,9 +106,8 @@ theme?: EditorTheme
 
 Editor theme.
 
-**Default:** `"light"`
-
-**Possible values:** `"light"` | `"dark"`
+**Default:** `"light"`  
+**Allowed values:** `"light"` | `"dark"`
 
 #### `placeholder`
 
@@ -101,7 +115,7 @@ Editor theme.
 placeholder?: string
 ```
 
-Placeholder text displayed when the editor is empty.
+Placeholder text shown when the editor is empty.
 
 **Default:** `"Please enter content..."`
 
@@ -113,7 +127,7 @@ include?: EditorPluginKey[]
 
 Only include the specified plugins. If empty, all plugins are included.
 
-**Default:** `[]` (includes all plugins)
+**Default:** `[]` (all plugins)
 
 #### `exclude`
 
@@ -123,7 +137,7 @@ exclude?: EditorPluginKey[]
 
 Exclude the specified plugins.
 
-**Default:** `[]` (excludes no plugins)
+**Default:** `[]` (none excluded)
 
 #### `uploader`
 
@@ -131,14 +145,14 @@ Exclude the specified plugins.
 uploader?: MediaUploaderOptions
 ```
 
-Media upload configuration, supporting independent settings for images, videos, and files.
-See [Chapter 2](#2-media-upload) for detailed configuration.
+Media upload configuration, supports separate settings for images, videos, and files.  
+See [Chapter 2](#2-media-upload) for details.
 
 ### 1.4 Instance Properties
 
 #### `isMounted`
 
-Check whether the editor is mounted.
+Returns whether the editor is mounted.
 
 ```typescript
 console.log(editor.isMounted); // true
@@ -146,7 +160,7 @@ console.log(editor.isMounted); // true
 
 #### `isDestroyed`
 
-Check whether the editor has been destroyed.
+Returns whether the editor has been destroyed.
 
 ```typescript
 console.log(editor.isDestroyed); // false
@@ -154,7 +168,7 @@ console.log(editor.isDestroyed); // false
 
 #### `theme`
 
-Get the current theme. Returns `"light"` or `"dark"`.
+Returns the current theme (`"light"` or `"dark"`).
 
 ```typescript
 console.log(editor.theme); // "light"
@@ -162,7 +176,7 @@ console.log(editor.theme); // "light"
 
 #### `isDark`
 
-Whether dark mode is active.
+Returns `true` if dark mode is active.
 
 ```typescript
 console.log(editor.isDark); // false
@@ -176,13 +190,13 @@ console.log(editor.isDark); // false
 setTheme(theme: EditorTheme): void
 ```
 
-Set the theme.
+Sets the theme.
 
 **Parameters:**
 
 | Parameter | Type          | Description                       |
 | --------- | ------------- | --------------------------------- |
-| `theme`   | `EditorTheme` | Theme name, `"light"` or `"dark"` |
+| `theme`   | `EditorTheme` | Theme name: `"light"` or `"dark"` |
 
 #### `toggleTheme()`
 
@@ -190,7 +204,7 @@ Set the theme.
 toggleTheme(): void
 ```
 
-Toggle between light and dark themes.
+Toggles between light and dark themes.
 
 #### `getHtml()`
 
@@ -198,11 +212,10 @@ Toggle between light and dark themes.
 getHtml(): string
 ```
 
-Get the editor’s HTML content.
+Returns the editor’s HTML content.
 
-**Returns:** `string` – HTML string
-
-**Throws:** If the editor has been destroyed, throws `Error: Editor has been destroyed`
+**Returns:** `string` – HTML string  
+**Throws:** `Error: Editor has been destroyed` if the editor is destroyed.
 
 #### `destroy()`
 
@@ -210,13 +223,15 @@ Get the editor’s HTML content.
 destroy(): void
 ```
 
-Destroy the editor, cleaning up all resources and event listeners.
+Destroys the editor, cleaning up all resources and event listeners.
+
+---
 
 ## 2. Media Upload
 
-### 2.1 MediaUploaderOptions
+### 2.1 `MediaUploaderOptions`
 
-Upload configuration collection, configured per media type.
+A collection of upload configurations, grouped by media type.
 
 ```typescript
 interface MediaUploaderOptions {
@@ -226,7 +241,7 @@ interface MediaUploaderOptions {
 }
 ```
 
-**Property descriptions:**
+**Properties:**
 
 | Property | Type                  | Description         |
 | -------- | --------------------- | ------------------- |
@@ -234,9 +249,9 @@ interface MediaUploaderOptions {
 | `video`  | `MediaUploaderConfig` | Video upload config |
 | `file`   | `MediaUploaderConfig` | File upload config  |
 
-### 2.2 MediaUploaderConfig
+### 2.2 `MediaUploaderConfig`
 
-Upload configuration for a single media type.
+Configuration for a single media type.
 
 #### `action`
 
@@ -244,7 +259,7 @@ Upload configuration for a single media type.
 action?: string
 ```
 
-Upload URL.
+Upload endpoint URL.
 
 **Default:** `undefined`
 
@@ -254,7 +269,7 @@ Upload URL.
 method?: string
 ```
 
-Request method.
+HTTP method.
 
 **Default:** `"POST"`
 
@@ -298,17 +313,17 @@ Maximum file size in bytes.
 
 #### `accept`
 
-```typescript
+````typescript
 accept?: string[]
-```
+`
 
-Accepted file types.
+Accepted file MIME types.
 
 #### `data`
 
 ```typescript
 data?: Record<string, any> | (() => Record<string, any>)
-```
+````
 
 Additional form data.
 
@@ -322,7 +337,7 @@ Format the response result.
 
 **Parameters:**
 
-- `result` – Server response
+- `result` – The server response
 
 **Returns:** `UploadResult` – Formatted upload result
 
@@ -343,12 +358,12 @@ Format the response result.
 upload?: (file: File, context: UploadContext) => Promise<UploadResult>
 ```
 
-Custom upload function. If set, the default upload logic is replaced.
+Custom upload function. If provided, the default upload logic is replaced.
 
 **Parameters:**
 
 - `file` – The file object
-- `context` – Upload context, containing `signal`, `config`, and `onProgress`
+- `context` – Upload context containing `signal`, `config`, and `onProgress`
 
 **Returns:** `Promise<UploadResult>` – Upload result
 
@@ -384,14 +399,14 @@ Custom upload function. If set, the default upload logic is replaced.
 beforeUpload?: (file: File) => File | false | Promise<File | false>
 ```
 
-Pre‑upload hook. Return `false` to cancel upload, or return a new `File` object to replace the file.
+Pre‑upload hook. Return `false` to cancel upload, or return a new `File` to replace the original.
 
 **Example:**
 
 ```typescript
 {
   beforeUpload: (file) => {
-    // Compress image then return
+    // Compress image and return
     return compressImage(file);
   },
 }
@@ -403,7 +418,7 @@ Pre‑upload hook. Return `false` to cancel upload, or return a new `File` objec
 validate?: (file: File) => string | void
 ```
 
-Validate the file. Return an error message string to indicate validation failure.
+Validate the file. Return an error message string to indicate failure.
 
 **Example:**
 
@@ -464,3 +479,110 @@ onValidateError?: (error: Error, file: File) => void
 ```
 
 Validation error callback.
+
+---
+
+## 3. Internationalization(i18n)
+
+### 3.1 i18n Instance Properties
+
+#### `locale`
+
+The current locale of the instance.
+
+```typescript
+console.log(i18n.locale); // zh-CN
+```
+
+### 3.2 i18n Instance Methods
+
+#### `t(key, ...args)`
+
+```typescript
+t(key: string, ...args: any[]): string
+```
+
+Returns the translated text for `key` in the current locale.
+
+**Returns:** `string` – Translated text, or the key itself if not found.
+
+**Parameters:**
+
+| Parameter | Type     | Description                                                               |
+| --------- | -------- | ------------------------------------------------------------------------- |
+| `key`     | `string` | Message key, supports dot‑path notation, e.g., `"toolbar.bold"`           |
+| `args`    | `any[]`  | Optional arguments to replace placeholders `{0}`, `{1}`, … in the message |
+
+**Example:**
+
+```typescript
+i18n.t("toolbar.bold");
+```
+
+#### `setLocale(locale)`
+
+```typescript
+setLocale(locale: Locale): void
+```
+
+Sets the locale for the editor instance.
+
+**Parameters:**
+
+| Parameter | Type     | Description                                    |
+| --------- | -------- | ---------------------------------------------- |
+| `locale`  | `Locale` | Target locale: `"zh-CN"`, `"en"`, or `"ja-JP"` |
+
+#### `extend(messages)`
+
+```typescript
+extend(messages: DeepPartial<LocaleMessages>): void
+```
+
+Extends the current locale’s message object.
+
+**Parameters:**
+
+| Parameter  | Type                          | Description        |
+| ---------- | ----------------------------- | ------------------ |
+| `messages` | `DeepPartial<LocaleMessages>` | Messages to extend |
+
+**Note:** This method must be called **before** the editor is initialized; otherwise it has no effect on the editor.
+
+**Example:**
+
+```typescript
+i18n.extend({
+  toolbar: { bold: "Custom Bold", italic: "Custom Italic", test: "Test Text" },
+});
+```
+
+#### `subscribe(callback)`
+
+```typescript
+subscribe(callback: (locale: Locale) => void): () => void
+```
+
+Subscribes to locale change events. Useful for using `i18n` outside the editor.
+
+**Parameters:**
+
+| Parameter  | Type                       | Description                              |
+| ---------- | -------------------------- | ---------------------------------------- |
+| `callback` | `(locale: Locale) => void` | Callback invoked when the locale changes |
+
+**Returns:** An unsubscribe function.
+
+**Note:** Call the returned unsubscribe function when destroying to prevent memory leaks.
+
+**Example:**
+
+```typescript
+let unsubscribeLocale: (() => void) | null = null;
+unsubscribeLocale = i18n.subscribe(() => {
+  // Handle locale change...
+});
+// On destroy:
+unsubscribeLocale?.();
+unsubscribeLocale = null;
+```

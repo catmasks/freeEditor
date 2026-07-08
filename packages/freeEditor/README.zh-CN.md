@@ -5,7 +5,7 @@
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">一个基于TipTap内核开发的轻量级富文本编辑器</h4>
-<h4 align="center">开箱即用、支持所有前端框架</h4>
+<h4 align="center">开箱即用，支持所有前端框架，内置中英日三种语言</h4>
 
 ### 开始关注并使用
 
@@ -23,23 +23,27 @@ pnpm add @catmasks/free-editor
 
 ## 导航
 
-编辑器内置以下插件：
+### 内置插件：
 
 `EditorPluginKey`:
 
-| 插件键名               | 名称     | 说明                        |
-| ---------------------- | -------- | --------------------------- |
-| `heading`              | 标题     | 支持 H1-H6 标题             |
-| `fontBold`             | 粗体     | 文字加粗/取消加粗           |
-| `fontItalic`           | 斜体     | 文字倾斜/取消倾斜           |
-| `fontColor`            | 字体颜色 | 设置文字颜色                |
-| `fontHighlight`        | 高亮     | 设置文字背景高亮            |
-| `fontFamily`           | 字体     | 设置字体                    |
-| `fontSize`             | 字号     | 设置文字大小                |
-| `link`                 | 链接     | 插入/编辑/移除链接          |
-| `codeBlock`            | 代码块   | 插入代码块                  |
-| [`image`](#2-媒体上传) | 图片     | 插入图片，支持拖拽/粘贴上传 |
-| [`video`](#2-媒体上传) | 视频     | 插入视频，支持拖拽/粘贴上传 |
+| 插件键名                                                | 名称     | 说明                        |
+| ------------------------------------------------------- | -------- | --------------------------- |
+| `heading`                                               | 标题     | 支持 H1-H6 标题             |
+| `fontBold`                                              | 粗体     | 文字加粗/取消加粗           |
+| `fontItalic`                                            | 斜体     | 文字倾斜/取消倾斜           |
+| `fontColor`                                             | 字体颜色 | 设置文字颜色                |
+| `fontHighlight`                                         | 高亮     | 设置文字背景高亮            |
+| `fontFamily`                                            | 字体     | 设置字体                    |
+| `fontSize`                                              | 字号     | 设置文字大小                |
+| `link`                                                  | 链接     | 插入/编辑/移除链接          |
+| `codeBlock`                                             | 代码块   | 插入代码块                  |
+| [<span style="color:#4695db">image</span>](#2-媒体上传) | 图片     | 插入图片，支持拖拽/粘贴上传 |
+| [<span style="color:#4695db">video</span>](#2-媒体上传) | 视频     | 插入视频，支持拖拽/粘贴上传 |
+
+### 国际化:
+
+详情请参考 [<span style="color:#4695db">第三章 - i18n</span>](#3-国际化i18n)
 
 ## 1. 快速开始
 
@@ -81,7 +85,17 @@ content?: string
 
 编辑器初始化内容，HTML 字符串。
 
-**默认值：** `undefined`
+#### `locale`
+
+```typescript
+locale?: Locale
+```
+
+编辑器初始化语种
+
+**默认值：** `"zh-CN"`
+
+**可选值：** `"zh-CN"` | `"en"` | `"ja-JP"`
 
 #### `theme`
 
@@ -464,3 +478,112 @@ onValidateError?: (error: Error, file: File) => void
 ```
 
 验证错误回调。
+
+## 3. 国际化(i18n)
+
+### 3.1 i18n 实例属性
+
+#### `locale`
+
+当前实例语言类型
+
+```typescript
+console.log(i18n.locale); // zh-CN
+```
+
+### 3.2 i18n 实例方法
+
+#### `t(key, ...args)`
+
+```typescript
+t(key: string, ...args: any[]): string
+```
+
+获取当前语言下 `key` 的文本。
+
+**返回值：** `string` - 翻译后的文本，若未找到则返回 key 本身
+
+**参数：**
+
+| 参数   | 类型     | 说明                                         |
+| ------ | -------- | -------------------------------------------- |
+| `key`  | `string` | 消息键，支持点路径格式，例如 "toolbar.bold"  |
+| `args` | `any[]`  | 可选参数，用于替换消息中的占位符 {0}, {1}... |
+
+**示例：**
+
+获取工具栏加粗的文本
+
+```typescript
+i18n.t("toolbar.bold");
+```
+
+#### `setLocale(locale)`
+
+```typescript
+setLocale(locale: Locale): void
+```
+
+设置编辑器实例的语言。
+
+**参数：**
+
+| 参数     | 类型     | 说明                                            |
+| -------- | -------- | ----------------------------------------------- |
+| `locale` | `Locale` | 目标语言，可选 `"zh-CN"` 或 `"en"` 或 `"ja-JP"` |
+
+#### `extend(messages)`
+
+```typescript
+extend(messages: DeepPartial<LocaleMessages>): void
+```
+
+扩展当前语言的消息对象
+
+**参数：**
+
+| 参数       | 类型                          | 说明           |
+| ---------- | ----------------------------- | -------------- |
+| `messages` | `DeepPartial<LocaleMessages>` | 扩展的消息对象 |
+
+**注意事项：**
+
+该方法必须在编辑器初始化前调用,否则将对编辑器无任何效果
+
+**示例：**
+
+修改简体中文下的加粗和斜体的显示文本,以及扩展一个测试文本
+
+```typescript
+i18n.extend({
+  toolbar: { bold: "自定义粗体", italic: "自定义斜体", test: "测试文本" },
+});
+```
+
+#### `subscribe(callback: (locale) => void)`
+
+订阅语言变化事件,用于编辑器外部使用 `i18n`
+
+**参数：**
+
+| 参数       | 类型                              | 说明                 |
+| ---------- | --------------------------------- | -------------------- |
+| `callback` | `function(locale:Locale) => void` | 语言变化时的回调函数 |
+
+**注意事项：**
+
+销毁时调用返回的取消订阅函数，防止内存泄漏
+
+**返回值：** 返回一个取消订阅函数
+
+**示例：**
+
+```typescript
+let unsubscribeLocale: (() => void) | null = null;
+unsubscribeLocale = i18n.subscribe(() => {
+  // 语言变化后的处理..
+});
+// 销毁
+unsubscribeLocale?.();
+unsubscribeLocale = null;
+```
