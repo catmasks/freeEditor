@@ -1,6 +1,6 @@
 import { FloatingToolbar, type FloatingPlacement } from "../FloatingToolbar";
 import { hexToHsv, hsvToHex } from "./color";
-import { i18n } from "../../../core/utils/index";
+import { i18n } from "../../../core/index";
 
 /**
  * HSV 颜色对象 / HSV color object

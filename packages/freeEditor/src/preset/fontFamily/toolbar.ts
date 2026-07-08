@@ -2,7 +2,7 @@ import type { Editor } from "@tiptap/core";
 import { createSelectToolbar } from "../toolbar";
 import type { SelectOption } from "../../ui/index";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 字体下拉选项 / Font family dropdown options
@@ -25,7 +25,7 @@ export function createFontFamilyToolbar(editor: Editor) {
     options: getFontFamilyOptions(),
     tooltip: i18n.t("toolbar.fontFamily"),
     width: "auto",
-    dropdownWidth: "72px",
+    dropdownWidth: "80px",
     getValue: () => editor.getAttributes("style").fontFamily || null,
     onChange: (value) => {
       if (value == null) {

@@ -2,7 +2,7 @@ import { FloatingToolbar, type FloatingPlacement } from "../FloatingToolbar";
 
 import { createToolbarButton } from "../button";
 
-import { i18n } from "../../../core/utils/index";
+import { i18n } from "../../../core/index";
 
 /**
  * 选择器选项 / Select option

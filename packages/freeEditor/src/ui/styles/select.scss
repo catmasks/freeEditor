@@ -90,9 +90,8 @@
  */
 .free-select__dropdown {
   margin: 0;
-
   overflow-y: auto;
-
+  overflow-x: hidden;
   max-height: 240px;
 
   scrollbar-width: thin;
@@ -117,7 +116,8 @@
   cursor: pointer;
 
   word-break: break-word;
-
+  overflow-wrap: break-word;
+  white-space: normal;
   transition:
     background 0.12s,
     color 0.12s;

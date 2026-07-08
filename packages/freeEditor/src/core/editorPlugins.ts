@@ -7,8 +7,7 @@ import type {
   CreateEditorPluginsOptions,
 } from "./types/index";
 
-import { MediaEngine, useMediaUploader, i18n } from "./utils/index";
-
+import { MediaEngine, useMediaUploader } from "./utils/index";
 import Gapcursor from "@tiptap/extension-gapcursor";
 
 import { CustomDocument, CustomParagraph, CustomText } from "../preset/index";
@@ -103,11 +102,7 @@ function mergeEditorProps(propsList: EditorProps[]): EditorProps {
 export function createEditorPlugins(
   options: CreateEditorPluginsOptions = {},
 ): CreateEditorPluginsResult {
-  const { include = [], exclude = [], uploader, locale, placeholder } = options;
-
-  if (locale) {
-    i18n.setLocale(locale);
-  }
+  const { include = [], exclude = [], uploader, placeholder } = options;
 
   const baseExtensions = createBaseExtensions(placeholder);
 

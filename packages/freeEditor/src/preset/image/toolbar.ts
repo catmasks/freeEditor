@@ -2,7 +2,7 @@ import type { Editor } from "@tiptap/core";
 
 import { createSimpleToolbar } from "../toolbar";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 图片图标 SVG / Image icon SVG

@@ -1,5 +1,5 @@
 import { FloatingToolbar } from "../../../ui/index";
-import { i18n } from "../index";
+import { i18n } from "../../i18n/index";
 import type { MediaNodeAttrs } from "./types";
 
 /**
@@ -94,11 +94,6 @@ class MediaToolbarController {
   onDelete = () => {};
 
   /**
-   * 取消语言变化监听 / Unsubscribe locale change
-   */
-  private offLocaleChange: (() => void) | null = null;
-
-  /**
    * 构造函数 / Constructor
    * @param getTarget 获取目标元素函数 / Get target element function
    */
@@ -118,18 +113,10 @@ class MediaToolbarController {
 
     this.toolbar = new FloatingToolbar({
       target,
-
       placement: "top-center",
-
       offset: 8,
-
       closeOnEsc: true,
-
       content: this.createContent(),
-    });
-
-    this.offLocaleChange = i18n.onLocaleChange(() => {
-      this.refreshContent();
     });
   }
 
@@ -245,11 +232,7 @@ class MediaToolbarController {
    * 销毁工具栏 / Destroy toolbar
    */
   destroy() {
-    this.offLocaleChange?.();
-    this.offLocaleChange = null;
-
     this.toolbar?.destroy();
-
     this.toolbar = null;
   }
 }
@@ -299,9 +282,9 @@ export class MediaNodeView {
   private toolbarController: MediaToolbarController | null = null;
 
   /**
-   * 取消语言变化监听 / Unsubscribe locale change
+   * 取消语言变化订阅 / Unsubscribe locale change
    */
-  private offLocaleChange: (() => void) | null = null;
+  private unsubscribeLocale: (() => void) | null = null;
 
   /**
    * 构造函数 / Constructor
@@ -314,7 +297,8 @@ export class MediaNodeView {
 
     this.initToolbar();
 
-    this.offLocaleChange = i18n.onLocaleChange(() => {
+    // [I18N] 订阅语言变化
+    this.unsubscribeLocale = i18n.subscribe(() => {
       this.refreshLocale();
     });
   }
@@ -340,6 +324,7 @@ export class MediaNodeView {
       this.wrapper.classList.add("free-editor__selected");
     }
 
+    this.toolbarController?.refreshContent();
     this.toolbarController?.syncTarget();
   }
 
@@ -928,8 +913,8 @@ export class MediaNodeView {
    * 销毁节点视图 / Destroy node view
    */
   destroy() {
-    this.offLocaleChange?.();
-    this.offLocaleChange = null;
+    this.unsubscribeLocale?.();
+    this.unsubscribeLocale = null;
 
     this.stopResize();
 

@@ -1,7 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import { createSimpleToolbar } from "../toolbar";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 代码块图标 SVG / Code block icon SVG

@@ -1,7 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import { createColorPickerToolbar } from "../toolbar";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 字体颜色图标 SVG / Font color icon SVG

@@ -2,7 +2,7 @@ import type { Editor } from "@tiptap/core";
 import { createSelectToolbar } from "../toolbar";
 import type { SelectOption } from "../../ui/index";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 标题下拉选项 / Heading dropdown options
@@ -44,7 +44,7 @@ export function createHeadingToolbar(editor: Editor) {
     options: getHeadingOptions(),
     tooltip: i18n.t("toolbar.heading"),
     width: "auto",
-    dropdownWidth: "72px",
+    dropdownWidth: "80px",
     getValue: () => getHeadingLevel(editor),
     onChange: (value) => {
       if (value == null) {

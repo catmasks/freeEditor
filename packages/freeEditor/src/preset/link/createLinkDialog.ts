@@ -2,7 +2,7 @@ import type { Editor } from "@tiptap/core";
 
 import { FloatingToolbar, type FloatingPlacement } from "../../ui/index";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 选区范围类型 / Selection range type

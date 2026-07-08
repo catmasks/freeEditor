@@ -8,3 +8,5 @@ export * from "./Editor";
 export * from "./editorPlugins";
 
 export * from "./utils/index";
+
+export { i18n } from "./i18n";

@@ -13,6 +13,6 @@
     "vite": "^8.0.12"
   },
   "dependencies": {
-    "@catmasks/free-editor": "file:..\\packages\\freeEditor\\catmasks-free-editor-0.0.3.tgz"
+    "@catmasks/free-editor": "file:..\\packages\\freeEditor\\catmasks-free-editor-0.0.4.tgz"
   }
 }

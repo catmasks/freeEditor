@@ -4,7 +4,7 @@ import { createToolbarButton, createIcon } from "../../ui/index";
 
 import { LinkDialog } from "./createLinkDialog";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 创建链接工具栏按钮 / Create link toolbar button

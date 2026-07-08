@@ -4,7 +4,7 @@ import { Plugin, PluginKey } from "@tiptap/pm/state";
 
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 占位符扩展 / Placeholder extension

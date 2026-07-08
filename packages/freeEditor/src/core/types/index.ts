@@ -1,6 +1,7 @@
 import type { EditorProps } from "@tiptap/pm/view";
 import type { Editor, AnyExtension } from "@tiptap/core";
 import type { MediaEngine } from "../utils/index";
+export type { LocaleMessages } from "../i18n";
 
 /**
  * 语言类型 / Locale type
@@ -525,11 +526,6 @@ export interface CreateEditorPluginsOptions {
    * 上传配置 / Upload configuration
    */
   uploader?: any;
-
-  /**
-   * 语言 / Locale
-   */
-  locale?: Locale;
 
   /**
    * 占位符文本 / Placeholder text

@@ -1,6 +1,6 @@
 import { createToolbar } from "./ui/toolbar/index";
 import { createEditorPlugins, CoreEditor } from "./core/editorPlugins";
-import { i18n } from "./core/utils/index";
+import { i18n } from "./core/index";
 
 import type {
   CreateEditorPluginsResult,
@@ -59,14 +59,19 @@ export class Editor {
   private currentLocale: Locale;
 
   /**
+   * 取消语言变化订阅 / Unsubscribe locale change
+   */
+  private unsubscribeLocale: (() => void) | null = null;
+
+  /**
    * 构造函数 / Constructor
    * @param el - 挂载的 DOM 元素 / DOM element to mount
    * @param options - 编辑器配置选项 / Editor configuration options
    */
   constructor(el: HTMLElement, options: EditorOptions = {}) {
     this.currentLocale = options.locale || "zh-CN";
+    // [I18N] 发布语言变化通知
     i18n.setLocale(this.currentLocale);
-
     this.root = document.createElement("div");
     this.root.className = "free-editor__container";
 
@@ -81,7 +86,6 @@ export class Editor {
     this.pluginResult = createEditorPlugins({
       include: options.include || [],
       exclude: options.exclude || [],
-      locale: this.currentLocale,
       placeholder: options.placeholder,
       uploader: options.uploader,
     });
@@ -97,6 +101,12 @@ export class Editor {
 
     const cleanup = this.pluginResult.setup(this.core.editor, this.root);
     this.destroyHooks.push(cleanup);
+
+    // [I18N] 订阅语言变化
+    this.unsubscribeLocale = i18n.subscribe(() => {
+      this.rebuildToolbar();
+      this.refreshPlaceholder();
+    });
 
     this.mounted = true;
   }
@@ -174,9 +184,8 @@ export class Editor {
     }
 
     this.currentLocale = locale;
+    // [I18N] 发布语言变化通知
     i18n.setLocale(locale);
-    this.rebuildToolbar();
-    this.refreshPlaceholder();
   }
 
   /**
@@ -227,6 +236,9 @@ export class Editor {
 
     this.destroyed = true;
     this.mounted = false;
+
+    this.unsubscribeLocale?.();
+    this.unsubscribeLocale = null;
 
     this.destroyHooks.forEach((fn) => fn());
     this.destroyHooks = [];

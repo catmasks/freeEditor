@@ -1,7 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import { createSimpleToolbar } from "../toolbar";
 
-import { i18n } from "../../core/utils/index";
+import { i18n } from "../../core/index";
 
 /**
  * 斜体图标 SVG / Italic icon SVG
