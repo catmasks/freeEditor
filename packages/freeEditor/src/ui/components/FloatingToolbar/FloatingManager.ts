@@ -8,6 +8,8 @@ interface FloatingAPI {
   getToolbarEl: () => HTMLElement | null;
   /** 获取目标元素 / Get target element */
   getTargetEl: () => HTMLElement | null;
+  /** 检测点是否在目标区域内 / Check if point is inside target area */
+  isPointInTarget?: (x: number, y: number) => boolean;
   /** 配置选项 / Configuration options */
   options: {
     /** 是否忽略目标点击 / Whether to ignore target click */
@@ -180,7 +182,11 @@ export class FloatingManager {
       const inTarget =
         target && (path.includes(target) || target.contains(e.target as Node));
 
-      if (inToolbar || inTarget) return;
+      const inTargetRect = active.isPointInTarget
+        ? active.isPointInTarget(e.clientX, e.clientY)
+        : false;
+
+      if (inToolbar || inTarget || inTargetRect) return;
 
       active.close();
       this.activeId = null;

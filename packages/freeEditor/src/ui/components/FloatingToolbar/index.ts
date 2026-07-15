@@ -164,6 +164,8 @@ export class FloatingToolbar {
 
       getTargetEl: () => this.getTargetElement(),
 
+      isPointInTarget: (x, y) => this.isPointInTarget(x, y),
+
       options: {
         ignoreTargetClick: true,
       },
@@ -759,6 +761,26 @@ export class FloatingToolbar {
    */
   isVisible(): boolean {
     return this.visible;
+  }
+
+  /**
+   * 检测点是否在目标区域内 / Check if point is inside target area
+   * @param x - X 坐标 / X coordinate
+   * @param y - Y 坐标 / Y coordinate
+   * @returns 是否在目标区域内 / Whether inside target area
+   */
+  isPointInTarget(x: number, y: number): boolean {
+    const targetRect = this.getTargetRect();
+    if (!targetRect) {
+      return false;
+    }
+
+    return (
+      x >= targetRect.left &&
+      x <= targetRect.right &&
+      y >= targetRect.top &&
+      y <= targetRect.bottom
+    );
   }
 
   /**

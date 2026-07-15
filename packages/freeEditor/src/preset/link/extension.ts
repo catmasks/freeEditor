@@ -304,6 +304,72 @@ export const CustomLink = Mark.create({
     return [
       new Plugin({
         props: {
+          handleDOMEvents: {
+            pointerdown(view, event) {
+              const pos = view.posAtCoords({
+                left: event.clientX,
+                top: event.clientY,
+              });
+
+              if (!pos) return false;
+
+              const $pos = view.state.doc.resolve(pos.pos);
+              const markType = view.state.schema.marks.link;
+
+              const nodeBefore = $pos.nodeBefore;
+              const nodeAfter = $pos.nodeAfter;
+              const nodeAtPos = $pos.node();
+
+              let hasLink = false;
+
+              if (nodeAtPos && nodeAtPos.isText) {
+                hasLink = nodeAtPos.marks.some(
+                  (m: any) => m.type === markType,
+                );
+              }
+
+              if (!hasLink && nodeBefore && nodeBefore.isText) {
+                hasLink = nodeBefore.marks.some(
+                  (m: any) => m.type === markType,
+                );
+              }
+
+              if (!hasLink && nodeAfter && nodeAfter.isText) {
+                hasLink = nodeAfter.marks.some(
+                  (m: any) => m.type === markType,
+                );
+              }
+
+              if (!hasLink) return false;
+
+              const bounds = findLinkBounds(view.state.doc, pos.pos);
+
+              if (!bounds || bounds.start >= bounds.end) return false;
+
+              const startCoords = view.coordsAtPos(bounds.start);
+              const endCoords = view.coordsAtPos(bounds.end);
+
+              const rect = {
+                top: Math.min(startCoords.top, endCoords.top),
+                left: startCoords.left,
+                right: endCoords.right,
+                bottom: Math.max(startCoords.bottom, endCoords.bottom),
+                width: endCoords.right - startCoords.left,
+                height: Math.abs(endCoords.bottom - startCoords.top),
+                x: startCoords.left,
+                y: Math.min(startCoords.top, endCoords.top),
+                toJSON() {
+                  return this;
+                },
+              } as DOMRect;
+
+              if (floatingToolbar) {
+                floatingToolbar.setTarget(rect);
+              }
+
+              return false;
+            },
+          },
           handleClick(view, pos, event) {
             const $pos = view.state.doc.resolve(pos);
             const markType = view.state.schema.marks.link;
