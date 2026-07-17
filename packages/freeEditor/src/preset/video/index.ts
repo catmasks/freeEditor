@@ -39,11 +39,11 @@ export const VideoPlugin: EditorPlugin = {
       handleUploadFiles(editor, files, "video");
     };
 
-    const offDrop = context.mediaEngine?.onDrop((files) => {
+    const offDrop = context.mediaEngine?.onDrop("video", (files) => {
       handleVideos(files);
     });
 
-    const offPaste = context.mediaEngine?.onPaste((files) => {
+    const offPaste = context.mediaEngine?.onPaste("video", (files) => {
       handleVideos(files);
     });
 

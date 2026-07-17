@@ -22,6 +22,7 @@ export default {
     link: "Link",
     image: "Image",
     video: "Video",
+    attachment: "Attachment",
     table: "Table",
     undo: "Undo",
     redo: "Redo",
@@ -32,6 +33,8 @@ export default {
     linkTextPlaceholder: "Display text",
     linkUrl: "Link URL",
     linkUrlPlaceholder: "Link URL",
+    openLink: "Open Link",
+    editLink: "Edit Link",
     removeLink: "Remove Link",
     unsafeLink: "Unsafe link",
   },
@@ -68,5 +71,9 @@ export default {
     cancelUpload: "Cancel upload",
     uploadFailed: "Upload failed",
     retry: "Retry",
+    openFile: "Open file",
+  },
+  attachment: {
+    defaultName: "Untitled file",
   },
 };

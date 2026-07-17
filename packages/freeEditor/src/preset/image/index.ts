@@ -39,11 +39,11 @@ export const ImagePlugin: EditorPlugin = {
       handleUploadFiles(editor, files, "image");
     };
 
-    const offDrop = context.mediaEngine?.onDrop((files) => {
+    const offDrop = context.mediaEngine?.onDrop("image", (files) => {
       handleImages(files);
     });
 
-    const offPaste = context.mediaEngine?.onPaste((files) => {
+    const offPaste = context.mediaEngine?.onPaste("image", (files) => {
       handleImages(files);
     });
 

@@ -74,9 +74,7 @@ export function initEditor(): void {
           });
         },
       },
-
-      file: {
-        accept: [".pdf", ".doc", ".docx", ".zip"],
+      attachment: {
         onUploadError(error, file) {
           console.error("[file upload error]", error.message, file);
           alert(i18n.t("upload.uploadFailed"));

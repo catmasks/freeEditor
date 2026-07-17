@@ -118,6 +118,8 @@ export default defineConfig({
        */
       copyDtsFiles: true,
 
+      // @ts-ignore
+      // rollupTypes: true,
       exclude: ["**/*.test.ts"],
     }),
   ],

@@ -4,6 +4,23 @@ import type { MediaEngine } from "../utils/index";
 export type { LocaleMessages } from "../i18n";
 
 /**
+ * 插件键名 / Plugin key
+ */
+export type EditorPluginKey =
+  | "codeBlock"
+  | "fontBold"
+  | "fontItalic"
+  | "fontColor"
+  | "fontHighlight"
+  | "fontFamily"
+  | "fontSize"
+  | "link"
+  | "image"
+  | "table"
+  | "video"
+  | "heading"
+  | "attachment";
+/**
  * 语言类型 / Locale type
  */
 export type Locale = "zh-CN" | "en" | "ja-JP";
@@ -76,7 +93,7 @@ export type EditorTheme = "light" | "dark";
 /**
  * 媒体类型 / Media type
  */
-export type MediaType = "image" | "video" | "file";
+export type MediaType = "image" | "video" | "attachment";
 
 /**
  * 上传进度信息 / Upload progress information
@@ -333,7 +350,7 @@ export interface MediaUploaderOptions {
   /**
    * 文件上传配置 / File upload configuration
    */
-  file?: MediaUploaderConfig;
+  attachment?: MediaUploaderConfig;
 }
 
 /**
@@ -359,6 +376,11 @@ export interface InsertOptions {
    * 文件名称 / File name
    */
   name?: string;
+
+  /**
+   * 文件大小（字节） / File size (bytes)
+   */
+  size?: number;
 
   /**
    * 是否加载中 / Whether loading
@@ -412,23 +434,6 @@ export type UploadGenerator = {
    */
   getTask(id: string): UploadTask | undefined;
 };
-
-/**
- * 插件键名 / Plugin key
- */
-export type EditorPluginKey =
-  | "codeBlock"
-  | "fontBold"
-  | "fontItalic"
-  | "fontColor"
-  | "fontHighlight"
-  | "fontFamily"
-  | "fontSize"
-  | "link"
-  | "image"
-  | "table"
-  | "video"
-  | "heading";
 
 /**
  * 插件上下文 / Plugin context

@@ -25,6 +25,18 @@
 }
 
 /**
+ * 附件节点 - 行内文字对齐
+ */
+.free-editor__media-resizer[data-type="attachment"] {
+  display: inline;
+  position: static;
+  max-width: none;
+  width: auto;
+  vertical-align: baseline;
+  line-height: inherit;
+}
+
+/**
  * 选中态
  */
 .free-editor__media-resizer.free-editor__selected {
@@ -51,6 +63,21 @@
   border-radius: 8px;
 
   color: #6b7280;
+}
+
+/**
+ * 附件 loading - 小尺寸
+ */
+.free-editor__media-resizer[data-type="attachment"]
+  .free-editor__media-loading {
+  width: auto;
+  height: auto;
+  min-width: auto;
+  padding: 2px 6px;
+  flex-direction: row;
+  gap: 6px;
+  border-radius: 4px;
+  font-size: 13px;
 }
 
 /**
@@ -109,6 +136,19 @@
   font-weight: 500;
 
   position: relative;
+}
+
+/**
+ * 附件 error - 小尺寸
+ */
+.free-editor__media-resizer[data-type="attachment"] .free-editor__media-error {
+  width: auto;
+  height: auto;
+  padding: 2px 6px;
+  flex-direction: row;
+  gap: 6px;
+  border-radius: 4px;
+  font-size: 13px;
 }
 
 /**

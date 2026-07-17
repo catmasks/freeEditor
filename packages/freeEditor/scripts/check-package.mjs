@@ -9,11 +9,10 @@ const root = path.resolve(process.cwd());
 
 const requiredFiles = [
   "README.md",
-  "README.zh-CN.md",
-  "README.ja-JP.md",
   "LICENSE",
   "dist/index.js",
   "dist/index.d.ts",
+  "dist/style.css",
 ];
 
 let failed = false;

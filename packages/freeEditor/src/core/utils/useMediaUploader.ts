@@ -36,7 +36,7 @@ const MEDIA_UPLOAD_ERROR_CODE = {
 const resolveMediaType = (file: File): MediaType => {
   if (file.type.startsWith("image/")) return "image";
   if (file.type.startsWith("video/")) return "video";
-  return "file";
+  return "attachment";
 };
 
 /**
@@ -60,7 +60,7 @@ const isAllowedFile = (file: File, type?: MediaType): boolean => {
  * 处理多文件上传 / Handle multiple file upload
  * @param editor 编辑器实例 / Editor instance
  * @param input 文件输入（单文件/文件数组/FileList） / File input (single file/file array/FileList)
- * @param type 允许的媒体类型（可选） / Allowed media type (optional)
+ * @param type 媒体类型（可选，指定后强制使用该类型，不自动判断） / Media type (optional, if specified, force use this type without auto-detection)
  * @returns 上传任务 Promise / Upload task promise
  */
 export const handleUploadFiles = async (
@@ -90,14 +90,18 @@ export const handleUploadFiles = async (
 
   if (!validFiles.length) return;
 
+  const getUploadType = (file: File): MediaType => {
+    return type || resolveMediaType(file);
+  };
+
   if (validFiles.length === 1) {
     const file = validFiles[0];
 
-    return uploader.upload(file, resolveMediaType(file));
+    return uploader.upload(file, getUploadType(file));
   }
 
   return Promise.all(
-    validFiles.map((file) => uploader.upload(file, resolveMediaType(file))),
+    validFiles.map((file) => uploader.upload(file, getUploadType(file))),
   );
 };
 
@@ -148,6 +152,15 @@ function normalizeProgress(progress: Partial<UploadProgress>) {
  */
 function getFileName(file: File) {
   return file.name.replace(/\.[^/.]+$/, "");
+}
+
+/**
+ * 获取完整文件名（含扩展名） / Get full file name (with extension)
+ * @param file 文件对象 / File object
+ * @returns 完整文件名 / Full file name
+ */
+function getFullFileName(file: File) {
+  return file.name;
 }
 
 /**
@@ -295,6 +308,7 @@ function insertMediaNode(editor: Editor, options: InsertOptions) {
     loading: options.loading,
     progress: options.progress,
     error: options.error,
+    size: options.size,
   });
 
   const { from, to } = editor.state.selection;
@@ -327,6 +341,60 @@ function updateMediaNode(
     });
 
     editor.view.dispatch(tr);
+    return false;
+  });
+}
+
+/**
+ * 将媒体节点替换为链接文本 / Replace media node with link text
+ *
+ * 用于附件上传成功后，将临时的 attachment 节点转换为链接 /
+ * Used to convert temporary attachment node to link after successful upload
+ *
+ * @param editor 编辑器实例 / Editor instance
+ * @param id 节点 ID / Node ID
+ * @param url 链接地址 / Link URL
+ * @param text 链接文本 / Link text
+ */
+function replaceMediaNodeWithLink(
+  editor: Editor,
+  id: string,
+  url: string,
+  text: string,
+) {
+  editor.state.doc.descendants((node, pos) => {
+    if (node.attrs.id !== id) return;
+
+    const linkMark = editor.schema.marks.link.create({
+      href: url,
+      target: "_blank",
+      rel: "noopener noreferrer nofollow",
+    });
+
+    const textNode = editor.schema.text(text, [linkMark]);
+
+    const tr = editor.state.tr.replaceWith(pos, pos + node.nodeSize, textNode);
+
+    editor.view.dispatch(tr);
+
+    return false;
+  });
+}
+
+/**
+ * 删除媒体节点 / Remove media node
+ *
+ * @param editor 编辑器实例 / Editor instance
+ * @param id 节点 ID / Node ID
+ */
+function removeMediaNode(editor: Editor, id: string) {
+  editor.state.doc.descendants((node, pos) => {
+    if (node.attrs.id !== id) return;
+
+    const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
+
+    editor.view.dispatch(tr);
+
     return false;
   });
 }
@@ -487,14 +555,30 @@ export function useMediaUploader(
             task.progress = 100;
             task.response = result;
 
-            updateMediaNode(editor, nodeId, {
-              src: result.url,
-              name: result.name || getFileName(finalFile),
-              loading: false,
-              progress: 100,
-              error: false,
-            });
+            const displayName =
+              result.name ||
+              (type === "attachment"
+                ? getFullFileName(finalFile)
+                : getFileName(finalFile));
 
+            if (type === "attachment") {
+              replaceMediaNodeWithLink(
+                editor,
+                nodeId,
+                result.url,
+                `${displayName}`,
+              );
+            } else {
+              updateMediaNode(editor, nodeId, {
+                src: result.url,
+                name: displayName,
+                loading: false,
+                progress: 100,
+                error: false,
+              });
+            }
+
+            taskMap.delete(nodeId);
             config.onSuccess?.(result, finalFile);
           } catch (e: any) {
             console.error(e);
@@ -561,10 +645,14 @@ export function useMediaUploader(
 
         task.status = "canceled";
 
-        updateMediaNode(editor, nodeId, {
-          loading: false,
-          error: true,
-        });
+        if (type === "attachment") {
+          removeMediaNode(editor, nodeId);
+        } else {
+          updateMediaNode(editor, nodeId, {
+            loading: false,
+            error: true,
+          });
+        }
 
         taskMap.delete(nodeId);
       },
@@ -575,7 +663,11 @@ export function useMediaUploader(
     insertMediaNode(editor, {
       id: nodeId,
       type,
-      name: getFileName(finalFile),
+      name:
+        type === "attachment"
+          ? getFullFileName(finalFile)
+          : getFileName(finalFile),
+      size: finalFile.size,
       loading: true,
       progress: 0,
       error: false,

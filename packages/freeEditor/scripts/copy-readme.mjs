@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const packageDir = path.resolve(__dirname, "..");
 const rootDir = path.resolve(packageDir, "../..");
 
-const files = ["README.md", "README.zh-CN.md", "README.ja-JP.md", "LICENSE"];
+const files = ["README.md", "LICENSE"];
 
 for (const file of files) {
   const source = path.join(rootDir, file);

@@ -22,6 +22,7 @@ export default {
     link: "リンク",
     image: "画像",
     video: "動画",
+    attachment: "添付ファイル",
     table: "表",
     undo: "元に戻す",
     redo: "やり直し",
@@ -32,6 +33,8 @@ export default {
     linkTextPlaceholder: "表示テキスト",
     linkUrl: "リンクURL",
     linkUrlPlaceholder: "リンクURL",
+    openLink: "リンクを開く",
+    editLink: "リンクを編集",
     removeLink: "リンクを削除",
     unsafeLink: "安全でないリンク",
   },
@@ -68,5 +71,9 @@ export default {
     cancelUpload: "アップロードをキャンセル",
     uploadFailed: "アップロードに失敗しました",
     retry: "再試行",
+    openFile: "ファイルを開く",
+  },
+  attachment: {
+    defaultName: "名前なしファイル",
   },
 };

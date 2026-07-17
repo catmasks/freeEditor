@@ -27,3 +27,5 @@ export * from "./fontHighlight/index";
 export * from "./image/index";
 
 export * from "./video/index";
+
+export * from "./attachment/index";

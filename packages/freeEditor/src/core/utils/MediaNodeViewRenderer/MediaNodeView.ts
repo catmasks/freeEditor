@@ -78,6 +78,11 @@ class MediaToolbarController {
   private getTarget: () => HTMLElement | null;
 
   /**
+   * 媒体类型 / Media type
+   */
+  private mediaType: "image" | "video" | "attachment" = "image";
+
+  /**
    * 预设尺寸回调 / Preset size callback
    * @param _p 比例值 / Ratio value
    */
@@ -94,11 +99,21 @@ class MediaToolbarController {
   onDelete = () => {};
 
   /**
+   * 打开文件回调 / Open file callback
+   */
+  onOpen = () => {};
+
+  /**
    * 构造函数 / Constructor
    * @param getTarget 获取目标元素函数 / Get target element function
+   * @param mediaType 媒体类型 / Media type
    */
-  constructor(getTarget: () => HTMLElement | null) {
+  constructor(
+    getTarget: () => HTMLElement | null,
+    mediaType: "image" | "video" | "attachment" = "image",
+  ) {
     this.getTarget = getTarget;
+    this.mediaType = mediaType;
   }
 
   /**
@@ -183,6 +198,18 @@ class MediaToolbarController {
 
       return el;
     };
+
+    if (this.mediaType === "attachment") {
+      wrap.appendChild(
+        btn(i18n.t("media.openFile"), () => this.onOpen(), "primary"),
+      );
+
+      wrap.appendChild(
+        btn(i18n.t("common.remove"), () => this.onDelete(), "danger"),
+      );
+
+      return wrap;
+    }
 
     wrap.appendChild(btn("30%", () => this.onPreset(0.3), "primary"));
 
@@ -317,7 +344,11 @@ export class MediaNodeView {
       this.renderError();
     } else {
       this.renderMedia();
-      this.renderResizeHandles();
+
+      const isAttachment = attrs.type === "attachment";
+      if (!isAttachment) {
+        this.renderResizeHandles();
+      }
     }
 
     if (this.options.selected) {
@@ -342,6 +373,8 @@ export class MediaNodeView {
 
     this.wrapper.className = "free-editor__media-resizer";
 
+    this.wrapper.dataset.type = attrs.type || "image";
+
     this.applyWrapperStyle();
 
     if (attrs.loading) {
@@ -351,7 +384,10 @@ export class MediaNodeView {
     } else {
       this.renderMedia();
 
-      this.renderResizeHandles();
+      const isAttachment = attrs.type === "attachment";
+      if (!isAttachment) {
+        this.renderResizeHandles();
+      }
     }
 
     this.el.appendChild(this.wrapper);
@@ -369,17 +405,23 @@ export class MediaNodeView {
   private applyWrapperStyle() {
     const { attrs } = this.options;
 
-    this.wrapper.style.display = "inline-block";
+    const isAttachment = attrs.type === "attachment";
 
-    this.wrapper.style.maxWidth = "100%";
-
-    this.wrapper.style.verticalAlign = "middle";
-
-    this.wrapper.style.lineHeight = "0";
-
-    this.wrapper.style.position = "relative";
-
-    this.wrapper.style.width = attrs.width || "100%";
+    if (isAttachment) {
+      this.wrapper.style.display = "inline";
+      this.wrapper.style.verticalAlign = "baseline";
+      this.wrapper.style.lineHeight = "inherit";
+      this.wrapper.style.width = "auto";
+      this.wrapper.style.maxWidth = "none";
+      this.wrapper.style.position = "static";
+    } else {
+      this.wrapper.style.display = "inline-block";
+      this.wrapper.style.maxWidth = "100%";
+      this.wrapper.style.verticalAlign = "middle";
+      this.wrapper.style.lineHeight = "0";
+      this.wrapper.style.width = attrs.width || "100%";
+      this.wrapper.style.position = "relative";
+    }
   }
 
   /**
@@ -493,6 +535,7 @@ export class MediaNodeView {
     const { attrs } = this.options;
 
     const isVideo = attrs.type === "video";
+    const isAttachment = attrs.type === "attachment";
 
     const mediaWrap = document.createElement("span");
 
@@ -500,7 +543,16 @@ export class MediaNodeView {
 
     mediaWrap.style.position = "relative";
 
-    mediaWrap.style.display = "block";
+    if (isAttachment) {
+      mediaWrap.style.display = "inline";
+    } else {
+      mediaWrap.style.display = "block";
+    }
+
+    if (isAttachment) {
+      this.renderAttachment(mediaWrap);
+      return;
+    }
 
     if (isVideo) {
       const media = document.createElement("video");
@@ -641,6 +693,56 @@ export class MediaNodeView {
   }
 
   /**
+   * 渲染附件文件卡片 / Render attachment file card
+   * @param mediaWrap 媒体包装器元素 / Media wrapper element
+   */
+  private renderAttachment(mediaWrap: HTMLSpanElement) {
+    const { attrs } = this.options;
+
+    const link = document.createElement("a");
+    link.className = "free-editor__attachment-link";
+    link.href = attrs.src || "#";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.title = attrs.name || "";
+    link.textContent = `${attrs.name || i18n.t("attachment.defaultName")}`;
+    link.style.pointerEvents = "none";
+    link.addEventListener("mouseenter", () => {
+      link.style.textDecoration = "underline";
+    });
+
+    link.addEventListener("mouseleave", () => {
+      link.style.textDecoration = "none";
+    });
+
+    link.addEventListener("mousedown", (e) => {
+      if (this.options.selected) {
+        return;
+      }
+
+      e.stopPropagation();
+
+      this.wrapper.dispatchEvent(
+        new MouseEvent("mousedown", {
+          bubbles: true,
+          cancelable: true,
+          clientX: e.clientX,
+          clientY: e.clientY,
+        }),
+      );
+    });
+
+    link.addEventListener("click", (e) => {
+      if (!this.options.selected) {
+        e.stopPropagation();
+      }
+    });
+
+    mediaWrap.appendChild(link);
+    this.wrapper.appendChild(mediaWrap);
+  }
+
+  /**
    * 渲染调整大小手柄 / Render resize handles
    */
   private renderResizeHandles() {
@@ -759,7 +861,16 @@ export class MediaNodeView {
    * 初始化工具栏 / Initialize toolbar
    */
   private initToolbar() {
-    this.toolbarController = new MediaToolbarController(() => this.wrapper);
+    const { attrs } = this.options;
+    const mediaType = (attrs.type || "image") as
+      | "image"
+      | "video"
+      | "attachment";
+
+    this.toolbarController = new MediaToolbarController(
+      () => this.wrapper,
+      mediaType,
+    );
 
     this.toolbarController.onPreset = (p) => this.setPresetWidth(p);
 
@@ -767,11 +878,24 @@ export class MediaNodeView {
 
     this.toolbarController.onDelete = () => this.options.deleteNode();
 
+    this.toolbarController.onOpen = () => this.openAttachment();
+
     this.toolbarController.init();
 
     if (this.options.selected) {
       this.toolbarController.show();
     }
+  }
+
+  /**
+   * 打开附件（新标签页） / Open attachment (new tab)
+   */
+  private openAttachment() {
+    const { attrs } = this.options;
+
+    if (!attrs.src) return;
+
+    window.open(attrs.src, "_blank", "noopener,noreferrer");
   }
 
   /**
@@ -827,7 +951,11 @@ export class MediaNodeView {
 
     const nextAttrs = this.options.attrs;
 
-    this.wrapper.style.width = nextAttrs.width || "100%";
+    const isAttachment = nextAttrs.type === "attachment";
+
+    this.wrapper.style.width = isAttachment
+      ? nextAttrs.width || "auto"
+      : nextAttrs.width || "100%";
 
     if (nextAttrs.loading && prevAttrs.loading) {
       const progressEl = this.wrapper.querySelector(
@@ -845,7 +973,9 @@ export class MediaNodeView {
       prevAttrs.loading !== nextAttrs.loading ||
       prevAttrs.error !== nextAttrs.error ||
       prevAttrs.src !== nextAttrs.src ||
-      prevAttrs.type !== nextAttrs.type;
+      prevAttrs.type !== nextAttrs.type ||
+      prevAttrs.name !== nextAttrs.name ||
+      prevAttrs.size !== nextAttrs.size;
 
     if (!stateChanged) {
       return;
@@ -860,7 +990,9 @@ export class MediaNodeView {
     } else {
       this.renderMedia();
 
-      this.renderResizeHandles();
+      if (!isAttachment) {
+        this.renderResizeHandles();
+      }
     }
 
     if (this.options.selected) {

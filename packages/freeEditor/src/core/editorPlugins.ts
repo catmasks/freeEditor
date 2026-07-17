@@ -25,6 +25,7 @@ import {
   FontHighlightPlugin,
   ImagePlugin,
   VideoPlugin,
+  AttachmentPlugin,
 } from "../preset/index";
 
 /**
@@ -42,6 +43,7 @@ export const editorPluginRegistry: EditorPlugin[] = [
   CodeBlockPlugin,
   ImagePlugin,
   VideoPlugin,
+  AttachmentPlugin,
 ];
 
 /**

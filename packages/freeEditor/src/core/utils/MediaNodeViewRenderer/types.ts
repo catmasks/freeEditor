@@ -20,7 +20,7 @@ export interface MediaNodeAttrs {
   /**
    * 媒体类型 / Media type
    */
-  type?: "image" | "video";
+  type?: "image" | "video" | "attachment";
 
   /**
    * 宽度 / Width
@@ -31,6 +31,11 @@ export interface MediaNodeAttrs {
    * 高度 / Height
    */
   height?: string;
+
+  /**
+   * 文件大小（字节） / File size (bytes)
+   */
+  size?: number;
 
   /**
    * 是否加载中 / Whether loading

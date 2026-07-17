@@ -22,6 +22,7 @@ export default {
     link: "链接",
     image: "图片",
     video: "视频",
+    attachment: "附件",
     table: "表格",
     undo: "撤销",
     redo: "重做",
@@ -32,6 +33,8 @@ export default {
     linkTextPlaceholder: "显示文字",
     linkUrl: "链接地址",
     linkUrlPlaceholder: "链接地址",
+    openLink: "打开链接",
+    editLink: "编辑链接",
     removeLink: "移除链接",
     unsafeLink: "非安全链接",
   },
@@ -68,5 +71,9 @@ export default {
     cancelUpload: "取消上传",
     uploadFailed: "上传失败",
     retry: "重试",
+    openFile: "打开文件",
+  },
+  attachment: {
+    defaultName: "未命名文件",
   },
 };
