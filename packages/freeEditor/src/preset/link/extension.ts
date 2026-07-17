@@ -96,11 +96,8 @@ export const CustomLink = Mark.create({
    */
   addProseMirrorPlugins() {
     const editor = this.editor;
-    const options = this.options;
 
     let floatingToolbar: FloatingToolbar | null = null;
-    let rafId: number | null = null;
-    let blurTimer: number | null = null;
 
     /**
      * 查找指定位置所在链接的边界 / Find link bounds at given position
@@ -206,11 +203,9 @@ export const CustomLink = Mark.create({
         btn.style.whiteSpace = "nowrap";
         btn.onmousedown = (e) => {
           e.stopPropagation();
-          e.preventDefault();
         };
         btn.onclick = (e) => {
           e.stopPropagation();
-          e.preventDefault();
           onClick();
         };
         return btn;
@@ -235,7 +230,6 @@ export const CustomLink = Mark.create({
         i18n.t("link.removeLink"),
         () => {
           editor.chain().focus().unsetLink().run();
-          floatingToolbar?.hide();
         },
         "danger",
       );
@@ -248,171 +242,139 @@ export const CustomLink = Mark.create({
 
     /**
      * 更新工具栏位置和显示状态 / Update toolbar position and visibility
+     *
+     * @param view 编辑器视图 / Editor view
      */
-    const updateToolbar = () => {
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-      }
+    const updateToolbar = (view: any) => {
+      const { state } = view;
+      const { selection } = state;
 
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-
-        if (!editor.isEditable) {
-          floatingToolbar?.hide();
-          return;
-        }
-
-        if (!editor.isActive("link")) {
-          floatingToolbar?.hide();
-          return;
-        }
-
-        const { state, view } = editor;
-        const { selection } = state;
-
-        if (!view) {
-          floatingToolbar?.hide();
-          return;
-        }
-
-        const bounds = findLinkBounds(state.doc, selection.from);
-
-        if (!bounds || bounds.start >= bounds.end) {
-          floatingToolbar?.hide();
-          return;
-        }
-
-        const start = bounds.start;
-        const end = bounds.end;
-
-        const startCoords = view.coordsAtPos(start);
-        const endCoords = view.coordsAtPos(end);
-
-        const rect = {
-          top: Math.min(startCoords.top, endCoords.top),
-          left: startCoords.left,
-          right: endCoords.right,
-          bottom: Math.max(startCoords.bottom, endCoords.bottom),
-          width: endCoords.right - startCoords.left,
-          height: Math.abs(endCoords.bottom - startCoords.top),
-          x: startCoords.left,
-          y: Math.min(startCoords.top, endCoords.top),
-          toJSON() {
-            return this;
-          },
-        } as DOMRect;
-
-        if (!floatingToolbar) {
-          floatingToolbar = new FloatingToolbar({
-            target: rect,
-            placement: "top-center",
-            offset: 6,
-            content: createToolbarContent(),
-          });
-        } else {
-          floatingToolbar.setTarget(rect);
-          floatingToolbar.setContent(createToolbarContent());
-        }
-
-        floatingToolbar.show();
-      });
-    };
-
-    /**
-     * 选区更新处理 / Selection update handler
-     */
-    const handleSelectionUpdate = () => {
-      updateToolbar();
-    };
-
-    /**
-     * 失焦处理 / Blur handler
-     */
-    const handleBlur = () => {
-      if (blurTimer !== null) {
-        clearTimeout(blurTimer);
-      }
-
-      blurTimer = window.setTimeout(() => {
-        blurTimer = null;
+      if (!editor.isEditable) {
         floatingToolbar?.hide();
-      }, 150);
-    };
-
-    /**
-     * 聚焦处理 / Focus handler
-     */
-    const handleFocus = () => {
-      if (blurTimer !== null) {
-        clearTimeout(blurTimer);
-        blurTimer = null;
+        return;
       }
-      updateToolbar();
-    };
 
-    editor.on("selectionUpdate", handleSelectionUpdate);
-    editor.on("transaction", handleSelectionUpdate);
-    editor.on("blur", handleBlur);
-    editor.on("focus", handleFocus);
+      if (!editor.isActive("link")) {
+        floatingToolbar?.hide();
+        return;
+      }
+
+      const bounds = findLinkBounds(state.doc, selection.from);
+
+      if (!bounds || bounds.start >= bounds.end) {
+        floatingToolbar?.hide();
+        return;
+      }
+
+      const start = bounds.start;
+      const end = bounds.end;
+
+      const startCoords = view.coordsAtPos(start);
+      const endCoords = view.coordsAtPos(end);
+
+      const rect = {
+        top: Math.min(startCoords.top, endCoords.top),
+        left: startCoords.left,
+        right: endCoords.right,
+        bottom: Math.max(startCoords.bottom, endCoords.bottom),
+        width: endCoords.right - startCoords.left,
+        height: Math.abs(endCoords.bottom - startCoords.top),
+        x: startCoords.left,
+        y: Math.min(startCoords.top, endCoords.top),
+        toJSON() {
+          return this;
+        },
+      } as DOMRect;
+
+      if (!floatingToolbar) {
+        floatingToolbar = new FloatingToolbar({
+          target: rect,
+          placement: "top-center",
+          offset: 6,
+          content: createToolbarContent(),
+        });
+      } else {
+        floatingToolbar.setTarget(rect);
+        floatingToolbar.setContent(createToolbarContent());
+      }
+
+      floatingToolbar.show();
+    };
 
     return [
       new Plugin({
         props: {
-          handleDOMEvents: {
-            mousedown: (view, event) => {
-              const target = event.target as HTMLElement;
-              const link = target.closest("a");
+          handleClick(view, pos, event) {
+            const $pos = view.state.doc.resolve(pos);
+            const markType = view.state.schema.marks.link;
 
-              if (link) {
-                event.preventDefault();
+            const nodeBefore = $pos.nodeBefore;
+            const nodeAfter = $pos.nodeAfter;
+            const nodeAtPos = $pos.node();
 
-                const posInfo = view.posAtDOM(link, 0);
-                const pos =
-                  typeof posInfo === "number"
-                    ? posInfo
-                    : ((posInfo as any)?.pos ?? 0);
+            let hasLink = false;
 
-                const bounds = findLinkBounds(view.state.doc, pos);
+            if (nodeAtPos && nodeAtPos.isText) {
+              hasLink = nodeAtPos.marks.some((m: any) => m.type === markType);
+            }
 
-                if (bounds && bounds.start < bounds.end) {
-                  const tr = view.state.tr.setSelection(
-                    TextSelection.create(
-                      view.state.doc,
-                      bounds.start,
-                      bounds.end,
-                    ),
-                  );
-                  view.dispatch(tr);
-                }
+            if (!hasLink && nodeBefore && nodeBefore.isText) {
+              hasLink = nodeBefore.marks.some((m: any) => m.type === markType);
+            }
 
-                view.focus();
+            if (!hasLink && nodeAfter && nodeAfter.isText) {
+              hasLink = nodeAfter.marks.some((m: any) => m.type === markType);
+            }
 
-                return true;
-              }
-
+            if (!hasLink) {
+              floatingToolbar?.hide();
               return false;
-            },
-            click: () => {
-              setTimeout(() => updateToolbar(), 0);
-              return false;
-            },
+            }
+
+            return false;
           },
         },
-        destroy() {
-          if (rafId !== null) {
-            cancelAnimationFrame(rafId);
-            rafId = null;
-          }
-          if (blurTimer !== null) {
-            clearTimeout(blurTimer);
-            blurTimer = null;
-          }
-          editor.off("selectionUpdate", handleSelectionUpdate);
-          editor.off("transaction", handleSelectionUpdate);
-          editor.off("blur", handleBlur);
-          editor.off("focus", handleFocus);
-          floatingToolbar?.destroy();
-          floatingToolbar = null;
+        view() {
+          return {
+            update(view, prevState) {
+              if (!prevState) {
+                updateToolbar(view);
+                return;
+              }
+
+              if (!prevState.selection.eq(view.state.selection)) {
+                const { state } = view;
+                const { selection } = state;
+
+                if (selection.empty && editor.isActive("link")) {
+                  const bounds = findLinkBounds(state.doc, selection.from);
+
+                  if (bounds && bounds.start < bounds.end) {
+                    if (
+                      selection.from !== bounds.start ||
+                      selection.to !== bounds.end
+                    ) {
+                      const tr = view.state.tr.setSelection(
+                        TextSelection.create(
+                          view.state.doc,
+                          bounds.start,
+                          bounds.end,
+                        ),
+                      );
+                      view.dispatch(tr);
+                      return;
+                    }
+                  }
+                }
+
+                updateToolbar(view);
+              }
+            },
+            destroy() {
+              floatingToolbar?.destroy();
+              floatingToolbar = null;
+            },
+          };
         },
       }),
     ];
