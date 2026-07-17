@@ -4,6 +4,116 @@ import type { MediaEngine } from "../utils/index";
 export type { LocaleMessages } from "../i18n";
 
 /**
+ * 浮动工具栏放置位置 / Floating toolbar placement
+ */
+export type FloatingPlacement =
+  | "top-start"
+  | "top-center"
+  | "top-end"
+  | "bottom-start"
+  | "bottom-center"
+  | "bottom-end";
+
+/**
+ * 悬浮工具栏项 / Floating toolbar item
+ */
+export interface FloatingToolbarItem {
+  /**
+   * 唯一标识 / Unique identifier
+   */
+  key: string;
+
+  /**
+   * 匹配规则 - 节点名称列表 / Match rule - node name list
+   */
+  matchNodes?: string[];
+
+  /**
+   * 匹配规则 - 标记名称列表 / Match rule - mark name list
+   */
+  matchMarks?: string[];
+
+  /**
+   * 自定义匹配函数 / Custom match function
+   * @param editor 编辑器实例 / Editor instance
+   * @returns 是否匹配 / Whether it matches
+   */
+  shouldShow?: (editor: Editor) => boolean;
+
+  /**
+   * 自定义目标获取函数 / Custom target getter function
+   * 返回 HTMLElement 或 DOMRect 作为工具栏定位目标
+   * Returns HTMLElement or DOMRect as toolbar positioning target
+   * @param editor 编辑器实例 / Editor instance
+   * @returns 目标元素或矩形 / Target element or rect
+   */
+  getTarget?: (editor: Editor) => HTMLElement | DOMRect | null;
+
+  /**
+   * 渲染工具栏内容 / Render toolbar content
+   * @param editor 编辑器实例 / Editor instance
+   * @returns 工具栏内容元素 / Toolbar content element
+   */
+  render: (editor: Editor) => HTMLElement;
+
+  /**
+   * 优先级，数值越大越靠前 / Priority, higher value comes first
+   * @default 0
+   */
+  priority?: number;
+
+  /**
+   * 放置位置 / Placement position
+   * @default "top-center"
+   */
+  placement?: FloatingPlacement;
+
+  /**
+   * 偏移量 / Offset value
+   * @default 4
+   */
+  offset?: number;
+}
+
+/**
+ * 悬浮工具栏 API / Floating toolbar API
+ */
+export interface FloatingToolbarAPI {
+  /**
+   * 注册工具栏项 / Register toolbar item
+   * @param item 工具栏项 / Toolbar item
+   * @returns 取消注册函数 / Unregister function
+   */
+  registerItem: (item: FloatingToolbarItem) => () => void;
+
+  /**
+   * 手动显示悬浮工具栏 / Manually show floating toolbar
+   * @param target 目标元素或 DOMRect / Target element or DOMRect
+   */
+  show: (target: HTMLElement | DOMRect) => void;
+
+  /**
+   * 手动隐藏悬浮工具栏 / Manually hide floating toolbar
+   */
+  hide: () => void;
+
+  /**
+   * 刷新工具栏（重新匹配并渲染）/ Refresh toolbar (re-match and re-render)
+   */
+  refresh: () => void;
+
+  /**
+   * 获取当前是否可见 / Get whether it is currently visible
+   */
+  isVisible: () => boolean;
+
+  /**
+   * 销毁 / Destroy
+   */
+  destroy: () => void;
+}
+
+/**
  * 插件键名 / Plugin key
  */
 export type EditorPluginKey =
@@ -19,7 +129,8 @@ export type EditorPluginKey =
   | "table"
   | "video"
   | "heading"
-  | "attachment";
+  | "attachment"
+  | "floatingToolbar";
 /**
  * 语言类型 / Locale type
  */

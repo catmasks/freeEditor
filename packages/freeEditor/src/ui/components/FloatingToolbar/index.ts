@@ -61,6 +61,21 @@ export class FloatingToolbar {
   private visible = false;
 
   /**
+   * 是否正在显示动画中 / Whether show animation is in progress
+   */
+  private showAnimating = false;
+
+  /**
+   * 是否正在隐藏动画中 / Whether hide animation is in progress
+   */
+  private hideAnimating = false;
+
+  /**
+   * 隐藏动画定时器 / Hide animation timer
+   */
+  private hideTimer: number | null = null;
+
+  /**
    * 是否已销毁 / Whether it is destroyed
    */
   private destroyed = false;
@@ -573,7 +588,7 @@ export class FloatingToolbar {
    * 显示工具栏 / Show toolbar
    */
   async show(): Promise<void> {
-    if (this.destroyed || this.visible) {
+    if (this.destroyed) {
       return;
     }
 
@@ -583,7 +598,23 @@ export class FloatingToolbar {
       return;
     }
 
+    if (this.visible && !this.hideAnimating) {
+      return;
+    }
+
+    if (this.hideAnimating) {
+      if (this.hideTimer !== null) {
+        clearTimeout(this.hideTimer);
+        this.hideTimer = null;
+      }
+      this.hideAnimating = false;
+
+      toolbar.classList.remove("floating-toolbar-leave-active");
+      toolbar.classList.remove("floating-toolbar-leave-to");
+    }
+
     this.visible = true;
+    this.showAnimating = true;
 
     this.manager.activate(this.id);
 
@@ -606,18 +637,18 @@ export class FloatingToolbar {
     });
 
     toolbar.classList.remove("floating-toolbar-enter-from");
-
     toolbar.classList.remove("floating-toolbar-enter-to");
 
     void toolbar.offsetHeight;
 
     toolbar.classList.add("floating-toolbar-enter-active");
-
     toolbar.classList.add("floating-toolbar-enter-to");
 
     await this.updatePosition();
 
     this.setupObservers();
+
+    this.showAnimating = false;
 
     this.options.onShow?.();
   }
@@ -627,7 +658,7 @@ export class FloatingToolbar {
    * @param animate - 是否播放动画 / Whether to play animation
    */
   async hide(animate = true): Promise<void> {
-    if (this.destroyed || !this.visible) {
+    if (this.destroyed) {
       return;
     }
 
@@ -637,7 +668,16 @@ export class FloatingToolbar {
       return;
     }
 
+    if (!this.visible && !this.showAnimating) {
+      return;
+    }
+
+    if (this.showAnimating) {
+      this.showAnimating = false;
+    }
+
     this.visible = false;
+    this.hideAnimating = true;
 
     this.cleanupObservers();
 
@@ -645,16 +685,26 @@ export class FloatingToolbar {
 
     if (animate) {
       toolbar.classList.remove("floating-toolbar-enter-to");
-
       toolbar.classList.add("floating-toolbar-leave-active");
-
       toolbar.classList.add("floating-toolbar-leave-to");
 
-      await new Promise((r) => setTimeout(r, 200));
+      await new Promise<void>((resolve) => {
+        this.hideTimer = window.setTimeout(() => {
+          this.hideTimer = null;
+          resolve();
+        }, 200);
+      });
+
+      if (!this.hideAnimating) {
+        return;
+      }
+
+      this.hideAnimating = false;
 
       toolbar.classList.remove("floating-toolbar-leave-active");
-
       toolbar.classList.remove("floating-toolbar-leave-to");
+    } else {
+      this.hideAnimating = false;
     }
 
     toolbar.style.display = "none";
@@ -792,6 +842,14 @@ export class FloatingToolbar {
     }
 
     this.destroyed = true;
+
+    if (this.hideTimer !== null) {
+      clearTimeout(this.hideTimer);
+      this.hideTimer = null;
+    }
+
+    this.hideAnimating = false;
+    this.showAnimating = false;
 
     this.hide(false);
 

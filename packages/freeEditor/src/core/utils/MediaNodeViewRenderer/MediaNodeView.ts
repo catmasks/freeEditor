@@ -1,4 +1,3 @@
-import { FloatingToolbar } from "../../../ui/index";
 import { i18n } from "../../i18n/index";
 import type { MediaNodeAttrs } from "./types";
 
@@ -64,207 +63,6 @@ interface MediaNodeOptions {
 }
 
 /**
- * 媒体工具栏控制器 / Media toolbar controller
- */
-class MediaToolbarController {
-  /**
-   * 浮动工具栏实例 / Floating toolbar instance
-   */
-  private toolbar: FloatingToolbar | null = null;
-
-  /**
-   * 获取目标元素函数 / Get target element function
-   */
-  private getTarget: () => HTMLElement | null;
-
-  /**
-   * 媒体类型 / Media type
-   */
-  private mediaType: "image" | "video" | "attachment" = "image";
-
-  /**
-   * 预设尺寸回调 / Preset size callback
-   * @param _p 比例值 / Ratio value
-   */
-  onPreset = (_p: number) => {};
-
-  /**
-   * 重置尺寸回调 / Reset size callback
-   */
-  onReset = () => {};
-
-  /**
-   * 删除回调 / Delete callback
-   */
-  onDelete = () => {};
-
-  /**
-   * 打开文件回调 / Open file callback
-   */
-  onOpen = () => {};
-
-  /**
-   * 构造函数 / Constructor
-   * @param getTarget 获取目标元素函数 / Get target element function
-   * @param mediaType 媒体类型 / Media type
-   */
-  constructor(
-    getTarget: () => HTMLElement | null,
-    mediaType: "image" | "video" | "attachment" = "image",
-  ) {
-    this.getTarget = getTarget;
-    this.mediaType = mediaType;
-  }
-
-  /**
-   * 初始化工具栏 / Initialize toolbar
-   */
-  init() {
-    const target = this.getTarget();
-
-    if (!target) {
-      return;
-    }
-
-    this.toolbar = new FloatingToolbar({
-      target,
-      placement: "top-center",
-      offset: 8,
-      closeOnEsc: true,
-      content: this.createContent(),
-    });
-  }
-
-  /**
-   * 刷新工具栏内容（语言切换时调用） / Refresh toolbar content (called on locale change)
-   */
-  refreshContent() {
-    if (!this.toolbar) {
-      return;
-    }
-
-    const target = this.getTarget();
-    if (!target) {
-      return;
-    }
-
-    const wasVisible = this.toolbar.isVisible();
-    this.toolbar.destroy();
-
-    this.toolbar = new FloatingToolbar({
-      target,
-      placement: "top-center",
-      offset: 8,
-      closeOnEsc: true,
-      content: this.createContent(),
-    });
-
-    if (wasVisible) {
-      this.toolbar.show();
-    }
-  }
-
-  /**
-   * 创建工具栏内容 / Create toolbar content
-   * @returns 工具栏内容元素 / Toolbar content element
-   */
-  private createContent(): HTMLElement {
-    const wrap = document.createElement("div");
-
-    wrap.style.display = "flex";
-
-    wrap.style.alignItems = "center";
-
-    wrap.style.gap = "4px";
-
-    const btn = (
-      text: string,
-
-      fn: () => void,
-
-      className = "",
-    ) => {
-      const el = document.createElement("span");
-
-      el.className = `free-editor__media-node__action ${className}`;
-
-      el.textContent = text;
-
-      el.onclick = (e) => {
-        e.stopPropagation();
-
-        fn();
-      };
-
-      return el;
-    };
-
-    if (this.mediaType === "attachment") {
-      wrap.appendChild(
-        btn(i18n.t("media.openFile"), () => this.onOpen(), "primary"),
-      );
-
-      wrap.appendChild(
-        btn(i18n.t("common.remove"), () => this.onDelete(), "danger"),
-      );
-
-      return wrap;
-    }
-
-    wrap.appendChild(btn("30%", () => this.onPreset(0.3), "primary"));
-
-    wrap.appendChild(btn("50%", () => this.onPreset(0.5), "primary"));
-
-    wrap.appendChild(btn("100%", () => this.onPreset(1), "primary"));
-
-    wrap.appendChild(
-      btn(i18n.t("media.resetSize"), () => this.onReset(), "primary"),
-    );
-
-    wrap.appendChild(
-      btn(i18n.t("common.remove"), () => this.onDelete(), "danger"),
-    );
-
-    return wrap;
-  }
-
-  /**
-   * 显示工具栏 / Show toolbar
-   */
-  show() {
-    this.toolbar?.show();
-  }
-
-  /**
-   * 隐藏工具栏 / Hide toolbar
-   */
-  hide() {
-    this.toolbar?.hide();
-  }
-
-  /**
-   * 同步目标元素 / Sync target element
-   */
-  syncTarget() {
-    const el = this.getTarget();
-
-    if (!el) {
-      return;
-    }
-
-    this.toolbar?.setTarget(el);
-  }
-
-  /**
-   * 销毁工具栏 / Destroy toolbar
-   */
-  destroy() {
-    this.toolbar?.destroy();
-    this.toolbar = null;
-  }
-}
-
-/**
  * 媒体节点视图类 / Media node view class
  */
 export class MediaNodeView {
@@ -304,11 +102,6 @@ export class MediaNodeView {
   private resizeWidth = "";
 
   /**
-   * 工具栏控制器 / Toolbar controller
-   */
-  private toolbarController: MediaToolbarController | null = null;
-
-  /**
    * 取消语言变化订阅 / Unsubscribe locale change
    */
   private unsubscribeLocale: (() => void) | null = null;
@@ -321,8 +114,6 @@ export class MediaNodeView {
     this.options = options;
 
     this.render();
-
-    this.initToolbar();
 
     // [I18N] 订阅语言变化
     this.unsubscribeLocale = i18n.subscribe(() => {
@@ -354,9 +145,6 @@ export class MediaNodeView {
     if (this.options.selected) {
       this.wrapper.classList.add("free-editor__selected");
     }
-
-    this.toolbarController?.refreshContent();
-    this.toolbarController?.syncTarget();
   }
 
   /**
@@ -829,8 +617,6 @@ export class MediaNodeView {
     this.resizeWidth = `${width}px`;
 
     this.wrapper.style.width = this.resizeWidth;
-
-    this.toolbarController?.syncTarget();
   };
 
   /**
@@ -858,44 +644,11 @@ export class MediaNodeView {
   };
 
   /**
-   * 初始化工具栏 / Initialize toolbar
+   * 获取包装器元素（用于定位悬浮工具栏） / Get wrapper element (for floating toolbar positioning)
+   * @returns 包装器元素 / Wrapper element
    */
-  private initToolbar() {
-    const { attrs } = this.options;
-    const mediaType = (attrs.type || "image") as
-      | "image"
-      | "video"
-      | "attachment";
-
-    this.toolbarController = new MediaToolbarController(
-      () => this.wrapper,
-      mediaType,
-    );
-
-    this.toolbarController.onPreset = (p) => this.setPresetWidth(p);
-
-    this.toolbarController.onReset = () => this.resetSize();
-
-    this.toolbarController.onDelete = () => this.options.deleteNode();
-
-    this.toolbarController.onOpen = () => this.openAttachment();
-
-    this.toolbarController.init();
-
-    if (this.options.selected) {
-      this.toolbarController.show();
-    }
-  }
-
-  /**
-   * 打开附件（新标签页） / Open attachment (new tab)
-   */
-  private openAttachment() {
-    const { attrs } = this.options;
-
-    if (!attrs.src) return;
-
-    window.open(attrs.src, "_blank", "noopener,noreferrer");
+  getWrapper(): HTMLElement {
+    return this.wrapper;
   }
 
   /**
@@ -920,20 +673,10 @@ export class MediaNodeView {
       video.controls = selected;
     }
 
-    if (!this.toolbarController) {
-      return;
-    }
-
     if (selected) {
       this.wrapper.classList.add("free-editor__selected");
-
-      this.toolbarController.show();
-
-      this.toolbarController.syncTarget();
     } else {
       this.wrapper.classList.remove("free-editor__selected");
-
-      this.toolbarController.hide();
     }
   }
 
@@ -998,20 +741,16 @@ export class MediaNodeView {
     if (this.options.selected) {
       this.wrapper.classList.add("free-editor__selected");
     }
-
-    this.toolbarController?.syncTarget();
   }
 
   /**
    * 设置预设宽度 / Set preset width
    * @param p 比例值 / Ratio value
    */
-  private setPresetWidth(p: number) {
+  setPresetWidth(p: number) {
     const width = `${p * 100}%`;
 
     this.wrapper.style.width = width;
-
-    this.toolbarController?.syncTarget();
 
     this.options.updateAttributes({
       width,
@@ -1022,15 +761,31 @@ export class MediaNodeView {
   /**
    * 重置尺寸 / Reset size
    */
-  private resetSize() {
+  resetSize() {
     this.wrapper.style.width = "auto";
-
-    this.toolbarController?.syncTarget();
 
     this.options.updateAttributes({
       width: "auto",
       height: "auto",
     });
+  }
+
+  /**
+   * 打开附件（新标签页） / Open attachment (new tab)
+   */
+  openAttachment() {
+    const { attrs } = this.options;
+
+    if (!attrs.src) return;
+
+    window.open(attrs.src, "_blank", "noopener,noreferrer");
+  }
+
+  /**
+   * 删除节点 / Delete node
+   */
+  deleteNode() {
+    this.options.deleteNode();
   }
 
   /**
@@ -1049,10 +804,6 @@ export class MediaNodeView {
     this.unsubscribeLocale = null;
 
     this.stopResize();
-
-    this.toolbarController?.destroy();
-
-    this.toolbarController = null;
 
     this.el.remove();
   }

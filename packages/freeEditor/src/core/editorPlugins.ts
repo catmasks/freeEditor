@@ -26,12 +26,14 @@ import {
   ImagePlugin,
   VideoPlugin,
   AttachmentPlugin,
+  FloatingToolbarPlugin,
 } from "../preset/index";
 
 /**
  * 编辑器插件注册表 / Editor plugin registry
  */
 export const editorPluginRegistry: EditorPlugin[] = [
+  FloatingToolbarPlugin,
   HeadingPlugin,
   BoldPlugin,
   ItalicPlugin,

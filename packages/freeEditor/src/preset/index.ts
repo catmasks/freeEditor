@@ -29,3 +29,5 @@ export * from "./image/index";
 export * from "./video/index";
 
 export * from "./attachment/index";
+
+export * from "./floatingToolbar/index";

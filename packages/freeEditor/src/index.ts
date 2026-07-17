@@ -21,6 +21,11 @@ import type {
 
 import type { LocaleMessages } from "./core/i18n/index";
 
+import type {
+  FloatingToolbarItem,
+  FloatingToolbarAPI,
+} from "./preset/floatingToolbar/index";
+
 export { Editor, i18n };
 
 export type {
@@ -38,4 +43,6 @@ export type {
   MediaType,
   Locale,
   LocaleMessages,
+  FloatingToolbarItem,
+  FloatingToolbarAPI,
 };
