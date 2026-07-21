@@ -17,6 +17,7 @@ export default {
     fontHighlight: "Highlight",
     fontFamily: "Font Family",
     fontSize: "Font Size",
+    textAlign: "Align",
     heading: "Heading",
     codeBlock: "Code Block",
     link: "Link",
@@ -45,6 +46,12 @@ export default {
   },
   fontSize: {
     default: "Default Size",
+  },
+  textAlign: {
+    default: "Default",
+    left: "Left",
+    center: "Center",
+    right: "Right",
   },
   heading: {
     body: "Body",

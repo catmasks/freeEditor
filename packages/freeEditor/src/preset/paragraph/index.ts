@@ -28,7 +28,7 @@ export const CustomParagraph = Node.create({
    *
    * @returns HTML 渲染描述 / HTML render description
    */
-  renderHTML() {
-    return ["p", 0];
+  renderHTML({ HTMLAttributes }) {
+    return ["p", HTMLAttributes, 0];
   },
 });

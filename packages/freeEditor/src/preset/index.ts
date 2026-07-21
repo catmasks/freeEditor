@@ -18,6 +18,8 @@ export * from "./fontFamily/index";
 
 export * from "./fontSize/index";
 
+export * from "./textAlign/index";
+
 export * from "./link/index";
 
 export * from "./fontColor/index";

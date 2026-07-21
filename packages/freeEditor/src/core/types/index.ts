@@ -124,6 +124,7 @@ export type EditorPluginKey =
   | "fontHighlight"
   | "fontFamily"
   | "fontSize"
+  | "textAlign"
   | "link"
   | "image"
   | "table"

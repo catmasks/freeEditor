@@ -17,6 +17,7 @@ export default {
     fontHighlight: "ハイライト",
     fontFamily: "フォント",
     fontSize: "フォントサイズ",
+    textAlign: "配置",
     heading: "見出し",
     codeBlock: "コードブロック",
     link: "リンク",
@@ -45,6 +46,12 @@ export default {
   },
   fontSize: {
     default: "デフォルトサイズ",
+  },
+  textAlign: {
+    default: "デフォルト",
+    left: "左揃え",
+    center: "中央揃え",
+    right: "右揃え",
   },
   heading: {
     body: "本文",
