@@ -8,8 +8,8 @@ import { i18n } from "../../../core/index";
  * 选择器选项 / Select option
  */
 export interface SelectOption {
-  /** 显示标签 / Display label */
-  label: string;
+  /** 显示标签，支持文字或 DOM 元素 / Display label, supports text or DOM element */
+  label: string | HTMLElement;
 
   /** 选项值 / Option value */
   value: string | number | null;
@@ -212,7 +212,17 @@ export class Select {
       (item) => item.value === this.value,
     );
 
-    this.valueEl.textContent = current?.label || this.options.placeholder;
+    this.valueEl.innerHTML = "";
+
+    if (current) {
+      if (typeof current.label === "string") {
+        this.valueEl.textContent = current.label;
+      } else {
+        this.valueEl.appendChild(current.label.cloneNode(true));
+      }
+    } else {
+      this.valueEl.textContent = this.options.placeholder;
+    }
   }
 
   /**
@@ -238,7 +248,11 @@ export class Select {
 
       option.className = "free-select__option";
 
-      option.textContent = item.label;
+      if (typeof item.label === "string") {
+        option.textContent = item.label;
+      } else {
+        option.appendChild(item.label.cloneNode(true));
+      }
 
       if (item.value === this.value) {
         option.classList.add("is-active");

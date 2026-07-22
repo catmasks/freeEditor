@@ -54,6 +54,10 @@
 .free-select__value {
   flex: 1;
 
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
   overflow: hidden;
 
   white-space: nowrap;
@@ -118,6 +122,11 @@
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
   transition:
     background 0.12s,
     color 0.12s;
