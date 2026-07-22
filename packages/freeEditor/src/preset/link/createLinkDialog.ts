@@ -80,11 +80,6 @@ export class LinkDialog {
   private removeButton: HTMLButtonElement;
 
   /**
-   * 是否正在关闭中（防止递归调用）/ Whether closing is in progress (prevents recursive calls)
-   */
-  private isClosing = false;
-
-  /**
    * 构造函数 / Constructor
    *
    * @param options 对话框选项 / Dialog options
@@ -158,11 +153,6 @@ export class LinkDialog {
       placement: options.placement ?? "bottom-center",
 
       content: this.root,
-
-      onClose: () => {
-        if (this.isClosing) return;
-        this.handleClose();
-      },
     });
 
     confirmButton.addEventListener("click", this.confirm);
@@ -223,8 +213,6 @@ export class LinkDialog {
    * 打开对话框 / Open dialog
    */
   open(): void {
-    this.editor.storage.floatingToolbar?.setAutoRefresh(false);
-
     if (this.editor.isActive("link")) {
       this.editor.commands.extendMarkRange("link");
 
@@ -269,31 +257,16 @@ export class LinkDialog {
   }
 
   /**
-   * 处理关闭逻辑 / Handle close logic
+   * 关闭对话框 / Close dialog
    */
-  private handleClose(): void {
+  close = (): void => {
+    this.floating.hide();
+
     this.selectionRange = null;
 
     this.textInput.value = "";
 
     this.urlInput.value = "";
-
-    this.editor.storage.floatingToolbar?.setAutoRefresh(true);
-  }
-
-  /**
-   * 关闭对话框 / Close dialog
-   */
-  close = (): void => {
-    if (this.isClosing) return;
-
-    this.isClosing = true;
-
-    this.floating.hide();
-
-    this.handleClose();
-
-    this.isClosing = false;
   };
 
   /**
@@ -387,8 +360,6 @@ export class LinkDialog {
    * 清理资源和事件监听 / Clean up resources and event listeners
    */
   destroy(): void {
-    this.editor.storage.floatingToolbar?.setAutoRefresh(true);
-
     this.floating.destroy();
   }
 }

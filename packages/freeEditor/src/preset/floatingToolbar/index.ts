@@ -1,6 +1,7 @@
 import { Extension } from "@tiptap/core";
 
 import { FloatingToolbar } from "../../ui/components/FloatingToolbar/index";
+import { FloatingManager } from "../../ui/components/FloatingToolbar/FloatingManager";
 
 import type {
   FloatingPlacement,
@@ -45,6 +46,45 @@ export const FloatingToolbarPlugin = Extension.create({
     let currentEditor: Editor | null = null;
 
     let autoRefresh = true;
+
+    let suppressedByOtherFloating = false;
+
+    let managerUnsubscribe: (() => void) | null = null;
+
+    const setupManagerListener = () => {
+      if (managerUnsubscribe) return;
+
+      const manager = FloatingManager.getInstance();
+
+      managerUnsubscribe = manager.onActiveChange((activeId) => {
+        if (!toolbar) return;
+
+        const toolbarId = toolbar.getId();
+
+        if (activeId && activeId !== toolbarId) {
+          suppressedByOtherFloating = true;
+          if (toolbar.isVisible()) {
+            toolbar.hide();
+          }
+          if (refreshRaf !== null) {
+            cancelAnimationFrame(refreshRaf);
+            refreshRaf = null;
+          }
+        } else {
+          suppressedByOtherFloating = false;
+          if (autoRefresh) {
+            scheduleRefresh();
+          }
+        }
+      });
+    };
+
+    const cleanupManagerListener = () => {
+      if (managerUnsubscribe) {
+        managerUnsubscribe();
+        managerUnsubscribe = null;
+      }
+    };
 
     const getVisibleItems = (): FloatingToolbarItem[] => {
       if (!currentEditor || currentEditor.isDestroyed) return [];
@@ -213,6 +253,8 @@ export const FloatingToolbarPlugin = Extension.create({
           closeOnEsc: true,
         });
 
+        setupManagerListener();
+
         toolbar.show();
       } else {
         toolbar.setTarget(target);
@@ -236,7 +278,7 @@ export const FloatingToolbarPlugin = Extension.create({
     };
 
     const scheduleRefresh = () => {
-      if (!autoRefresh) {
+      if (!autoRefresh || suppressedByOtherFloating) {
         return;
       }
 
@@ -274,6 +316,8 @@ export const FloatingToolbarPlugin = Extension.create({
           content,
           closeOnEsc: true,
         });
+
+        setupManagerListener();
       } else {
         toolbar.setTarget(target);
 
@@ -323,6 +367,8 @@ export const FloatingToolbarPlugin = Extension.create({
 
         refreshRaf = null;
       }
+
+      cleanupManagerListener();
 
       toolbar?.destroy();
 
