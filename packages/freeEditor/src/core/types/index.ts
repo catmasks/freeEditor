@@ -145,6 +145,12 @@ export interface FloatingToolbarAPI {
   isVisible: () => boolean;
 
   /**
+   * 设置是否自动刷新（根据选区变化自动显示/隐藏）/ Set whether to auto-refresh (auto show/hide based on selection changes)
+   * @param enabled 是否启用自动刷新 / Whether auto-refresh is enabled
+   */
+  setAutoRefresh: (enabled: boolean) => void;
+
+  /**
    * 销毁 / Destroy
    */
   destroy: () => void;

@@ -44,6 +44,8 @@ export const FloatingToolbarPlugin = Extension.create({
 
     let currentEditor: Editor | null = null;
 
+    let autoRefresh = true;
+
     const getVisibleItems = (): FloatingToolbarItem[] => {
       if (!currentEditor || currentEditor.isDestroyed) return [];
 
@@ -234,6 +236,10 @@ export const FloatingToolbarPlugin = Extension.create({
     };
 
     const scheduleRefresh = () => {
+      if (!autoRefresh) {
+        return;
+      }
+
       if (refreshRaf !== null) {
         return;
       }
@@ -289,6 +295,20 @@ export const FloatingToolbarPlugin = Extension.create({
       return toolbar?.isVisible() || false;
     };
 
+    const setAutoRefresh = (enabled: boolean): void => {
+      autoRefresh = enabled;
+
+      if (!enabled) {
+        if (refreshRaf !== null) {
+          cancelAnimationFrame(refreshRaf);
+          refreshRaf = null;
+        }
+        hide();
+      } else {
+        scheduleRefresh();
+      }
+    };
+
     const registerItem = (item: FloatingToolbarItem): (() => void) => {
       items.set(item.key, item);
 
@@ -317,6 +337,7 @@ export const FloatingToolbarPlugin = Extension.create({
       hide,
       refresh: scheduleRefresh,
       isVisible,
+      setAutoRefresh,
       destroy,
       _setEditor: (editor: Editor) => {
         currentEditor = editor;
