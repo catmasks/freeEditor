@@ -52,10 +52,6 @@ export default {
     left: "Left",
     center: "Center",
     right: "Right",
-    defaultTooltip: "Use default text alignment",
-    leftTooltip: "Align text to the left",
-    centerTooltip: "Center-align text",
-    rightTooltip: "Align text to the right",
   },
   heading: {
     body: "Body",

@@ -52,10 +52,6 @@ export default {
     left: "左揃え",
     center: "中央揃え",
     right: "右揃え",
-    defaultTooltip: "デフォルトのテキスト配置を使用",
-    leftTooltip: "テキストを左揃えにする",
-    centerTooltip: "テキストを中央揃えにする",
-    rightTooltip: "テキストを右揃えにする",
   },
   heading: {
     body: "本文",

@@ -9,116 +9,39 @@ import { i18n } from "../../core/index";
 /**
  * 默认对齐图标 SVG / Default align icon SVG
  */
-const ALIGN_DEFAULT_ICON = `
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="3" y1="12" x2="15" y2="12" />
-    <line x1="3" y1="18" x2="18" y2="18" />
-  </svg>
-`;
+const ALIGN_DEFAULT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18"/><path d="M3 12h18"/><path d="M3 19h18"/></svg>`;
 
 /**
  * 左对齐图标 SVG / Left align icon SVG
  */
-const ALIGN_LEFT_ICON = `
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="3" y1="12" x2="15" y2="12" />
-    <line x1="3" y1="18" x2="18" y2="18" />
-  </svg>
-`;
+const ALIGN_LEFT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H3"/><path d="M15 12H3"/><path d="M17 19H3"/></svg>`;
 
 /**
  * 居中对齐图标 SVG / Center align icon SVG
  */
-const ALIGN_CENTER_ICON = `
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="6" y1="12" x2="18" y2="12" />
-    <line x1="4" y1="18" x2="20" y2="18" />
-  </svg>
-`;
+const ALIGN_CENTER_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H3"/><path d="M17 12H7"/><path d="M19 19H5"/></svg>`;
 
 /**
  * 右对齐图标 SVG / Right align icon SVG
  */
-const ALIGN_RIGHT_ICON = `
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="9" y1="12" x2="21" y2="12" />
-    <line x1="6" y1="18" x2="21" y2="18" />
-  </svg>
-`;
+const ALIGN_RIGHT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H3"/><path d="M21 12H9"/><path d="M21 19H7"/></svg>`;
 
 /**
  * 创建带图标的选项标签 DOM / Create option label DOM with icon
  * @param iconSvg 图标 SVG 字符串 / Icon SVG string
- * @param labelText 标签文字 / Label text
- * @param tooltip 提示文本 / Tooltip text
  * @returns 标签 DOM 元素 / Label DOM element
  */
-function createOptionLabel(
-  iconSvg: string,
-  labelText: string,
-  tooltip?: string,
-): HTMLElement {
+function createOptionLabel(iconSvg: string): HTMLElement {
   const wrapper = document.createElement("div");
   wrapper.style.display = "flex";
   wrapper.style.alignItems = "center";
   wrapper.style.gap = "6px";
   wrapper.style.width = "100%";
+  wrapper.style.pointerEvents = "none";
 
   const iconEl = createIcon(iconSvg);
   iconEl.style.flexShrink = "0";
   wrapper.appendChild(iconEl);
-
-  const textEl = document.createElement("span");
-  textEl.textContent = labelText;
-  wrapper.appendChild(textEl);
-
-  if (tooltip) {
-    wrapper.title = tooltip;
-  }
 
   return wrapper;
 }
@@ -126,35 +49,23 @@ function createOptionLabel(
 const getTextAlignOptions = (): SelectOption[] => [
   {
     value: null,
-    label: createOptionLabel(
-      ALIGN_DEFAULT_ICON,
-      i18n.t("textAlign.default"),
-      i18n.t("textAlign.defaultTooltip"),
-    ),
+    label: createOptionLabel(ALIGN_DEFAULT_ICON),
+    tooltip: i18n.t("textAlign.default"),
   },
   {
     value: "left",
-    label: createOptionLabel(
-      ALIGN_LEFT_ICON,
-      i18n.t("textAlign.left"),
-      i18n.t("textAlign.leftTooltip"),
-    ),
+    label: createOptionLabel(ALIGN_LEFT_ICON),
+    tooltip: i18n.t("textAlign.left"),
   },
   {
     value: "center",
-    label: createOptionLabel(
-      ALIGN_CENTER_ICON,
-      i18n.t("textAlign.center"),
-      i18n.t("textAlign.centerTooltip"),
-    ),
+    label: createOptionLabel(ALIGN_CENTER_ICON),
+    tooltip: i18n.t("textAlign.center"),
   },
   {
     value: "right",
-    label: createOptionLabel(
-      ALIGN_RIGHT_ICON,
-      i18n.t("textAlign.right"),
-      i18n.t("textAlign.rightTooltip"),
-    ),
+    label: createOptionLabel(ALIGN_RIGHT_ICON),
+    tooltip: i18n.t("textAlign.right"),
   },
 ];
 
@@ -179,7 +90,7 @@ export function createTextAlignToolbar(editor: Editor) {
     options: getTextAlignOptions(),
     tooltip: i18n.t("toolbar.textAlign"),
     width: "auto",
-    dropdownWidth: "80px",
+    dropdownWidth: "auto",
     getValue: () => getCurrentTextAlign(editor),
     onChange: (value) => {
       if (value == null) {

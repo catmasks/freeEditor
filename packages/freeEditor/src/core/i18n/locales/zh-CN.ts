@@ -48,14 +48,10 @@ export default {
     default: "默认字号",
   },
   textAlign: {
-    default: "默认对齐",
+    default: "默认",
     left: "居左",
     center: "居中",
     right: "居右",
-    defaultTooltip: "使用默认文本对齐方式",
-    leftTooltip: "将文本左对齐",
-    centerTooltip: "将文本居中对齐",
-    rightTooltip: "将文本右对齐",
   },
   heading: {
     body: "正文",

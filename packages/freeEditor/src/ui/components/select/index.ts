@@ -1,6 +1,6 @@
 import { FloatingToolbar, type FloatingPlacement } from "../FloatingToolbar";
 
-import { createToolbarButton } from "../button";
+import { createToolbarButton, bindTooltip } from "../button";
 
 import { i18n } from "../../../core/index";
 
@@ -13,6 +13,9 @@ export interface SelectOption {
 
   /** 选项值 / Option value */
   value: string | number | null;
+
+  /** 提示文本 / Tooltip text */
+  tooltip?: string;
 }
 
 /**
@@ -102,6 +105,11 @@ export class Select {
    * 是否打开 / Whether it is open
    */
   private open = false;
+
+  /**
+   * 选项 tooltip 销毁函数列表 / Option tooltip destroy function list
+   */
+  private optionTooltipDestroys: (() => void)[] = [];
 
   /**
    * 构造函数 / Constructor
@@ -231,6 +239,9 @@ export class Select {
   private renderOptions() {
     this.dropdownEl.innerHTML = "";
 
+    this.optionTooltipDestroys.forEach((destroy) => destroy());
+    this.optionTooltipDestroys = [];
+
     if (!this.options.options.length) {
       const empty = document.createElement("div");
 
@@ -256,6 +267,14 @@ export class Select {
 
       if (item.value === this.value) {
         option.classList.add("is-active");
+      }
+
+      if (item.tooltip) {
+        const { destroy } = bindTooltip(option, item.tooltip, {
+          skipFloatingCheck: true,
+          placement: "right",
+        });
+        this.optionTooltipDestroys.push(destroy);
       }
 
       option.addEventListener("mousedown", (e) => {
@@ -361,6 +380,9 @@ export class Select {
    * 销毁选择器 / Destroy select
    */
   destroy() {
+    this.optionTooltipDestroys.forEach((destroy) => destroy());
+    this.optionTooltipDestroys = [];
+
     this.floating.destroy();
 
     this.el.remove();
