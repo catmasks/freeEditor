@@ -28,6 +28,8 @@ import {
   VideoPlugin,
   AttachmentPlugin,
   FloatingToolbarPlugin,
+  UnderlinePlugin,
+  StrikePlugin,
 } from "../preset/index";
 
 /**
@@ -38,6 +40,8 @@ export const editorPluginRegistry: EditorPlugin[] = [
   HeadingPlugin,
   BoldPlugin,
   ItalicPlugin,
+  UnderlinePlugin,
+  StrikePlugin,
   FontColorPlugin,
   FontHighlightPlugin,
   FontFamilyPlugin,

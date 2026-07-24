@@ -4,6 +4,43 @@ import type { MediaEngine } from "../utils/index";
 export type { LocaleMessages } from "../i18n";
 
 /**
+ * 插件键名 / Plugin key
+ */
+export type EditorPluginKey =
+  /** 代码块*/
+  | "codeBlock"
+  /** 加粗*/
+  | "fontBold"
+  /** 斜体*/
+  | "fontItalic"
+  /**字体颜色 */
+  | "fontColor"
+  /**背景高亮 */
+  | "fontHighlight"
+  /**字体 */
+  | "fontFamily"
+  /**字体大小 */
+  | "fontSize"
+  /**对齐 */
+  | "textAlign"
+  /**链接 */
+  | "link"
+  /** 图片上传*/
+  | "image"
+  /**表格 */
+  | "table"
+  /**视频上传 */
+  | "video"
+  /** 标题*/
+  | "heading"
+  /**附件上传 */
+  | "attachment"
+  /**下划线 */
+  | "underline"
+  /**删除线 */
+  | "strike";
+
+/**
  * 浮动工具栏放置位置 / Floating toolbar placement
  */
 export type FloatingPlacement =
@@ -113,25 +150,6 @@ export interface FloatingToolbarAPI {
   destroy: () => void;
 }
 
-/**
- * 插件键名 / Plugin key
- */
-export type EditorPluginKey =
-  | "codeBlock"
-  | "fontBold"
-  | "fontItalic"
-  | "fontColor"
-  | "fontHighlight"
-  | "fontFamily"
-  | "fontSize"
-  | "textAlign"
-  | "link"
-  | "image"
-  | "table"
-  | "video"
-  | "heading"
-  | "attachment"
-  | "floatingToolbar";
 /**
  * 语言类型 / Locale type
  */

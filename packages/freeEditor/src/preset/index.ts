@@ -33,3 +33,7 @@ export * from "./video/index";
 export * from "./attachment/index";
 
 export * from "./floatingToolbar/index";
+
+export * from "./underline/index";
+
+export * from "./strike/index";
