@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import dts from "vite-plugin-dts";
+import { bundleDts } from "vite-plugin-bundle-dts";
 import path from "node:path";
 
 /**
@@ -109,18 +109,11 @@ export default defineConfig({
   plugins: [
     /**
      * TS 类型生成
+     * 使用 bundleDts 将所有类型声明合并到一个文件，去掉二级目录结构
      */
-    dts({
+    bundleDts({
       insertTypesEntry: true,
-
-      /**
-       * monorepo 更稳定
-       */
-      copyDtsFiles: true,
-
-      // @ts-ignore
-      // rollupTypes: true,
-      exclude: ["**/*.test.ts"],
+      rollupTypes: true,
     }),
   ],
 

@@ -8,14 +8,11 @@ import path from "node:path";
 export default defineConfig({
   resolve: {
     alias: {
-      /**
-       * 直接指向源码
-       */
-      "@catmasks/free-editor": path.resolve(
-        __dirname,
-        "../packages/freeEditor/src",
-        // "../packages/freeEditor/dist",
-      ),
+      // "@catmasks/free-editor": path.resolve(
+      //   __dirname,
+      //   "../packages/freeEditor/src",
+      //   // "../packages/freeEditor/dist",
+      // ),
     },
 
     /**

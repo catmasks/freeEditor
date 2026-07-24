@@ -1,4 +1,4 @@
-// import "@catmasks/free-editor/style.css";
+import "@catmasks/free-editor/style.css";
 
 import { initEditor, destroyEditor } from "./editor";
 import { initCustomI18n, updateButtonTexts } from "./i18n";

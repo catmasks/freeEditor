@@ -59,17 +59,17 @@
   ],
   "peerDependencies": {
     "@tiptap/core": "^3.26.1",
-    "@tiptap/pm": "^3.26.1",
-    "@tiptap/extension-gapcursor": "^3.26.1"
+    "@tiptap/extension-gapcursor": "^3.26.1",
+    "@tiptap/pm": "^3.26.1"
   },
   "devDependencies": {
-    "vite": "^8.0.12",
-    "vite-plugin-dts": "^5.0.2",
-    "typescript": "~6.0.2",
+    "@tiptap/core": "^3.26.1",
+    "@tiptap/extension-gapcursor": "^3.26.1",
+    "@tiptap/pm": "^3.26.1",
     "@types/node": "^24.12.3",
     "sass-embedded": "^1.100.0",
-    "@tiptap/core": "^3.26.1",
-    "@tiptap/pm": "^3.26.1",
-    "@tiptap/extension-gapcursor": "^3.26.1"
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12",
+    "vite-plugin-bundle-dts": "^0.5.0"
   }
 }
