@@ -72,14 +72,16 @@ import "@catmasks/free-editor/style.css";
 
 ```bash
 cd packages/freeEditor
-pnpm run pack
+pnpm pack --out free-editor.tgz
 ```
 
 ### 测试 .tgz 文件 / test .tgz file
 
+- 确保只有一个 .tgz 文件
+
 ```bash
 cd playground
-pnpm add ../packages/freeEditor/
+pnpm add ../packages/freeEditor/free-editor.tgz
 ```
 
 ### 运行 playground 项目 / run playground project
