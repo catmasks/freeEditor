@@ -7,6 +7,14 @@ cd playground
 pnpm remove @catmasks/free-editor
 ```
 
+```typescript
+/**
+ * 在 playground 项目中的 main.ts 顶部注释以下代码
+ * comment the following code to the main.ts file of the playground project
+ */
+import "@catmasks/free-editor/style.css";
+```
+
 ### 添加 freeEditor 库到 playground 项目的 vite.config.ts 中 / add freeEditor library to playground project's vite.config.ts
 
 ```typescript
@@ -48,6 +56,14 @@ resolve:{
       ),
     }
 }
+```
+
+```typescript
+/**
+ * 在 playground 项目中的 main.ts 顶部添加以下代码
+ * add the following code to the main.ts file of the playground project
+ */
+import "@catmasks/free-editor/style.css";
 ```
 
 ## 二次测试 / second test
