@@ -14,7 +14,6 @@ export default defineConfig({
         // "../packages/freeEditor/dist",
       ),
     },
-
     /**
      * 强制去重
      */

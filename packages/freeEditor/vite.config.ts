@@ -32,7 +32,7 @@ export default defineConfig({
       fileName: (format) => {
         if (format === "es") return "index.js";
         if (format === "cjs") return "index.cjs";
-        return "index.umd.cjs";
+        return "index.min.js";
       },
     },
 
@@ -55,11 +55,6 @@ export default defineConfig({
           "@tiptap/core",
           "@tiptap/pm",
           "@tiptap/extension-gapcursor",
-
-          "prosemirror-state",
-          "prosemirror-view",
-          "prosemirror-model",
-          "prosemirror-transform",
         ];
 
         return externalPkgs.some(
@@ -92,12 +87,9 @@ export default defineConfig({
         globals: {
           "@tiptap/core": "TiptapCore",
           "@tiptap/pm": "ProseMirror",
+          "@tiptap/pm/state": "ProseMirror",
+          "@tiptap/pm/view": "ProseMirror",
           "@tiptap/extension-gapcursor": "GapCursor",
-
-          "prosemirror-state": "ProseMirrorState",
-          "prosemirror-view": "ProseMirrorView",
-          "prosemirror-model": "ProseMirrorModel",
-          "prosemirror-transform": "ProseMirrorTransform",
         },
       },
     },
