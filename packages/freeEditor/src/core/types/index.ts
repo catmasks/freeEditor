@@ -22,7 +22,7 @@ export type EditorPluginKey =
   /**字体大小 */
   | "fontSize"
   /**对齐 */
-  | "textAlign"
+  | "alignment"
   /**链接 */
   | "link"
   /** 图片上传*/

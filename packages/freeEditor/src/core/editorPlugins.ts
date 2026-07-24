@@ -20,7 +20,7 @@ import {
   CodeBlockPlugin,
   FontFamilyPlugin,
   FontSizePlugin,
-  TextAlignPlugin,
+  AlignmentPlugin,
   LinkPlugin,
   FontColorPlugin,
   FontHighlightPlugin,
@@ -36,7 +36,6 @@ import {
  * 编辑器插件注册表 / Editor plugin registry
  */
 export const editorPluginRegistry: EditorPlugin[] = [
-  FloatingToolbarPlugin,
   HeadingPlugin,
   BoldPlugin,
   ItalicPlugin,
@@ -46,7 +45,7 @@ export const editorPluginRegistry: EditorPlugin[] = [
   FontHighlightPlugin,
   FontFamilyPlugin,
   FontSizePlugin,
-  TextAlignPlugin,
+  AlignmentPlugin,
   LinkPlugin,
   CodeBlockPlugin,
   ImagePlugin,
@@ -68,6 +67,7 @@ function createBaseExtensions(placeholder?: string): AnyExtension[] {
     PlaceholderPlugin.configure({
       placeholder: placeholder || "",
     }),
+    FloatingToolbarPlugin,
   ];
 }
 

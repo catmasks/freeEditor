@@ -46,30 +46,30 @@ function createOptionLabel(iconSvg: string): HTMLElement {
   return wrapper;
 }
 
-const getTextAlignOptions = (): SelectOption[] => [
+const getAlignmentOptions = (): SelectOption[] => [
   {
     value: null,
     label: createOptionLabel(ALIGN_DEFAULT_ICON),
-    tooltip: i18n.t("textAlign.default"),
+    tooltip: i18n.t("alignment.default"),
   },
   {
     value: "left",
     label: createOptionLabel(ALIGN_LEFT_ICON),
-    tooltip: i18n.t("textAlign.left"),
+    tooltip: i18n.t("alignment.left"),
   },
   {
     value: "center",
     label: createOptionLabel(ALIGN_CENTER_ICON),
-    tooltip: i18n.t("textAlign.center"),
+    tooltip: i18n.t("alignment.center"),
   },
   {
     value: "right",
     label: createOptionLabel(ALIGN_RIGHT_ICON),
-    tooltip: i18n.t("textAlign.right"),
+    tooltip: i18n.t("alignment.right"),
   },
 ];
 
-function getCurrentTextAlign(editor: Editor): string | null {
+function getCurrentAlignment(editor: Editor): string | null {
   const { state } = editor;
   const { selection } = state;
   const { $from } = selection;
@@ -77,27 +77,27 @@ function getCurrentTextAlign(editor: Editor): string | null {
   for (let d = $from.depth; d >= 0; d--) {
     const node = $from.node(d);
     if (node && ["paragraph", "heading"].includes(node.type.name)) {
-      return node.attrs.textAlign || null;
+      return node.attrs.alignment || null;
     }
   }
 
   return null;
 }
 
-export function createTextAlignToolbar(editor: Editor) {
+export function createAlignmentToolbar(editor: Editor) {
   return createSelectToolbar({
     editor,
-    options: getTextAlignOptions(),
-    tooltip: i18n.t("toolbar.textAlign"),
+    options: getAlignmentOptions(),
+    tooltip: i18n.t("toolbar.alignment"),
     width: "auto",
     dropdownWidth: "auto",
-    getValue: () => getCurrentTextAlign(editor),
+    getValue: () => getCurrentAlignment(editor),
     onChange: (value) => {
       if (value == null) {
-        editor.chain().focus().unsetTextAlign().run();
+        editor.chain().focus().unsetAlignment().run();
         return;
       }
-      editor.chain().focus().setTextAlign(String(value)).run();
+      editor.chain().focus().setAlignment(String(value)).run();
     },
   });
 }

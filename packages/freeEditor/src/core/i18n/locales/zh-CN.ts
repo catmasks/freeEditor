@@ -17,7 +17,7 @@ export default {
     fontHighlight: "背景高亮",
     fontFamily: "字体",
     fontSize: "字号",
-    textAlign: "对齐",
+    alignment: "对齐",
     heading: "标题",
     codeBlock: "代码块",
     link: "链接",
@@ -47,7 +47,7 @@ export default {
   fontSize: {
     default: "默认字号",
   },
-  textAlign: {
+  alignment: {
     default: "默认",
     left: "居左",
     center: "居中",

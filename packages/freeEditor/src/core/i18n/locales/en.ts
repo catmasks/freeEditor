@@ -17,7 +17,7 @@ export default {
     fontHighlight: "Highlight",
     fontFamily: "Font Family",
     fontSize: "Font Size",
-    textAlign: "Align",
+    alignment: "Align",
     heading: "Heading",
     codeBlock: "Code Block",
     link: "Link",
@@ -47,7 +47,7 @@ export default {
   fontSize: {
     default: "Default Size",
   },
-  textAlign: {
+  alignment: {
     default: "Default",
     left: "Left",
     center: "Center",

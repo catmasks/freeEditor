@@ -18,7 +18,7 @@ export * from "./fontFamily/index";
 
 export * from "./fontSize/index";
 
-export * from "./textAlign/index";
+export * from "./alignment/index";
 
 export * from "./link/index";
 

@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
 
-export const TextAlign = Extension.create({
-  name: "textAlign",
+export const Alignment = Extension.create({
+  name: "alignment",
 
   addGlobalAttributes() {
     return [
@@ -9,7 +9,7 @@ export const TextAlign = Extension.create({
         types: ["paragraph", "heading"],
 
         attributes: {
-          textAlign: {
+          alignment: {
             default: null,
 
             parseHTML: (element) => {
@@ -17,12 +17,12 @@ export const TextAlign = Extension.create({
             },
 
             renderHTML: (attributes) => {
-              if (!attributes.textAlign) {
+              if (!attributes.alignment) {
                 return {};
               }
 
               return {
-                style: `text-align: ${attributes.textAlign}`,
+                style: `text-align: ${attributes.alignment}`,
               };
             },
           },
@@ -33,7 +33,7 @@ export const TextAlign = Extension.create({
 
   addCommands() {
     return {
-      setTextAlign:
+      setAlignment:
         (alignment: string | null) =>
         ({ tr, state, dispatch }) => {
           const { selection } = state;
@@ -45,7 +45,7 @@ export const TextAlign = Extension.create({
               if (["paragraph", "heading"].includes(node.type.name)) {
                 tr.setNodeMarkup(pos, undefined, {
                   ...node.attrs,
-                  textAlign: alignment,
+                  alignment: alignment,
                 });
               }
             });
@@ -59,7 +59,7 @@ export const TextAlign = Extension.create({
                   if (currentNode) {
                     tr.setNodeMarkup(nodePos, undefined, {
                       ...currentNode.attrs,
-                      textAlign: alignment,
+                      alignment: alignment,
                     });
                   }
                   break;
@@ -73,7 +73,7 @@ export const TextAlign = Extension.create({
           return true;
         },
 
-      unsetTextAlign:
+      unsetAlignment:
         () =>
         ({ tr, state, dispatch }) => {
           const { selection } = state;
@@ -85,7 +85,7 @@ export const TextAlign = Extension.create({
               if (["paragraph", "heading"].includes(node.type.name)) {
                 tr.setNodeMarkup(pos, undefined, {
                   ...node.attrs,
-                  textAlign: null,
+                  alignment: null,
                 });
               }
             });
@@ -99,7 +99,7 @@ export const TextAlign = Extension.create({
                   if (currentNode) {
                     tr.setNodeMarkup(nodePos, undefined, {
                       ...currentNode.attrs,
-                      textAlign: null,
+                      alignment: null,
                     });
                   }
                   break;
@@ -118,10 +118,10 @@ export const TextAlign = Extension.create({
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
-    textAlign: {
-      setTextAlign: (alignment: string | null) => ReturnType;
+    alignment: {
+      setAlignment: (alignment: string | null) => ReturnType;
 
-      unsetTextAlign: () => ReturnType;
+      unsetAlignment: () => ReturnType;
     };
   }
 }

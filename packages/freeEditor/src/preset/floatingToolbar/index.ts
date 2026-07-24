@@ -1,16 +1,19 @@
+import { Extension } from "@tiptap/core";
+
 import { FloatingToolbar } from "../../ui/components/FloatingToolbar/index";
+
 import type {
   FloatingPlacement,
   FloatingToolbarItem,
   FloatingToolbarAPI,
 } from "../../core";
-import type { EditorPlugin, EditorPluginContext } from "../../core";
+
 import type { Editor } from "@tiptap/core";
 
 export type { FloatingToolbarItem, FloatingToolbarAPI, FloatingPlacement };
 
 /**
- * 悬浮工具栏插件 / Floating toolbar plugin
+ * 悬浮工具栏扩展 / Floating toolbar extension
  *
  * 通用悬浮工具栏，自动识别当前光标聚焦的节点/标记，
  * 选择性展示悬浮工具栏，支持其他插件注册工具栏项
@@ -19,28 +22,33 @@ export type { FloatingToolbarItem, FloatingToolbarAPI, FloatingPlacement };
  * focused node/mark and selectively displays the toolbar. Supports
  * registration of toolbar items from other plugins.
  */
-export const FloatingToolbarPlugin: EditorPlugin = {
-  /**
-   * 插件唯一标识 / Plugin unique key
-   */
-  key: "floatingToolbar",
+export const FloatingToolbarPlugin = Extension.create({
+  name: "floatingToolbar",
 
   /**
-   * 插件初始化 / Plugin setup
-   *
-   * @param editor 编辑器实例 / Editor instance
-   * @param context 插件上下文 / Plugin context
-   * @returns 清理函数 / Cleanup function
+   * 预初始化存储 / Pre-initialize storage
+   * 确保 editor.storage.floatingToolbar 永远不为 undefined
    */
-  setup(editor: Editor, context: EditorPluginContext) {
+  addStorage() {
     const items = new Map<string, FloatingToolbarItem>();
+
     let toolbar: FloatingToolbar | null = null;
+
     let refreshRaf: number | null = null;
+
     let lastVisibleKeys: string = "";
+
     let lastTargetKey: string = "";
 
+    let handleSelectionUpdate: (() => void) | null = null;
+
+    let currentEditor: Editor | null = null;
+
     const getVisibleItems = (): FloatingToolbarItem[] => {
-      const { state } = editor;
+      if (!currentEditor || currentEditor.isDestroyed) return [];
+
+      const { state } = currentEditor;
+
       const { selection } = state;
 
       const result: FloatingToolbarItem[] = [];
@@ -50,15 +58,20 @@ export const FloatingToolbarPlugin: EditorPlugin = {
 
         if (item.matchNodes && item.matchNodes.length > 0) {
           const { $from } = selection;
+
           for (let d = $from.depth; d >= 0; d--) {
             const node = $from.node(d);
+
             if (node && item.matchNodes.includes(node.type.name)) {
               shouldShow = true;
+
               break;
             }
           }
+
           if (!shouldShow) {
             const nodeSel = selection as any;
+
             if (
               nodeSel.node &&
               item.matchNodes?.includes(nodeSel.node.type.name)
@@ -70,15 +83,16 @@ export const FloatingToolbarPlugin: EditorPlugin = {
 
         if (!shouldShow && item.matchMarks && item.matchMarks.length > 0) {
           for (const markName of item.matchMarks) {
-            if (editor.isActive(markName)) {
+            if (currentEditor.isActive(markName)) {
               shouldShow = true;
+
               break;
             }
           }
         }
 
         if (!shouldShow && item.shouldShow) {
-          shouldShow = item.shouldShow(editor);
+          shouldShow = item.shouldShow(currentEditor);
         }
 
         if (shouldShow) {
@@ -92,20 +106,28 @@ export const FloatingToolbarPlugin: EditorPlugin = {
     };
 
     const getSelectionRect = (): DOMRect | null => {
-      const { view } = editor;
+      if (!currentEditor || currentEditor.isDestroyed) return null;
+
+      const { view } = currentEditor;
+
       const { selection } = view.state;
 
       if (selection.empty) {
         const pos = view.coordsAtPos(selection.from);
+
         return new DOMRect(pos.left, pos.top, 0, pos.bottom - pos.top);
       }
 
       const from = view.coordsAtPos(selection.from);
+
       const to = view.coordsAtPos(selection.to);
 
       const left = Math.min(from.left, to.left);
+
       const right = Math.max(from.right, to.right);
+
       const top = Math.min(from.top, to.top);
+
       const bottom = Math.max(from.bottom, to.bottom);
 
       return new DOMRect(left, top, right - left, bottom - top);
@@ -114,18 +136,27 @@ export const FloatingToolbarPlugin: EditorPlugin = {
     const getTargetForItem = (
       item: FloatingToolbarItem,
     ): HTMLElement | DOMRect | null => {
+      if (!currentEditor) return null;
+
       if (item.getTarget) {
-        return item.getTarget(editor);
+        return item.getTarget(currentEditor);
       }
+
       return getSelectionRect();
     };
 
     const buildContent = (visibleItems: FloatingToolbarItem[]): HTMLElement => {
+      if (!currentEditor) {
+        return document.createElement("div");
+      }
+
       const container = document.createElement("div");
+
       container.className = "floating-toolbar__content";
 
       for (const item of visibleItems) {
-        const el = item.render(editor);
+        const el = item.render(currentEditor);
+
         if (el) {
           container.appendChild(el);
         }
@@ -135,30 +166,40 @@ export const FloatingToolbarPlugin: EditorPlugin = {
     };
 
     const refresh = () => {
-      if (editor.isDestroyed) return;
+      if (!currentEditor || currentEditor.isDestroyed) return;
 
       const visibleItems = getVisibleItems();
+
       const visibleKeys = visibleItems.map((i) => i.key).join(",");
+
       const firstKey = visibleItems[0]?.key || "";
 
       if (visibleItems.length === 0) {
         hide();
+
         lastVisibleKeys = "";
+
         lastTargetKey = "";
+
         return;
       }
 
       const firstItem = visibleItems[0];
+
       const target = getTargetForItem(firstItem);
 
       if (!target) {
         hide();
+
         lastVisibleKeys = "";
+
         lastTargetKey = "";
+
         return;
       }
 
       const placement = firstItem.placement || "top-center";
+
       const offset = firstItem.offset ?? 4;
 
       if (!toolbar) {
@@ -169,10 +210,13 @@ export const FloatingToolbarPlugin: EditorPlugin = {
           content: buildContent(visibleItems),
           closeOnEsc: true,
         });
+
         toolbar.show();
       } else {
         toolbar.setTarget(target);
+
         toolbar.setPlacement(placement);
+
         toolbar.setOffset(offset);
 
         if (visibleKeys !== lastVisibleKeys) {
@@ -185,6 +229,7 @@ export const FloatingToolbarPlugin: EditorPlugin = {
       }
 
       lastVisibleKeys = visibleKeys;
+
       lastTargetKey = firstKey;
     };
 
@@ -192,20 +237,25 @@ export const FloatingToolbarPlugin: EditorPlugin = {
       if (refreshRaf !== null) {
         return;
       }
+
       refreshRaf = requestAnimationFrame(() => {
         refreshRaf = null;
+
         refresh();
       });
     };
 
     const show = (target: HTMLElement | DOMRect) => {
-      if (editor.isDestroyed) return;
+      if (!currentEditor || currentEditor.isDestroyed) return;
 
       const visibleItems = getVisibleItems();
+
       if (visibleItems.length === 0) return;
 
       const firstItem = visibleItems[0];
+
       const placement = firstItem.placement || "top-center";
+
       const offset = firstItem.offset ?? 4;
 
       const content = buildContent(visibleItems);
@@ -220,8 +270,11 @@ export const FloatingToolbarPlugin: EditorPlugin = {
         });
       } else {
         toolbar.setTarget(target);
+
         toolbar.setPlacement(placement);
+
         toolbar.setOffset(offset);
+
         toolbar.setContent(content);
       }
 
@@ -238,45 +291,92 @@ export const FloatingToolbarPlugin: EditorPlugin = {
 
     const registerItem = (item: FloatingToolbarItem): (() => void) => {
       items.set(item.key, item);
-      scheduleRefresh();
 
       return () => {
         items.delete(item.key);
-        scheduleRefresh();
       };
     };
 
     const destroy = () => {
       if (refreshRaf !== null) {
         cancelAnimationFrame(refreshRaf);
+
         refreshRaf = null;
       }
+
       toolbar?.destroy();
+
       toolbar = null;
+
       items.clear();
     };
 
-    const handleSelectionUpdate = () => {
-      scheduleRefresh();
-    };
-
-    editor.on("selectionUpdate", handleSelectionUpdate);
-
-    editor.storage.floatingToolbar = {
+    return {
       registerItem,
       show,
       hide,
       refresh: scheduleRefresh,
       isVisible,
       destroy,
-    } as FloatingToolbarAPI;
-
-    return () => {
-      editor.off("selectionUpdate", handleSelectionUpdate);
-      destroy();
-      if (editor.storage.floatingToolbar) {
-        delete editor.storage.floatingToolbar;
-      }
+      _setEditor: (editor: Editor) => {
+        currentEditor = editor;
+      },
+      _setHandleSelectionUpdate: (handler: () => void) => {
+        handleSelectionUpdate = handler;
+      },
+      _getHandleSelectionUpdate: () => handleSelectionUpdate,
+    } as FloatingToolbarAPI & {
+      _setEditor: (editor: Editor) => void;
+      _setHandleSelectionUpdate: (handler: () => void) => void;
+      _getHandleSelectionUpdate: () => (() => void) | null;
     };
   },
-};
+
+  /**
+   * 编辑器创建前执行 / Executed before editor is created
+   */
+  onBeforeCreate() {
+    const { editor } = this;
+
+    const toolbarAPI = editor.storage.floatingToolbar as
+      | (FloatingToolbarAPI & {
+          _setEditor: (editor: Editor) => void;
+          _setHandleSelectionUpdate: (handler: () => void) => void;
+          _getHandleSelectionUpdate: () => (() => void) | null;
+        })
+      | undefined;
+
+    if (!toolbarAPI) return;
+
+    toolbarAPI._setEditor(editor);
+
+    const localHandleSelectionUpdate = () => {
+      toolbarAPI.refresh();
+    };
+
+    toolbarAPI._setHandleSelectionUpdate(localHandleSelectionUpdate);
+
+    editor.on("selectionUpdate", localHandleSelectionUpdate);
+  },
+
+  /**
+   * 扩展销毁时执行 / Executed when extension is destroyed
+   */
+  onDestroy() {
+    const { editor } = this;
+
+    const toolbarAPI = editor.storage.floatingToolbar as
+      | (FloatingToolbarAPI & {
+          _getHandleSelectionUpdate: () => (() => void) | null;
+        })
+      | undefined;
+
+    const handler = toolbarAPI?._getHandleSelectionUpdate();
+
+    if (handler) {
+      editor.off("selectionUpdate", handler);
+    }
+
+    toolbarAPI?.destroy();
+  },
+});
