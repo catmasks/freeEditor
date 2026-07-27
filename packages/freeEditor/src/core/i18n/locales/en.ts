@@ -24,9 +24,6 @@ export default {
     image: "Image",
     video: "Video",
     attachment: "Attachment",
-    table: "Table",
-    undo: "Undo",
-    redo: "Redo",
   },
   link: {
     dialogTitle: "Link Settings",

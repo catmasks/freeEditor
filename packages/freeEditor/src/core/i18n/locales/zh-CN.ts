@@ -24,9 +24,6 @@ export default {
     image: "图片",
     video: "视频",
     attachment: "附件",
-    table: "表格",
-    undo: "撤销",
-    redo: "重做",
   },
   link: {
     dialogTitle: "链接设置",

@@ -27,8 +27,6 @@ export type EditorPluginKey =
   | "link"
   /** 图片上传*/
   | "image"
-  /**表格 */
-  | "table"
   /**视频上传 */
   | "video"
   /** 标题*/

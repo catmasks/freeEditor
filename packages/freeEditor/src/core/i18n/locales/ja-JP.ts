@@ -24,9 +24,6 @@ export default {
     image: "画像",
     video: "動画",
     attachment: "添付ファイル",
-    table: "表",
-    undo: "元に戻す",
-    redo: "やり直し",
   },
   link: {
     dialogTitle: "リンク設定",

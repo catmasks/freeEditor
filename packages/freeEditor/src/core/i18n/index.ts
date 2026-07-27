@@ -2,7 +2,7 @@ import zhCN from "./locales/zh-CN";
 import en from "./locales/en";
 import jaJP from "./locales/ja-JP";
 
-export type Locale = "zh-CN" | "en" | "ja-JP";
+import type { Locale } from "../types/index";
 
 export type LocaleMessages = typeof zhCN;
 

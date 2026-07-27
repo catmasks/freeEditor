@@ -17,14 +17,10 @@ import type {
   UploadTaskStatus,
   MediaType,
   Locale,
-} from "./core/types/index";
-
-import type { LocaleMessages } from "./core/i18n/index";
-
-import type {
+  LocaleMessages,
   FloatingToolbarItem,
   FloatingToolbarAPI,
-} from "./preset/floatingToolbar/index";
+} from "./core/index";
 
 export { Editor, i18n };
 
