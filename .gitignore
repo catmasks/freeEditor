@@ -49,3 +49,4 @@ test-results
 playwright-report
 cypress/videos
 cypress/screenshots
+cdn.html
