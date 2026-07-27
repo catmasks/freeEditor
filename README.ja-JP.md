@@ -6,8 +6,11 @@
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">TipTap コアをベースに開発された軽量リッチテキストエディタ</h4>
 <h4 align="center">プラグイン不要ですぐに使え、すべてのフロントエンドフレームワークに対応。中国語・英語・日本語を標準搭載</h4>
+<p align="center">
+  <img src="./playground/src/assets/image.png" alt="image">
+</p>
 
-### 注目して使い始める
+### 使い始める
 
 お役に立てたなら、スターを付けてください。新バージョンがリリースされたときに通知を受け取れます。
 
@@ -21,35 +24,99 @@ npm install @catmasks/free-editor
 pnpm add @catmasks/free-editor
 ```
 
+### CDN での利用
+
+バンドラーを使用しないプロジェクトでは、ESM CDN 経由でブラウザで直接使用できます。
+
+> **注意**:
+>
+> - このパッケージは ESM 形式のみ提供しています。`<script type="module">` で読み込む必要があり、従来の `<script>` タグでのインポートはサポートされていません。
+> - `@tiptap/core`、`@tiptap/pm`、`@tiptap/extension-gapcursor` は peerDependencies として外部化されているため、CDN で使用する際はこれらの依存関係が解決されることを確認してください。esm.sh などの自動依存関係解決に対応した CDN を使用すると、手動設定の手間を省けます。
+
+**esm.sh を使用する（推奨）**
+
+esm.sh は peerDependencies を自動的に解決して読み込むため、手動でインポートする必要はありません。
+
+```html
+<script type="module">
+  import { Editor, i18n } from "https://esm.sh/@catmasks/free-editor@0.0.4";
+  import "https://esm.sh/@catmasks/free-editor@0.0.4/style.css";
+
+  const editor = new Editor(document.getElementById("editor"), {
+    content: "<p>Hello World</p>",
+    placeholder: "内容を入力してください...",
+  });
+</script>
+```
+
+**importmap を使用する（オプション）**
+
+裸のインポート形式を使用したい場合は、importmap を併用できます：
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "@catmasks/free-editor": "https://esm.sh/@catmasks/free-editor@0.0.4",
+      "@catmasks/free-editor/style.css": "https://esm.sh/@catmasks/free-editor@0.0.4/style.css"
+    }
+  }
+</script>
+
+<script type="module">
+  import { Editor, i18n } from "@catmasks/free-editor";
+  import "@catmasks/free-editor/style.css";
+
+  const editor = new Editor(document.getElementById("editor"), {
+    content: "<p>Hello World</p>",
+  });
+</script>
+```
+
+**jsdelivr / unpkg を使用する（代替）**
+
+jsdelivr または unpkg を使用する場合は、peerDependencies も正しく読み込まれることを確認してください（自動解決に対応した esm.sh の使用を推奨します）。
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
+      "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
+      "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
+      "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
+      "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1"
+    }
+  }
+</script>
+<script type="module">
+  import {
+    Editor,
+    i18n,
+  } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/index.js";
+  import "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/style.css";
+</script>
+```
+
+> **ヒント**:
+>
+> - `@0.0.4` を実際に使用するバージョンに置き換えてください。
+> - `style.css` スタイルシートは**個別にインポートする必要があります**。そうしないとエディタが正しく表示されません。
+
 ## ナビゲーション
 
-### 内蔵プラグイン：
-
-`EditorPluginKey`:
-
-| プラグインキー                                                      | 名前           | 説明                                                               |
-| ------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------ |
-| `heading`                                                           | 見出し         | H1～H6 見出しに対応                                                |
-| `fontBold`                                                          | 太字           | 太字の切り替え                                                     |
-| `fontItalic`                                                        | 斜体           | 斜体の切り替え                                                     |
-| `fontColor`                                                         | 文字色         | 文字色を設定                                                       |
-| `fontHighlight`                                                     | ハイライト     | 背景ハイライトを設定                                               |
-| `fontFamily`                                                        | フォント       | フォントファミリを設定                                             |
-| `fontSize`                                                          | フォントサイズ | 文字サイズを設定                                                   |
-| `link`                                                              | リンク         | リンクの挿入・編集・削除                                           |
-| `codeBlock`                                                         | コードブロック | コードブロックを挿入                                               |
-| [<span style="color:#4695db">image</span>](#2-メディアアップロード) | 画像           | 画像を挿入（ドラッグ＆ドロップ／貼り付けによるアップロードに対応） |
-| [<span style="color:#4695db">video</span>](#2-メディアアップロード) | 動画           | 動画を挿入（ドラッグ＆ドロップ／貼り付けによるアップロードに対応） |
-
-### 国際化（i18n）:
-
-詳細は [<span style="color:#4695db">第3章 – i18n</span>](#3-国際化i18n) をご参照ください。
+- [1. クイックスタート](#1-クイックスタート)
+- [2. 設定項目](#2-設定項目)
+- [3. インスタンスプロパティとメソッド](#3-インスタンスプロパティとメソッド)
+- [4. 内蔵プラグイン](#4-内蔵プラグイン)
+- [5. メディアアップロード](#5-メディアアップロード)
+- [6. 国際化（i18n）](#6-国際化i18n)
 
 ---
 
 ## 1. クイックスタート
 
-### 1.1 基本的な使い方
+### 基本的な使い方
 
 ```typescript
 import { Editor } from "@catmasks/free-editor";
@@ -62,93 +129,109 @@ const editor = new Editor(document.getElementById("editor"), {
 });
 ```
 
-### 1.2 Editor コンストラクタ
+---
 
-**シグネチャ:**
+## 2. 設定項目
+
+コンストラクタの第2引数に `EditorOptions` 設定オブジェクトを渡します：
 
 ```typescript
-constructor(el: HTMLElement, options?: EditorOptions)
+interface EditorOptions {
+  content?: string;
+  locale?: Locale;
+  theme?: EditorTheme;
+  placeholder?: string;
+  include?: EditorPluginKey[];
+  exclude?: EditorPluginKey[];
+  uploader?: MediaUploaderOptions;
+}
 ```
 
-**パラメータ:**
+### `content`
 
-| パラメータ | 型              | 説明                            |
-| ---------- | --------------- | ------------------------------- |
-| `el`       | `HTMLElement`   | エディタをマウントする DOM 要素 |
-| `options`  | `EditorOptions` | エディタ設定（省略可能）        |
-
-### 1.3 設定項目 – `EditorOptions`
-
-#### `content`
+エディタの初期内容（HTML 文字列）。
 
 ```typescript
 content?: string
 ```
 
-エディタの初期内容（HTML 文字列）。
+### `locale`
 
-#### `locale`
+エディタの初期ロケール。
+
+- **デフォルト:** `"zh-CN"`
+- **指定可能な値:** `"zh-CN"` | `"en"` | `"ja-JP"`
 
 ```typescript
 locale?: Locale
 ```
 
-エディタの初期ロケール。
+### `theme`
 
-**デフォルト:** `"zh-CN"`  
-**指定可能な値:** `"zh-CN"` | `"en"` | `"ja-JP"`
+エディタのテーマ。
 
-#### `theme`
+- **デフォルト:** `"light"`
+- **指定可能な値:** `"light"` | `"dark"`
 
 ```typescript
 theme?: EditorTheme
 ```
 
-エディタのテーマ。
+### `placeholder`
 
-**デフォルト:** `"light"`  
-**指定可能な値:** `"light"` | `"dark"`
+エディタが空の場合に表示されるプレースホルダー文。
 
-#### `placeholder`
+- **デフォルト:** `"内容を入力してください..."`
 
 ```typescript
 placeholder?: string
 ```
 
-エディタが空の場合に表示されるプレースホルダー文。
+### `include`
 
-**デフォルト:** `"内容を入力してください..."`
+指定したプラグインのみを含めます。空の場合はすべてのプラグインを含みます。
 
-#### `include`
+- **デフォルト:** `[]`（すべてのプラグイン）
 
 ```typescript
 include?: EditorPluginKey[]
 ```
 
-指定したプラグインのみを含めます。空の場合はすべてのプラグインを含みます。
+**例:** 見出しと太字のみ有効にする
 
-**デフォルト:** `[]`（すべてのプラグイン）
+```typescript
+include: ["heading", "fontBold"];
+```
 
-#### `exclude`
+### `exclude`
+
+指定したプラグインを除外します。
+
+- **デフォルト:** `[]`（除外なし）
 
 ```typescript
 exclude?: EditorPluginKey[]
 ```
 
-指定したプラグインを除外します。
+**例:** コードブロックを除外する
 
-**デフォルト:** `[]`（除外なし）
+```typescript
+exclude: ["codeBlock"];
+```
 
-#### `uploader`
+### `uploader`
+
+メディアアップロード設定。画像・動画・添付ファイルの各タイプごとに個別に設定できます。詳細は [第5章](#5-メディアアップロード) をご参照ください。
 
 ```typescript
 uploader?: MediaUploaderOptions
 ```
 
-メディアアップロード設定。画像・動画・ファイルの各タイプごとに個別に設定できます。  
-詳細は [第2章](#2-メディアアップロード) をご参照ください。
+---
 
-### 1.4 インスタンスプロパティ
+## 3. インスタンスプロパティとメソッド
+
+### 3.1 インスタンスプロパティ
 
 #### `isMounted`
 
@@ -182,15 +265,23 @@ console.log(editor.theme); // "light"
 console.log(editor.isDark); // false
 ```
 
-### 1.5 インスタンスメソッド
+#### `locale`
+
+現在のロケールを取得します。
+
+```typescript
+console.log(editor.locale); // "zh-CN"
+```
+
+### 3.2 インスタンスメソッド
 
 #### `setTheme(theme)`
+
+テーマを設定します。
 
 ```typescript
 setTheme(theme: EditorTheme): void
 ```
-
-テーマを設定します。
 
 **パラメータ:**
 
@@ -200,332 +291,415 @@ setTheme(theme: EditorTheme): void
 
 #### `toggleTheme()`
 
+テーマを切り替えます（ライト／ダーク）。
+
 ```typescript
 toggleTheme(): void
 ```
 
-テーマを切り替えます（ライト／ダーク）。
-
-#### `getHtml()`
-
-```typescript
-getHtml(): string
-```
-
-エディタの HTML 内容を取得します。
-
-**戻り値:** `string` – HTML 文字列  
-**スロー:** エディタが破棄されている場合は `Error: Editor has been destroyed` をスローします。
-
-#### `destroy()`
-
-```typescript
-destroy(): void
-```
-
-エディタを破棄し、すべてのリソースとイベントリスナーをクリーンアップします。
-
----
-
-## 2. メディアアップロード
-
-### 2.1 `MediaUploaderOptions`
-
-アップロード設定の集合。メディアタイプごとに設定します。
-
-```typescript
-interface MediaUploaderOptions {
-  image?: MediaUploaderConfig;
-  video?: MediaUploaderConfig;
-  file?: MediaUploaderConfig;
-}
-```
-
-**プロパティ:**
-
-| プロパティ | 型                    | 説明                     |
-| ---------- | --------------------- | ------------------------ |
-| `image`    | `MediaUploaderConfig` | 画像アップロード設定     |
-| `video`    | `MediaUploaderConfig` | 動画アップロード設定     |
-| `file`     | `MediaUploaderConfig` | ファイルアップロード設定 |
-
-### 2.2 `MediaUploaderConfig`
-
-単一メディアタイプのアップロード設定。
-
-#### `action`
-
-```typescript
-action?: string
-```
-
-アップロード先の URL。
-
-**デフォルト:** `undefined`
-
-#### `method`
-
-```typescript
-method?: string
-```
-
-HTTP メソッド。
-
-**デフォルト:** `"POST"`
-
-#### `headers`
-
-```typescript
-headers?: HeadersInit
-```
-
-リクエストヘッダー。
-
-#### `withCredentials`
-
-```typescript
-withCredentials?: boolean
-```
-
-クレデンシャル（Cookie など）を送信するかどうか。
-
-**デフォルト:** `false`
-
-#### `fieldName`
-
-```typescript
-fieldName?: string
-```
-
-フォームのフィールド名。
-
-**デフォルト:** `"file"`
-
-#### `maxSize`
-
-```typescript
-maxSize?: number
-```
-
-最大ファイルサイズ（バイト単位）。
-
-**デフォルト:** `Infinity`
-
-#### `accept`
-
-```typescript
-accept?: string[]
-```
-
-受け付けるファイルの MIME タイプ。
-
-#### `data`
-
-```typescript
-data?: Record<string, any> | (() => Record<string, any>)
-```
-
-追加のフォームデータ。
-
-#### `format`
-
-```typescript
-format?: (result: any) => UploadResult | Promise<UploadResult>
-```
-
-サーバーレスポンスを整形します。
-
-**パラメータ:**
-
-- `result` – サーバーレスポンス
-
-**戻り値:** `UploadResult` – 整形されたアップロード結果
-
-**例:**
-
-```typescript
-{
-  format: (response) => ({
-    url: response.data.url,
-    name: response.data.filename,
-  }),
-}
-```
-
-#### `upload`
-
-```typescript
-upload?: (file: File, context: UploadContext) => Promise<UploadResult>
-```
-
-カスタムアップロード関数。設定するとデフォルトのアップロードロジックが置き換えられます。
-
-**パラメータ:**
-
-- `file` – ファイルオブジェクト
-- `context` – `signal`、`config`、`onProgress` を含むアップロードコンテキスト
-
-**戻り値:** `Promise<UploadResult>` – アップロード結果
-
-**例:**
-
-```typescript
-{
-  upload: async (file, context) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-      signal: context.signal,
-    });
-
-    const data = await res.json();
-
-    context.onProgress?.({ percent: 100 });
-
-    return {
-      url: data.url,
-      name: data.name,
-    };
-  },
-}
-```
-
-#### `beforeUpload`
-
-```typescript
-beforeUpload?: (file: File) => File | false | Promise<File | false>
-```
-
-アップロード前のフック。`false` を返すとアップロードをキャンセルし、新しい `File` オブジェクトを返すとファイルを置き換えます。
-
-**例:**
-
-```typescript
-{
-  beforeUpload: (file) => {
-    // 画像を圧縮して返す
-    return compressImage(file);
-  },
-}
-```
-
-#### `validate`
-
-```typescript
-validate?: (file: File) => string | void
-```
-
-ファイルを検証します。エラーメッセージ文字列を返すと検証失敗とみなします。
-
-**例:**
-
-```typescript
-{
-  validate: (file) => {
-    if (file.size > 10 * 1024 * 1024) {
-      return "ファイルサイズは 10MB を超えられません";
-    }
-  },
-}
-```
-
-#### `onProgress`
-
-```typescript
-onProgress?: (progress: UploadProgress, file: File) => void
-```
-
-進捗コールバック。
-
-#### `onSuccess`
-
-```typescript
-onSuccess?: (result: UploadResult, file: File) => void
-```
-
-成功コールバック。
-
-#### `onUploadError`
-
-```typescript
-onUploadError?: (error: Error, file: File) => void
-```
-
-アップロードエラーコールバック。
-
-#### `onTypeError`
-
-```typescript
-onTypeError?: (error: Error, file: File) => void
-```
-
-ファイルタイプエラーコールバック。
-
-#### `onSizeError`
-
-```typescript
-onSizeError?: (error: Error, file: File) => void
-```
-
-ファイルサイズエラーコールバック。
-
-#### `onValidateError`
-
-```typescript
-onValidateError?: (error: Error, file: File) => void
-```
-
-検証エラーコールバック。
-
----
-
-## 3. 国際化（i18n）
-
-### 3.1 i18n インスタンスプロパティ
-
-#### `locale`
-
-現在のインスタンスのロケール。
-
-```typescript
-console.log(i18n.locale); // zh-CN
-```
-
-### 3.2 i18n インスタンスメソッド
-
-#### `t(key, ...args)`
-
-```typescript
-t(key: string, ...args: any[]): string
-```
-
-現在のロケールにおける `key` に対応する翻訳テキストを返します。
-
-**戻り値:** `string` – 翻訳後のテキスト。見つからない場合は `key` そのものを返します。
-
-**パラメータ:**
-
-| パラメータ | 型       | 説明                                                                  |
-| ---------- | -------- | --------------------------------------------------------------------- |
-| `key`      | `string` | メッセージキー。ドット区切りパスに対応（例: `"toolbar.bold"`）        |
-| `args`     | `any[]`  | オプションの引数。メッセージ内のプレースホルダ `{0}`, `{1}`, … を置換 |
-
-**例:**
-
-```typescript
-i18n.t("toolbar.bold");
-```
-
 #### `setLocale(locale)`
+
+エディタのロケールを設定します。
 
 ```typescript
 setLocale(locale: Locale): void
 ```
 
-エディタインスタンスのロケールを設定します。
+**パラメータ:**
+
+| パラメータ | 型       | 説明                                       |
+| ---------- | -------- | ------------------------------------------ |
+| `locale`   | `Locale` | 対象ロケール: `"zh-CN"`、`"en"`、`"ja-JP"` |
+
+#### `getHtml()`
+
+エディタの HTML 内容を取得します。
+
+```typescript
+getHtml(): string
+```
+
+**戻り値:** `string` – HTML 文字列
+
+**スロー:** エディタが破棄されている場合は `Error: Editor has been destroyed` をスローします。
+
+#### `destroy()`
+
+エディタを破棄し、すべてのリソースとイベントリスナーをクリーンアップします。
+
+```typescript
+destroy(): void
+```
+
+---
+
+## 4. 内蔵プラグイン
+
+以下はすべての利用可能なプラグインキー（`EditorPluginKey`）です：
+
+| プラグインキー  | 名前           | 説明                                           |
+| --------------- | -------------- | ---------------------------------------------- |
+| `heading`       | 見出し         | H1～H6 見出しに対応                            |
+| `fontBold`      | 太字           | 太字の切り替え                                 |
+| `fontItalic`    | 斜体           | 斜体の切り替え                                 |
+| `fontColor`     | 文字色         | 文字色を設定                                   |
+| `fontHighlight` | ハイライト     | 背景ハイライトを設定                           |
+| `fontFamily`    | フォント       | フォントファミリを設定                         |
+| `fontSize`      | フォントサイズ | 文字サイズを設定                               |
+| `alignment`     | 配置           | 文字の左揃え／中央揃え／右揃え                 |
+| `link`          | リンク         | リンクの挿入・編集・削除                       |
+| `codeBlock`     | コードブロック | コードブロックを挿入                           |
+| `image`         | 画像           | 画像を挿入（ドラッグ＆ドロップ／貼り付け）     |
+| `video`         | 動画           | 動画を挿入（ドラッグ＆ドロップ／貼り付け）     |
+| `attachment`    | 添付ファイル   | ファイルを添付（ドラッグ＆ドロップ／貼り付け） |
+| `underline`     | 下線           | 文字に下線を追加                               |
+| `strike`        | 取り消し線     | 文字に取り消し線を追加                         |
+
+> **ヒント:** `include` または `exclude` 設定を使用して、有効にするプラグインを柔軟に制御できます。
+
+---
+
+## 5. メディアアップロード
+
+### 5.1 設定構造
+
+アップロード設定はメディアタイプごとに3つのカテゴリに分かれています：
+
+```typescript
+interface MediaUploaderOptions {
+  image?: MediaUploaderConfig; // 画像アップロード設定
+  video?: MediaUploaderConfig; // 動画アップロード設定
+  attachment?: MediaUploaderConfig; // 添付ファイルアップロード設定
+}
+```
+
+### 5.2 アップロード設定項目 (`MediaUploaderConfig`)
+
+以下は単一メディアタイプのすべての設定項目です：
+
+#### `action`
+
+アップロード先の URL。
+
+```typescript
+action?: string
+```
+
+#### `method`
+
+HTTP メソッド。
+
+- **デフォルト:** `"POST"`
+
+```typescript
+method?: string
+```
+
+#### `headers`
+
+リクエストヘッダー。
+
+```typescript
+headers?: HeadersInit
+```
+
+#### `withCredentials`
+
+クレデンシャル（Cookie など）を送信するかどうか。
+
+- **デフォルト:** `false`
+
+```typescript
+withCredentials?: boolean
+```
+
+#### `fieldName`
+
+フォームのフィールド名。
+
+- **デフォルト:** `"file"`
+
+```typescript
+fieldName?: string
+```
+
+#### `maxSize`
+
+最大ファイルサイズ（バイト単位）。
+
+- **デフォルト:** `Infinity`
+
+```typescript
+maxSize?: number
+```
+
+#### `accept`
+
+受け付けるファイルの MIME タイプの配列。
+
+```typescript
+accept?: string[]
+```
+
+**例:**
+
+```typescript
+accept: ["image/png", "image/jpeg"];
+```
+
+#### `data`
+
+追加のフォームデータ。オブジェクトまたはオブジェクトを返す関数を指定できます。
+
+```typescript
+data?: Record<string, any> | (() => Record<string, any>)
+```
+
+#### `format`
+
+サーバーレスポンスを整形し、標準の `UploadResult` を返します。
+
+```typescript
+format?: (result: any) => UploadResult | Promise<UploadResult>
+```
+
+**例:**
+
+```typescript
+format: (response) => ({
+  url: response.data.url,
+  name: response.data.filename,
+});
+```
+
+#### `upload`
+
+カスタムアップロード関数。設定するとデフォルトのアップロードロジックが置き換えられます。
+
+```typescript
+upload?: (file: File, context: UploadContext) => Promise<UploadResult>
+```
+
+**パラメータ:**
+
+- `file` – ファイルオブジェクト
+- `context` – `signal`（中止シグナル）、`config`（設定）、`onProgress`（進捗コールバック）を含むアップロードコンテキスト
+
+**例:**
+
+```typescript
+upload: async (file, context) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+    signal: context.signal,
+  });
+
+  const data = await res.json();
+
+  context.onProgress?.({ percent: 100 });
+
+  return {
+    url: data.url,
+    name: data.name,
+  };
+};
+```
+
+#### `beforeUpload`
+
+アップロード前のフック。`false` を返すとアップロードをキャンセルし、新しい `File` オブジェクトを返すとファイルを置き換えます。
+
+```typescript
+beforeUpload?: (file: File) => File | false | Promise<File | false>
+```
+
+#### `validate`
+
+ファイルを検証します。エラーメッセージ文字列を返すと検証失敗とみなします。
+
+```typescript
+validate?: (file: File) => string | void
+```
+
+**例:**
+
+```typescript
+validate: (file) => {
+  if (file.size > 10 * 1024 * 1024) {
+    return "ファイルサイズは 10MB を超えられません";
+  }
+};
+```
+
+### 5.3 コールバックイベント
+
+#### `onProgress`
+
+アップロード進捗コールバック。
+
+```typescript
+onProgress?: (progress: UploadProgress, file: File) => void
+```
+
+`UploadProgress` 構造：
+
+```typescript
+interface UploadProgress {
+  loaded: number; // 読み込み済みバイト数
+  total: number; // 合計バイト数
+  percent: number; // パーセンテージ
+}
+```
+
+#### `onSuccess`
+
+アップロード成功コールバック。
+
+```typescript
+onSuccess?: (result: UploadResult, file: File) => void
+```
+
+`UploadResult` 構造：
+
+```typescript
+interface UploadResult {
+  url: string; // リソース URL
+  name?: string; // ファイル名
+}
+```
+
+#### `onUploadError`
+
+アップロードエラーコールバック。
+
+```typescript
+onUploadError?: (error: Error, file: File) => void
+```
+
+#### `onTypeError`
+
+ファイルタイプエラーコールバック。
+
+```typescript
+onTypeError?: (error: Error, file: File) => void
+```
+
+#### `onSizeError`
+
+ファイルサイズエラーコールバック。
+
+```typescript
+onSizeError?: (error: Error, file: File) => void
+```
+
+#### `onValidateError`
+
+検証エラーコールバック。
+
+```typescript
+onValidateError?: (error: Error, file: File) => void
+```
+
+### 5.4 完全な例
+
+```typescript
+import { Editor, i18n } from "@catmasks/free-editor";
+import type { UploadResult, UploadContext } from "@catmasks/free-editor";
+
+const editor = new Editor(document.getElementById("editor"), {
+  uploader: {
+    // 画像アップロード設定
+    image: {
+      maxSize: 5 * 1024 * 1024, // 5MB
+      accept: ["image/png", "image/jpeg"],
+      async upload(file: File, ctx: UploadContext) {
+        return new Promise<UploadResult>((resolve, reject) => {
+          // カスタムアップロードロジック...
+          resolve({ url: "https://example.com/image.png" });
+        });
+      },
+    },
+    // 動画アップロード設定
+    video: {
+      maxSize: 500 * 1024 * 1024, // 500MB
+      accept: ["video/*"],
+      onUploadError(error) {
+        alert(i18n.t("upload.uploadFailed"));
+      },
+    },
+    // 添付ファイルアップロード設定
+    attachment: {
+      onSuccess(result, file) {
+        console.log("アップロード成功:", result.url);
+      },
+    },
+  },
+});
+```
+
+---
+
+## 6. 国際化（i18n）
+
+`i18n` は多言語対応を管理するグローバルシングルトンです。
+
+```typescript
+import { i18n } from "@catmasks/free-editor";
+```
+
+### 6.1 プロパティ
+
+#### `locale`
+
+現在のロケール。
+
+```typescript
+console.log(i18n.locale); // "zh-CN"
+```
+
+### 6.2 メソッド
+
+#### `t(key, ...args)`
+
+現在のロケールにおける `key` に対応する翻訳テキストを返します。プレースホルダ `{0}`, `{1}`... の置換に対応しています。
+
+```typescript
+t(key: string, ...args: any[]): string
+```
+
+**例:**
+
+```typescript
+i18n.t("toolbar.bold"); // "太字"
+i18n.t("upload.fileSizeExceeded"); // "ファイルサイズが制限を超えています"
+```
+
+**利用可能な翻訳キー:**
+
+| 名前空間     | 説明                       |
+| ------------ | -------------------------- |
+| `common`     | 共通テキスト               |
+| `toolbar`    | ツールバーテキスト         |
+| `link`       | リンク関連テキスト         |
+| `fontFamily` | フォント関連テキスト       |
+| `fontSize`   | フォントサイズ関連テキスト |
+| `alignment`  | 配置関連テキスト           |
+| `heading`    | 見出し関連テキスト         |
+| `upload`     | アップロード関連テキスト   |
+| `media`      | メディアノードテキスト     |
+| `attachment` | 添付ファイル関連テキスト   |
+
+#### `setLocale(locale)`
+
+現在のロケールを設定します。
+
+```typescript
+setLocale(locale: Locale): void
+```
 
 **パラメータ:**
 
@@ -535,58 +709,48 @@ setLocale(locale: Locale): void
 
 #### `extend(messages)`
 
+現在のロケールのメッセージオブジェクトを拡張します（ディープマージ）。
+
+> **注意:** このメソッドはエディタの初期化**前**に呼び出す必要があります。初期化後に呼び出してもエディタには反映されません。
+
 ```typescript
 extend(messages: DeepPartial<LocaleMessages>): void
 ```
 
-現在のロケールのメッセージオブジェクトを拡張します。
-
-**パラメータ:**
-
-| パラメータ | 型                            | 説明                           |
-| ---------- | ----------------------------- | ------------------------------ |
-| `messages` | `DeepPartial<LocaleMessages>` | 拡張するメッセージオブジェクト |
-
-**注意:** このメソッドはエディタの初期化**前**に呼び出す必要があります。初期化後に呼び出してもエディタには反映されません。
-
 **例:**
 
 ```typescript
+import { i18n } from "@catmasks/free-editor";
+
+// エディタを作成する前に翻訳を拡張
 i18n.extend({
   toolbar: {
     bold: "カスタム太字",
     italic: "カスタム斜体",
-    test: "テストテキスト",
   },
 });
+
+// その後エディタを作成
+const editor = new Editor(...);
 ```
 
 #### `subscribe(callback)`
+
+ロケール変更イベントを購読します。購読解除関数を返します。
+
+> **注意:** 破棄時に返された購読解除関数を呼び出して、メモリリークを防止してください。
 
 ```typescript
 subscribe(callback: (locale: Locale) => void): () => void
 ```
 
-ロケール変更イベントを購読します。エディタ外部で `i18n` を使用する際に便利です。
-
-**パラメータ:**
-
-| パラメータ | 型                         | 説明                                 |
-| ---------- | -------------------------- | ------------------------------------ |
-| `callback` | `(locale: Locale) => void` | ロケール変更時に呼ばれるコールバック |
-
-**戻り値:** 購読を解除する関数
-
-**注意:** 破棄時に返された購読解除関数を呼び出して、メモリリークを防止してください。
-
 **例:**
 
 ```typescript
-let unsubscribeLocale: (() => void) | null = null;
-unsubscribeLocale = i18n.subscribe(() => {
-  // ロケール変更後の処理...
+const unsubscribe = i18n.subscribe((locale) => {
+  console.log("ロケールが変更されました:", locale);
 });
-// 破棄時
-unsubscribeLocale?.();
-unsubscribeLocale = null;
+
+// 不要になったら購読解除
+unsubscribe();
 ```
