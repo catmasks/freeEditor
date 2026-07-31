@@ -354,6 +354,10 @@ Here are all available plugin keys (`EditorPluginKey`):
 | `attachment`    | Attachment    | Insert attachment, supports drag-and-drop / paste |
 | `underline`     | Underline     | Add underline to text                             |
 | `strike`        | Strikethrough | Add strikethrough to text                         |
+| `superscript`   | Superscript   | Add superscript to text                           |
+| `subscript`     | Subscript     | Add subscript to text                             |
+| `orderedList`   | OrderedList   | Insert ordered list                               |
+| `bulletList`    | BulletList    | Insert bullet list                                |
 
 > **Tip:** Use `include` or `exclude` options to flexibly control which plugins are enabled.
 

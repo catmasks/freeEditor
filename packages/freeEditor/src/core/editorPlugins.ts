@@ -39,6 +39,9 @@ import {
   SubscriptPlugin,
   BulletListPlugin,
   OrderedListPlugin,
+  IndentPlugin,
+  OutdentPlugin,
+  LineBreakPlugin,
 } from "../preset/index";
 
 /**
@@ -57,6 +60,9 @@ export const editorPluginRegistry: EditorPlugin[] = [
   FontFamilyPlugin,
   FontSizePlugin,
   AlignmentPlugin,
+  IndentPlugin,
+  OutdentPlugin,
+  LineBreakPlugin,
   LinkPlugin,
   CodeBlockPlugin,
   OrderedListPlugin,

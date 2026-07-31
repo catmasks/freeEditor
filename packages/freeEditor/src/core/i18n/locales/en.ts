@@ -28,6 +28,9 @@ export default {
     attachment: "Attachment",
     bulletList: "Bullet List",
     orderedList: "Numbered List",
+    indent: "Indent",
+    outdent: "Outdent",
+    lineBreak: "Line Break",
   },
   link: {
     dialogTitle: "Link Settings",

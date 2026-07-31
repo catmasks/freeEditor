@@ -47,3 +47,9 @@ export * from "./listItem/index";
 export * from "./bulletList/index";
 
 export * from "./orderedList/index";
+
+export * from "./indent/index";
+
+export * from "./outdent/index";
+
+export * from "./lineBreak/index";

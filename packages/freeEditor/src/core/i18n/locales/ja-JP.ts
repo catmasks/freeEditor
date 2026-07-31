@@ -28,6 +28,9 @@ export default {
     attachment: "添付ファイル",
     bulletList: "箇条書き",
     orderedList: "番号付きリスト",
+    indent: "インデント",
+    outdent: "アウトデント",
+    lineBreak: "改行",
   },
   link: {
     dialogTitle: "リンク設定",

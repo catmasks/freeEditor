@@ -44,7 +44,13 @@ export type EditorPluginKey =
   /**无序列表 */
   | "bulletList"
   /**有序列表 */
-  | "orderedList";
+  | "orderedList"
+  /**增加缩进 */
+  | "indent"
+  /**减少缩进 */
+  | "outdent"
+  /**换行 */
+  | "lineBreak";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement

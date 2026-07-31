@@ -28,6 +28,9 @@ export default {
     attachment: "附件",
     bulletList: "无序列表",
     orderedList: "有序列表",
+    indent: "增加缩进",
+    outdent: "减少缩进",
+    lineBreak: "换行",
   },
   link: {
     dialogTitle: "链接设置",

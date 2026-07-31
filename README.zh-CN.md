@@ -357,6 +357,9 @@ destroy(): void
 | `subscript`     | 下标     | 文字添加下标                |
 | `orderedList`   | 有序列表 | 插入有序列表                |
 | `bulletList`    | 无序列表 | 插入无序列表                |
+| `indent`        | 缩进     | 增加缩进                    |
+| `outdent`       | 减少缩进 | 减少缩进                    |
+| `lineBreak`     | 软换行   | 插入软换行                  |
 
 > **提示：** 使用 `include` 或 `exclude` 配置项可灵活控制启用哪些插件。
 
