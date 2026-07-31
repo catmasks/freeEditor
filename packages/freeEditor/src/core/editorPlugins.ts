@@ -15,24 +15,26 @@ import {
   CustomParagraph,
   CustomText,
   ListItem,
+  TaskItem,
+  FloatingToolbarPlugin,
+  PlaceholderPlugin,
 } from "../preset/index";
 
 import {
   BoldPlugin,
   ItalicPlugin,
   HeadingPlugin,
-  PlaceholderPlugin,
   CodeBlockPlugin,
   FontFamilyPlugin,
   FontSizePlugin,
   AlignmentPlugin,
+  LineHeightPlugin,
   LinkPlugin,
   FontColorPlugin,
   FontHighlightPlugin,
   ImagePlugin,
   VideoPlugin,
   AttachmentPlugin,
-  FloatingToolbarPlugin,
   UnderlinePlugin,
   StrikePlugin,
   SuperscriptPlugin,
@@ -42,6 +44,10 @@ import {
   IndentPlugin,
   OutdentPlugin,
   LineBreakPlugin,
+  BlockquotePlugin,
+  TaskListPlugin,
+  DividerPlugin,
+  InlineCodePlugin,
 } from "../preset/index";
 
 /**
@@ -60,6 +66,8 @@ export const editorPluginRegistry: EditorPlugin[] = [
   FontFamilyPlugin,
   FontSizePlugin,
   AlignmentPlugin,
+  LineHeightPlugin,
+  BlockquotePlugin,
   IndentPlugin,
   OutdentPlugin,
   LineBreakPlugin,
@@ -67,9 +75,12 @@ export const editorPluginRegistry: EditorPlugin[] = [
   CodeBlockPlugin,
   OrderedListPlugin,
   BulletListPlugin,
+  TaskListPlugin,
   ImagePlugin,
   VideoPlugin,
   AttachmentPlugin,
+  DividerPlugin,
+  InlineCodePlugin,
 ];
 
 /**
@@ -83,6 +94,7 @@ function createBaseExtensions(placeholder?: string): AnyExtension[] {
     CustomParagraph,
     CustomText,
     ListItem,
+    TaskItem,
     Gapcursor,
     PlaceholderPlugin.configure({
       placeholder: placeholder || "",

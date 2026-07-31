@@ -45,12 +45,22 @@ export type EditorPluginKey =
   | "bulletList"
   /**有序列表 */
   | "orderedList"
+  /**任务列表 */
+  | "taskList"
   /**增加缩进 */
   | "indent"
   /**减少缩进 */
   | "outdent"
   /**换行 */
-  | "lineBreak";
+  | "lineBreak"
+  /**行高 */
+  | "lineHeight"
+  /**引用 */
+  | "blockquote"
+  /**分割线 */
+  | "divider"
+  /**行内代码 */
+  | "inlineCode";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement

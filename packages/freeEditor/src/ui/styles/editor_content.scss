@@ -30,6 +30,29 @@
       overflow-x: auto;
     }
 
+    // 行内代码样式 / Inline code styles
+    code {
+      background: var(--editor-inline-code-bg, rgba(107, 114, 128, 0.15));
+      color: var(--editor-inline-code-color, #be185d);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      font-family:
+        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 0.875em;
+      line-height: 1.5;
+    }
+
+    // 代码块内的 code 不受行内代码样式影响 / Code inside pre not affected by inline styles
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+      line-height: inherit;
+    }
+
     video,
     img {
       max-width: 100%;
@@ -83,6 +106,108 @@
 
     ol ol ol {
       list-style-type: lower-roman;
+    }
+
+    // 任务列表样式 / Task list styles
+    ul[data-type="taskList"] {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul[data-type="taskList"] li.task-item {
+      display: flex;
+      align-items: flex-start;
+      margin: 0.3em 0;
+      padding-left: 0;
+    }
+
+    ul[data-type="taskList"] li.task-item > p {
+      margin: 0;
+    }
+
+    .task-item-checkbox-wrapper {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 0.5em;
+      margin-top: 0.15em;
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .task-item-checkbox {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .task-item-checkbox-custom {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--editor-checkbox-border, #9ca3af);
+      border-radius: 3px;
+      background-color: var(--editor-checkbox-bg, transparent);
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .task-item-checkbox:checked + .task-item-checkbox-custom {
+      background-color: var(--editor-checkbox-checked-bg, #3b82f6);
+      border-color: var(--editor-checkbox-checked-border, #3b82f6);
+    }
+
+    .task-item-checkbox:checked + .task-item-checkbox-custom::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 9px;
+      border: solid var(--editor-checkbox-checked-color, #ffffff);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .task-item-checkbox:focus-visible + .task-item-checkbox-custom {
+      outline: 2px solid var(--editor-checkbox-focus, #60a5fa);
+      outline-offset: 1px;
+    }
+
+    .task-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    li.task-item[data-checked="true"] .task-item-content > :first-child,
+    li.task-item[data-checked="true"] .task-item-content p:first-child {
+      text-decoration: line-through;
+      color: var(--editor-task-checked-color, #9ca3af);
+    }
+
+    // 引用样式 / Blockquote styles
+    blockquote {
+      border-left: 4px solid var(--editor-text-secondary, #6b7280);
+      padding-left: 1em;
+      margin: 0.5em 0;
+      color: var(--editor-text-secondary, #6b7280);
+      font-style: italic;
+
+      p {
+        margin: 0.3em 0;
+      }
+    }
+
+    // 分割线样式 / Divider (hr) styles
+    hr {
+      border: none;
+      border-top: 1px solid var(--editor-divider-color, #e5e7eb);
+      margin: 1em 0;
+      height: 0;
+      box-sizing: content-box;
     }
   }
 }
