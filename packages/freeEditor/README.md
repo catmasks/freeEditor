@@ -358,6 +358,9 @@ Here are all available plugin keys (`EditorPluginKey`):
 | `subscript`     | Subscript     | Add subscript to text                             |
 | `orderedList`   | OrderedList   | Insert ordered list                               |
 | `bulletList`    | BulletList    | Insert bullet list                                |
+| `indent`        | Indent        | Increase indent                                   |
+| `outdent`       | Outdent       | Decrease indent                                   |
+| `lineBreak`     | Line Break     | Insert soft line break                          |
 
 > **Tip:** Use `include` or `exclude` options to flexibly control which plugins are enabled.
 

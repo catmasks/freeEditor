@@ -25,7 +25,8 @@ function mutateIndent(
   const targetTypes = ["paragraph", "heading"];
   let changed = false;
 
-  // 遍历选区范围内的节点 / Iterate nodes within selection range
+  // 遍历选区（含空选区光标位置）范围内的块节点
+  // Iterate block nodes within selection (including cursor position for empty selection)
   doc.nodesBetween($from.pos, $to.pos, (node: any, pos: number) => {
     if (targetTypes.includes(node.type.name)) {
       const currentLevel = node.attrs.indent || 0;
@@ -39,32 +40,6 @@ function mutateIndent(
       }
     }
   });
-
-  // 空选区时，处理光标所在的当前块 / Handle cursor block for empty selection
-  if (selection.empty) {
-    for (let d = $from.depth; d >= 0; d--) {
-      const node = $from.node(d);
-      if (node && targetTypes.includes(node.type.name)) {
-        const nodePos = $from.start(d) - 1;
-        const currentNode = doc.nodeAt(nodePos);
-        if (currentNode) {
-          const currentLevel = currentNode.attrs.indent || 0;
-          const newLevel = Math.max(
-            0,
-            Math.min(mutate(currentLevel), MAX_INDENT_LEVEL),
-          );
-          if (newLevel !== currentLevel) {
-            tr.setNodeMarkup(nodePos, undefined, {
-              ...currentNode.attrs,
-              indent: newLevel,
-            });
-            changed = true;
-          }
-        }
-        break;
-      }
-    }
-  }
 
   return changed;
 }
@@ -95,27 +70,17 @@ export const Indent = Extension.create({
             /**
              * 解析 HTML 属性 / Parse HTML attribute
              *
-             * 解析 text-indent 值并换算为 2em 的整数倍级别
+             * 从 text-indent 换算缩进级别（每级 2em）
              *
              * @param element DOM 元素 / DOM element
              * @returns 缩进级别（0 ~ 5） / Indent level (0 ~ 5)
              */
             parseHTML: (element) => {
-              const raw = element.style.textIndent;
-              if (!raw) return 0;
-
-              const match = raw.match(/^([\d.]+)(px|em|rem)?$/);
-              if (!match) return 0;
-
-              const value = parseFloat(match[1]);
-              const unit = match[2] || "em";
-
-              // 统一换算为 em（1em = 16px） / Convert to em (1em = 16px)
-              const emVal = unit === "px" ? value / 16 : value;
-
-              // 换算为 2em 的整数倍级别 / Convert to 2em-multiple level
-              const level = Math.round(emVal / 2);
-              return Math.max(0, Math.min(level, MAX_INDENT_LEVEL));
+              const em = parseFloat(element.style.textIndent) || 0;
+              return Math.max(
+                0,
+                Math.min(Math.round(em / 2), MAX_INDENT_LEVEL),
+              );
             },
 
             /**
