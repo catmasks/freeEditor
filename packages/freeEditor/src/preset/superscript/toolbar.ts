@@ -20,7 +20,10 @@ export function createSuperscriptToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: SUPERSCRIPT_ICON,
-    tooltip: i18n.t("toolbar.superscript"),
+    tooltip: {
+      text: i18n.t("toolbar.superscript"),
+      keyboard: "ctrl + shift + .",
+    },
     isActive: () => editor.isActive("superscript"),
     onClick: () => editor.commands.setSuperscript(),
   });

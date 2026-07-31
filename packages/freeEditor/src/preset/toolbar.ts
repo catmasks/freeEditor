@@ -5,7 +5,7 @@ import {
   ColorPickerDropdown,
   Select,
 } from "../ui/index";
-import type { SelectOption } from "../ui/index";
+import type { SelectOption, TooltipType } from "../ui/index";
 
 /**
  * 简单工具栏按钮配置项 / Configuration options for a simple toolbar button
@@ -20,9 +20,9 @@ export interface SimpleToolbarOptions {
    */
   iconSvg: string;
   /**
-   * 提示文本 / The tooltip text
+   * 提示文本（支持字符串或带快捷键的配置对象）/ Tooltip text (supports string or config object with keyboard shortcut)
    */
-  tooltip: string;
+  tooltip: TooltipType;
   /**
    * 判断是否处于激活状态的函数 / Function to determine if the button is active
    */
@@ -83,9 +83,9 @@ export interface ColorPickerToolbarOptions {
    */
   iconSvg: string;
   /**
-   * 提示文本 / The tooltip text
+   * 提示文本（支持字符串或带快捷键的配置对象）/ Tooltip text (supports string or config object with keyboard shortcut)
    */
-  tooltip: string;
+  tooltip: TooltipType;
   /**
    * 获取当前颜色值的函数 / Function to get the current color value
    */
@@ -174,9 +174,9 @@ export interface SelectToolbarOptions {
    */
   options: SelectOption[];
   /**
-   * 提示文本 / The tooltip text
+   * 提示文本（支持字符串或带快捷键的配置对象）/ Tooltip text (supports string or config object with keyboard shortcut)
    */
-  tooltip: string;
+  tooltip: TooltipType;
   /**
    * 触发器宽度 / Trigger width
    */

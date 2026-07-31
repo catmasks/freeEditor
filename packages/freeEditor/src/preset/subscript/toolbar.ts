@@ -20,7 +20,10 @@ export function createSubscriptToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: SUBSCRIPT_ICON,
-    tooltip: i18n.t("toolbar.subscript"),
+    tooltip: {
+      text: i18n.t("toolbar.subscript"),
+      keyboard: "ctrl + shift + ,",
+    },
     isActive: () => editor.isActive("subscript"),
     onClick: () => editor.commands.setSubscript(),
   });

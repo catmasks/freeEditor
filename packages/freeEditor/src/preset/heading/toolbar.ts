@@ -42,7 +42,7 @@ export function createHeadingToolbar(editor: Editor) {
   return createSelectToolbar({
     editor,
     options: getHeadingOptions(),
-    tooltip: i18n.t("toolbar.heading"),
+    tooltip: { text: i18n.t("toolbar.heading"), keyboard: "ctrl + alt + *" },
     width: "auto",
     dropdownWidth: "80px",
     getValue: () => getHeadingLevel(editor),

@@ -1,6 +1,10 @@
 import { FloatingToolbar, type FloatingPlacement } from "../FloatingToolbar";
 
-import { createToolbarButton, bindTooltip } from "../button";
+import {
+  createToolbarButton,
+  bindTooltip,
+  type TooltipType,
+} from "../button";
 
 import { i18n } from "../../../core/index";
 
@@ -14,8 +18,8 @@ export interface SelectOption {
   /** 选项值 / Option value */
   value: string | number | null;
 
-  /** 提示文本 / Tooltip text */
-  tooltip?: string;
+  /** 提示文本（支持字符串或带快捷键的配置对象）/ Tooltip text (supports string or config object with keyboard shortcut) */
+  tooltip?: TooltipType;
 }
 
 /**
@@ -34,8 +38,8 @@ export interface SelectOptions {
   /** 占位文本 / Placeholder text */
   placeholder?: string;
 
-  /** 提示文本 / Tooltip text */
-  tooltip?: string;
+  /** 提示文本（支持字符串或带快捷键的配置对象）/ Tooltip text (supports string or config object with keyboard shortcut) */
+  tooltip?: TooltipType;
 
   /** 触发器宽度 / Trigger width */
   width?: string;

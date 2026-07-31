@@ -107,6 +107,9 @@ export const CustomHeading = Node.create({
    */
   addKeyboardShortcuts() {
     return {
+      "Mod-Alt-0": () => {
+        return this.editor.commands.unsetHeading();
+      },
       "Mod-Alt-1": () => {
         return this.editor.commands.setHeading({
           level: 1,

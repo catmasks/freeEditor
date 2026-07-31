@@ -2,6 +2,22 @@ import { FloatingManager } from "../FloatingToolbar/FloatingManager";
 
 export type TooltipPlacement = "top" | "bottom" | "left" | "right";
 
+/**
+ * 提示文本配置 / Tooltip content configuration
+ */
+export interface TooltipContent {
+  /**
+   * 提示文本 / Tooltip text
+   */
+  text: string;
+  /**
+   * 快捷键提示 / Keyboard shortcut hint
+   */
+  keyboard?: string;
+}
+
+export type TooltipType = string | TooltipContent;
+
 export interface TooltipBindResult {
   destroy: () => void;
 }
@@ -54,14 +70,32 @@ function calcTooltipPosition(
 
 export function bindTooltip(
   target: HTMLElement,
-  tooltip: string,
+  tooltip: TooltipType,
   options: BindTooltipOptions = {},
 ): TooltipBindResult {
   const { skipFloatingCheck = false, placement = "bottom" } = options;
 
   const tooltipEl = document.createElement("div");
   tooltipEl.className = "free-editor__tooltip--portal";
-  tooltipEl.innerText = tooltip;
+
+  // 解析 tooltip 内容，支持带快捷键的配置
+  const tooltipText = typeof tooltip === "string" ? tooltip : tooltip.text;
+  const tooltipKeyboard =
+    typeof tooltip === "string" ? undefined : tooltip.keyboard;
+
+  // 构建 tooltip 内部结构
+  const textEl = document.createElement("div");
+  textEl.className = "free-editor__tooltip--text";
+  textEl.textContent = tooltipText;
+  tooltipEl.appendChild(textEl);
+
+  // 如果有快捷键，在提示文本下方显示
+  if (tooltipKeyboard) {
+    const keyboardEl = document.createElement("div");
+    keyboardEl.className = "free-editor__tooltip--keyboard";
+    keyboardEl.textContent = tooltipKeyboard;
+    tooltipEl.appendChild(keyboardEl);
+  }
 
   tooltipEl.style.position = "fixed";
   tooltipEl.style.zIndex = "3000";
@@ -160,13 +194,13 @@ export function bindTooltip(
 /**
  * 创建工具栏按钮 / Create toolbar button
  * @param content - 按钮内容元素 / Button content element
- * @param tooltip - 提示文本 / Tooltip text
+ * @param tooltip - 提示文本（支持字符串或带快捷键的配置对象）/ Tooltip text (supports string or config object with keyboard shortcut)
  * @param options - 配置选项 / Options
  * @returns 按钮 DOM 元素 / Button DOM element
  */
 export function createToolbarButton(
   content: HTMLElement,
-  tooltip: string,
+  tooltip: TooltipType,
   options?: Omit<BindTooltipOptions, "skipFloatingCheck">,
 ) {
   const item = document.createElement("div");

@@ -18,7 +18,7 @@ export function createUnderlineToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: UNDERLINE_ICON,
-    tooltip: i18n.t("toolbar.underline"),
+    tooltip: { text: i18n.t("toolbar.underline"), keyboard: "ctrl + u" },
     isActive: () => editor.isActive("underline"),
     onClick: () => editor.commands.setUnderline(),
   });

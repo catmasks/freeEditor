@@ -18,7 +18,7 @@ export function createStrikeToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: STRIKE_ICON,
-    tooltip: i18n.t("toolbar.strike"),
+    tooltip: { text: i18n.t("toolbar.strike"), keyboard: "ctrl + s" },
     isActive: () => editor.isActive("strike"),
     onClick: () => editor.commands.setStrike(),
   });

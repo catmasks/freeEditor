@@ -32,7 +32,7 @@ export function createBoldToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: BOLD_ICON,
-    tooltip: i18n.t("toolbar.bold"),
+    tooltip: { text: i18n.t("toolbar.bold"), keyboard: "ctrl + b" },
     isActive: () => editor.isActive("bold"),
     onClick: () => editor.commands.setBold(),
   });

@@ -32,7 +32,7 @@ export function createItalicToolbar(editor: Editor) {
   return createSimpleToolbar({
     editor,
     iconSvg: ITALIC_ICON,
-    tooltip: i18n.t("toolbar.italic"),
+    tooltip: { text: i18n.t("toolbar.italic"), keyboard: "ctrl + i" },
     isActive: () => editor.isActive("italic"),
     onClick: () => editor.commands.setItalic(),
   });
