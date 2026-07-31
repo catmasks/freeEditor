@@ -355,6 +355,8 @@ destroy(): void
 | `strike`        | 删除线   | 文字添加删除线              |
 | `superscript`   | 上标     | 文字添加上标                |
 | `subscript`     | 下标     | 文字添加下标                |
+| `orderedList`   | 有序列表 | 插入有序列表                |
+| `bulletList`    | 无序列表 | 插入无序列表                |
 
 > **提示：** 使用 `include` 或 `exclude` 配置项可灵活控制启用哪些插件。
 

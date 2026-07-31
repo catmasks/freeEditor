@@ -40,7 +40,11 @@ export type EditorPluginKey =
   /**上标 */
   | "superscript"
   /**下标 */
-  | "subscript";
+  | "subscript"
+  /**无序列表 */
+  | "bulletList"
+  /**有序列表 */
+  | "orderedList";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement

@@ -41,5 +41,48 @@
       height: 0;
       display: block;
     }
+
+    // 列表样式 / List styles
+    ul,
+    ol {
+      padding-left: 1.5em;
+      margin: 0.4em 0;
+    }
+
+    ul {
+      list-style-type: disc;
+    }
+
+    ol {
+      list-style-type: decimal;
+    }
+
+    li {
+      margin: 0.2em 0;
+      p {
+        margin: 0;
+      }
+      // 嵌套列表缩进 / Nested list indent
+      ul,
+      ol {
+        margin: 0.2em 0;
+      }
+    }
+
+    ul ul {
+      list-style-type: circle;
+    }
+
+    ul ul ul {
+      list-style-type: square;
+    }
+
+    ol ol {
+      list-style-type: lower-alpha;
+    }
+
+    ol ol ol {
+      list-style-type: lower-roman;
+    }
   }
 }

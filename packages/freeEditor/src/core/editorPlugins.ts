@@ -10,7 +10,12 @@ import type {
 import { MediaEngine, useMediaUploader } from "./utils/index";
 import Gapcursor from "@tiptap/extension-gapcursor";
 
-import { CustomDocument, CustomParagraph, CustomText } from "../preset/index";
+import {
+  CustomDocument,
+  CustomParagraph,
+  CustomText,
+  ListItem,
+} from "../preset/index";
 
 import {
   BoldPlugin,
@@ -32,6 +37,8 @@ import {
   StrikePlugin,
   SuperscriptPlugin,
   SubscriptPlugin,
+  BulletListPlugin,
+  OrderedListPlugin,
 } from "../preset/index";
 
 /**
@@ -52,6 +59,8 @@ export const editorPluginRegistry: EditorPlugin[] = [
   AlignmentPlugin,
   LinkPlugin,
   CodeBlockPlugin,
+  OrderedListPlugin,
+  BulletListPlugin,
   ImagePlugin,
   VideoPlugin,
   AttachmentPlugin,
@@ -67,6 +76,7 @@ function createBaseExtensions(placeholder?: string): AnyExtension[] {
     CustomDocument,
     CustomParagraph,
     CustomText,
+    ListItem,
     Gapcursor,
     PlaceholderPlugin.configure({
       placeholder: placeholder || "",

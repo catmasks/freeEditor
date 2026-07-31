@@ -26,6 +26,8 @@ export default {
     image: "图片",
     video: "视频",
     attachment: "附件",
+    bulletList: "无序列表",
+    orderedList: "有序列表",
   },
   link: {
     dialogTitle: "链接设置",

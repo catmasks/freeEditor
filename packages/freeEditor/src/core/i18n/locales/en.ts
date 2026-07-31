@@ -26,6 +26,8 @@ export default {
     image: "Image",
     video: "Video",
     attachment: "Attachment",
+    bulletList: "Bullet List",
+    orderedList: "Numbered List",
   },
   link: {
     dialogTitle: "Link Settings",

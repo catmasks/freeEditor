@@ -356,6 +356,8 @@ destroy(): void
 | `strike`        | 取り消し線     | 文字に取り消し線を追加                         |
 | `superscript`   | 上標           | 文字に上標を追加                               |
 | `subscript`     | 下標           | 文字に下標を追加                               |
+| `orderedList`   | 有序リスト     | 有序リストを挿入                               |
+| `bulletList`    | 无序リスト     | 无序リストを挿入                               |
 
 > **ヒント:** `include` または `exclude` 設定を使用して、有効にするプラグインを柔軟に制御できます。
 

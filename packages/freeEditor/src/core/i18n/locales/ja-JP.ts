@@ -26,6 +26,8 @@ export default {
     image: "画像",
     video: "動画",
     attachment: "添付ファイル",
+    bulletList: "箇条書き",
+    orderedList: "番号付きリスト",
   },
   link: {
     dialogTitle: "リンク設定",
