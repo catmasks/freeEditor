@@ -37,3 +37,7 @@ export * from "./floatingToolbar/index";
 export * from "./underline/index";
 
 export * from "./strike/index";
+
+export * from "./superscript/index";
+
+export * from "./subscript/index";

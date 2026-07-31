@@ -13,6 +13,8 @@ export default {
     italic: "Italic",
     underline: "Underline",
     strike: "Strikethrough",
+    superscript: "Superscript",
+    subscript: "Subscript",
     fontColor: "Font Color",
     fontHighlight: "Highlight",
     fontFamily: "Font Family",

@@ -30,6 +30,8 @@ import {
   FloatingToolbarPlugin,
   UnderlinePlugin,
   StrikePlugin,
+  SuperscriptPlugin,
+  SubscriptPlugin,
 } from "../preset/index";
 
 /**
@@ -41,6 +43,8 @@ export const editorPluginRegistry: EditorPlugin[] = [
   ItalicPlugin,
   UnderlinePlugin,
   StrikePlugin,
+  SuperscriptPlugin,
+  SubscriptPlugin,
   FontColorPlugin,
   FontHighlightPlugin,
   FontFamilyPlugin,

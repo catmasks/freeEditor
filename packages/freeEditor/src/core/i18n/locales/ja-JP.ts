@@ -13,6 +13,8 @@ export default {
     italic: "斜体",
     underline: "下線",
     strike: "取り消し線",
+    superscript: "上付き文字",
+    subscript: "下付き文字",
     fontColor: "フォント色",
     fontHighlight: "ハイライト",
     fontFamily: "フォント",

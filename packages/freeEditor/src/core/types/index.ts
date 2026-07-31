@@ -36,7 +36,11 @@ export type EditorPluginKey =
   /**下划线 */
   | "underline"
   /**删除线 */
-  | "strike";
+  | "strike"
+  /**上标 */
+  | "superscript"
+  /**下标 */
+  | "subscript";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement

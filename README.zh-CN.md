@@ -353,6 +353,8 @@ destroy(): void
 | `attachment`    | 附件     | 插入附件，支持拖拽/粘贴上传 |
 | `underline`     | 下划线   | 文字添加下划线              |
 | `strike`        | 删除线   | 文字添加删除线              |
+| `superscript`   | 上标     | 文字添加上标                |
+| `subscript`     | 下标     | 文字添加下标                |
 
 > **提示：** 使用 `include` 或 `exclude` 配置项可灵活控制启用哪些插件。
 

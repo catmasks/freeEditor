@@ -13,6 +13,8 @@ export default {
     italic: "斜体",
     underline: "下划线",
     strike: "删除线",
+    superscript: "上标",
+    subscript: "下标",
     fontColor: "字体颜色",
     fontHighlight: "背景高亮",
     fontFamily: "字体",
