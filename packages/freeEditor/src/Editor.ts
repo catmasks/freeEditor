@@ -225,7 +225,17 @@ export class Editor {
 
     return this.core.getHtml();
   }
+  /**
+   * 获取 JSON 内容 / Get JSON content
+   * @returns JSON 字符串 / JSON string
+   */
+  getJson() {
+    if (this.destroyed) {
+      throw new Error("Editor has been destroyed");
+    }
 
+    return this.core.getJson();
+  }
   /**
    * 销毁编辑器 / Destroy editor
    */

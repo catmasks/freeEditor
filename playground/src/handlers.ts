@@ -41,6 +41,8 @@ export function initEventListeners(): void {
   if (getHtmlBtn) {
     getHtmlBtn.addEventListener("click", () => {
       const html = editor?.getHtml();
+      const json = editor?.getJson();
+      console.log(json);
       if (html) {
         const preview = document.getElementById("preview");
         if (preview) {

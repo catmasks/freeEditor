@@ -107,27 +107,6 @@ export function initEditor(): void {
 }
 
 /**
- * 切换主题 / Toggle theme
- */
-export function toggleDark(): void {
-  editor?.toggleTheme();
-}
-
-/**
- * 获取HTML内容 / Get HTML content
- */
-export function getHtml(): void {
-  const html = editor?.getHtml();
-
-  if (html) {
-    const preview = document.getElementById("preview");
-    if (preview) {
-      preview.textContent = html;
-    }
-  }
-}
-
-/**
  * 销毁编辑器 / Destroy editor
  */
 export function destroyEditor(): void {

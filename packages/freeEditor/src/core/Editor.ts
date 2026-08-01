@@ -31,7 +31,13 @@ export class CoreEditor {
   getHtml() {
     return this.editor.getHTML();
   }
-
+  /**
+   * 获取 JSON 内容 / Get JSON content
+   * @returns JSON 字符串 / JSON string
+   */
+  getJson() {
+    return this.editor.getJSON();
+  }
   /**
    * 销毁编辑器实例 / Destroy editor instance
    */
