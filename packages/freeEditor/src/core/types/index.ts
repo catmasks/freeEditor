@@ -225,6 +225,7 @@ export interface EditorOptions {
    * 是否禁用/ Whether disabled (recommended)
    */
   disabled?: boolean;
+
   /**
    * 是否禁用/ Whether disabled (legacy alias)
    * @deprecated 请使用 disabled / Please use disabled instead

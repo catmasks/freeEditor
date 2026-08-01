@@ -61,6 +61,8 @@ export const editorPluginRegistry: EditorPlugin[] = [
   StrikePlugin,
   SuperscriptPlugin,
   SubscriptPlugin,
+  InlineCodePlugin,
+  DividerPlugin,
   FontColorPlugin,
   FontHighlightPlugin,
   FontFamilyPlugin,
@@ -79,8 +81,6 @@ export const editorPluginRegistry: EditorPlugin[] = [
   ImagePlugin,
   VideoPlugin,
   AttachmentPlugin,
-  DividerPlugin,
-  InlineCodePlugin,
 ];
 
 /**

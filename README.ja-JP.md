@@ -5,14 +5,14 @@
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">TipTap コアをベースに開発された軽量リッチテキストエディタ</h4>
-<h4 align="center">プラグイン不要ですぐに使え、すべてのフロントエンドフレームワークに対応。中国語・英語・日本語を標準搭載</h4>
+<h4 align="center">プラグイン不要で即利用可能、あらゆるフロントエンドフレームワークに対応、日本語・中国語・英語を内蔵</h4>
 <p align="center">
-  <img src="./playground/src/assets/image.png" alt="image">
+  <img src="./playground/src/assets/freeEditor.png" alt="freeEditor">
 </p>
 
-### 使い始める
+### はじめに
 
-お役に立てたなら、スターを付けてください。新バージョンがリリースされたときに通知を受け取れます。
+本プロジェクトがお役に立ちましたら、スター（Star）をお願いいたします。新バージョン公開時に通知を受け取ることができます。
 
 ```bash
 npm install @catmasks/free-editor
@@ -24,18 +24,16 @@ npm install @catmasks/free-editor
 pnpm add @catmasks/free-editor
 ```
 
-### CDN での利用
+### CDN による導入
 
-バンドラーを使用しないプロジェクトでは、ESM CDN 経由でブラウザで直接使用できます。
+バンドルツールを使用しないプロジェクトでは、ESM CDN を介してブラウザで直接利用することが可能です。
 
-> **注意**:
+> **注意**：
 >
-> - このパッケージは ESM 形式のみ提供しています。`<script type="module">` で読み込む必要があり、従来の `<script>` タグでのインポートはサポートされていません。
-> - `@tiptap/core`、`@tiptap/pm`、`@tiptap/extension-gapcursor` は peerDependencies として外部化されているため、CDN で使用する際はこれらの依存関係が解決されることを確認してください。esm.sh などの自動依存関係解決に対応した CDN を使用すると、手動設定の手間を省けます。
+> - 本パッケージは ESM 形式のみを提供しております。従来の `<script>` タグによる読み込みはサポートされておらず、`<script type="module">` 方式での読み込みが必須です。
+> - `@tiptap/core`、`@tiptap/pm`、`@tiptap/extension-gapcursor` は peerDependencies として外部化されているため、CDN 導入時にはこれらの依存関係が解決可能であることをご確認ください。esm.sh など、依存関係を自動解決する CDN をご利用いただくと、手動設定が不要となります。
 
-**esm.sh を使用する（推奨）**
-
-esm.sh は peerDependencies を自動的に解決して読み込むため、手動でインポートする必要はありません。
+**esm.sh の利用（推奨）**
 
 ```html
 <script type="module">
@@ -49,9 +47,9 @@ esm.sh は peerDependencies を自動的に解決して読み込むため、手�
 </script>
 ```
 
-**importmap を使用する（オプション）**
+**importmap の利用（任意）**
 
-裸のインポート形式を使用したい場合は、importmap を併用できます：
+ベアインポート形式をご希望の場合は、importmap と併用できます。
 
 ```html
 <script type="importmap">
@@ -73,9 +71,9 @@ esm.sh は peerDependencies を自動的に解決して読み込むため、手�
 </script>
 ```
 
-**jsdelivr / unpkg を使用する（代替）**
+**jsdelivr / unpkg の利用（代替案）**
 
-jsdelivr または unpkg を使用する場合は、peerDependencies も正しく読み込まれることを確認してください（自動解決に対応した esm.sh の使用を推奨します）。
+jsdelivr または unpkg を利用する場合、peerDependencies も正しく読み込まれるようご注意ください（自動解決機能を持つ esm.sh の利用を推奨いたします）。
 
 ```html
 <script type="importmap">
@@ -95,28 +93,29 @@ jsdelivr または unpkg を使用する場合は、peerDependencies も正し�
     i18n,
   } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/index.js";
   import "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/style.css";
+  // ... エディタを使用
 </script>
 ```
 
-> **ヒント**:
+> **補足**：
 >
-> - `@0.0.4` を実際に使用するバージョンに置き換えてください。
-> - `style.css` スタイルシートは**個別にインポートする必要があります**。そうしないとエディタが正しく表示されません。
+> - `@0.0.4` の部分は、実際にご利用のバージョン番号に置き換えてください。
+> - スタイルシート `style.css` は**必ず個別にインポート**してください。インポートされない場合、エディタが正しく表示されません。
 
-## ナビゲーション
+## 目次
 
 - [1. クイックスタート](#1-クイックスタート)
-- [2. 設定項目](#2-設定項目)
+- [2. 設定オプション](#2-設定オプション)
 - [3. インスタンスプロパティとメソッド](#3-インスタンスプロパティとメソッド)
 - [4. 内蔵プラグイン](#4-内蔵プラグイン)
 - [5. メディアアップロード](#5-メディアアップロード)
-- [6. 国際化（i18n）](#6-国際化i18n)
+- [6. 国際化 (i18n)](#6-国際化-i18n)
 
 ---
 
 ## 1. クイックスタート
 
-### 基本的な使い方
+### 基本的な使用方法
 
 ```typescript
 import { Editor } from "@catmasks/free-editor";
@@ -131,15 +130,18 @@ const editor = new Editor(document.getElementById("editor"), {
 
 ---
 
-## 2. 設定項目
+## 2. 設定オプション
 
-コンストラクタの第2引数に `EditorOptions` 設定オブジェクトを渡します：
+コンストラクタの第2引数には `EditorOptions` 設定オブジェクトを渡します。
 
 ```typescript
 interface EditorOptions {
   content?: string;
   locale?: Locale;
   theme?: EditorTheme;
+  disable?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
   placeholder?: string;
   include?: EditorPluginKey[];
   exclude?: EditorPluginKey[];
@@ -149,7 +151,7 @@ interface EditorOptions {
 
 ### `content`
 
-エディタの初期内容（HTML 文字列）。
+エディタの初期化コンテンツ（HTML 文字列）です。
 
 ```typescript
 content?: string
@@ -157,10 +159,10 @@ content?: string
 
 ### `locale`
 
-エディタの初期ロケール。
+エディタの初期言語を設定します。
 
-- **デフォルト:** `"zh-CN"`
-- **指定可能な値:** `"zh-CN"` | `"en"` | `"ja-JP"`
+- **デフォルト値：** `"zh-CN"`
+- **指定可能な値：** `"zh-CN"` | `"en"` | `"ja-JP"`
 
 ```typescript
 locale?: Locale
@@ -168,20 +170,41 @@ locale?: Locale
 
 ### `theme`
 
-エディタのテーマ。
+エディタのテーマを設定します。
 
-- **デフォルト:** `"light"`
-- **指定可能な値:** `"light"` | `"dark"`
+- **デフォルト値：** `"light"`
+- **指定可能な値：** `"light"` | `"dark"`
 
 ```typescript
 theme?: EditorTheme
 ```
 
+### `disabled` | `disable`
+
+エディタを無効（無効化）にするかどうかを指定します。
+
+- **デフォルト値：** `false`
+
+```typescript
+disabled?: boolean
+disable?: boolean
+```
+
+### `readonly`
+
+エディタを読み取り専用にするかどうかを指定します。
+
+- **デフォルト値：** `false`
+
+```typescript
+readonly?: boolean
+```
+
 ### `placeholder`
 
-エディタが空の場合に表示されるプレースホルダー文。
+プレースホルダーテキストです。エディタが空の場合に表示されます。
 
-- **デフォルト:** `"内容を入力してください..."`
+- **デフォルト値：** `"内容を入力してください..."`
 
 ```typescript
 placeholder?: string
@@ -189,15 +212,15 @@ placeholder?: string
 
 ### `include`
 
-指定したプラグインのみを含めます。空の場合はすべてのプラグインを含みます。
+有効化するプラグインを指定します。空の場合は全プラグインが有効となります。
 
-- **デフォルト:** `[]`（すべてのプラグイン）
+- **デフォルト値：** `[]`（全プラグインを有効）
 
 ```typescript
 include?: EditorPluginKey[]
 ```
 
-**例:** 見出しと太字のみ有効にする
+**例：** 見出しと太字のみを有効にする
 
 ```typescript
 include: ["heading", "fontBold"];
@@ -205,15 +228,15 @@ include: ["heading", "fontBold"];
 
 ### `exclude`
 
-指定したプラグインを除外します。
+除外するプラグインを指定します。
 
-- **デフォルト:** `[]`（除外なし）
+- **デフォルト値：** `[]`（除外なし）
 
 ```typescript
 exclude?: EditorPluginKey[]
 ```
 
-**例:** コードブロックを除外する
+**例：** コードブロックを除外する
 
 ```typescript
 exclude: ["codeBlock"];
@@ -221,7 +244,7 @@ exclude: ["codeBlock"];
 
 ### `uploader`
 
-メディアアップロード設定。画像・動画・添付ファイルの各タイプごとに個別に設定できます。詳細は [第5章](#5-メディアアップロード) をご参照ください。
+メディアアップロードの設定です。画像・動画・添付ファイルの各メディア種別ごとに個別に設定可能です。詳細は [第5章](#5-メディアアップロード) をご参照ください。
 
 ```typescript
 uploader?: MediaUploaderOptions
@@ -235,7 +258,7 @@ uploader?: MediaUploaderOptions
 
 #### `isMounted`
 
-エディタがマウントされているかどうかを取得します。
+エディタがマウント済みかどうかを取得します。
 
 ```typescript
 console.log(editor.isMounted); // true
@@ -243,7 +266,7 @@ console.log(editor.isMounted); // true
 
 #### `isDestroyed`
 
-エディタが破棄されているかどうかを取得します。
+エディタが破棄済みかどうかを取得します。
 
 ```typescript
 console.log(editor.isDestroyed); // false
@@ -251,7 +274,7 @@ console.log(editor.isDestroyed); // false
 
 #### `theme`
 
-現在のテーマを取得します。`"light"` または `"dark"` を返します。
+現在のテーマを取得します。戻り値は `"light"` または `"dark"` です。
 
 ```typescript
 console.log(editor.theme); // "light"
@@ -259,15 +282,31 @@ console.log(editor.theme); // "light"
 
 #### `isDark`
 
-ダークモードかどうかを返します。
+ダークモードかどうかを取得します。
 
 ```typescript
 console.log(editor.isDark); // false
 ```
 
+#### `disabled`
+
+エディタが無効化されているかどうかを取得します。
+
+```typescript
+console.log(editor.disabled); // false
+```
+
+#### `readonly`
+
+エディタが読み取り専用かどうかを取得します。
+
+```typescript
+console.log(editor.readonly); // false
+```
+
 #### `locale`
 
-現在のロケールを取得します。
+現在の言語を取得します。
 
 ```typescript
 console.log(editor.locale); // "zh-CN"
@@ -283,11 +322,11 @@ console.log(editor.locale); // "zh-CN"
 setTheme(theme: EditorTheme): void
 ```
 
-**パラメータ:**
+**引数：**
 
-| パラメータ | 型            | 説明                                |
-| ---------- | ------------- | ----------------------------------- |
-| `theme`    | `EditorTheme` | テーマ名: `"light"` または `"dark"` |
+| 引数    | 型            | 説明                               |
+| ------- | ------------- | ---------------------------------- |
+| `theme` | `EditorTheme` | テーマ名 `"light"` または `"dark"` |
 
 #### `toggleTheme()`
 
@@ -299,33 +338,71 @@ toggleTheme(): void
 
 #### `setLocale(locale)`
 
-エディタのロケールを設定します。
+エディタの言語を設定します。
 
 ```typescript
 setLocale(locale: Locale): void
 ```
 
-**パラメータ:**
+**引数：**
 
-| パラメータ | 型       | 説明                                       |
-| ---------- | -------- | ------------------------------------------ |
-| `locale`   | `Locale` | 対象ロケール: `"zh-CN"`、`"en"`、`"ja-JP"` |
+| 引数     | 型       | 説明                                    |
+| -------- | -------- | --------------------------------------- |
+| `locale` | `Locale` | 対象言語 `"zh-CN"` / `"en"` / `"ja-JP"` |
 
 #### `getHtml()`
 
-エディタの HTML 内容を取得します。
+エディタの HTML コンテンツを取得します。
 
 ```typescript
 getHtml(): string
 ```
 
-**戻り値:** `string` – HTML 文字列
+#### `getJson()`
 
-**スロー:** エディタが破棄されている場合は `Error: Editor has been destroyed` をスローします。
+エディタの JSON コンテンツを取得します。
+
+```typescript
+getJson(): string
+```
+
+**戻り値：** `string` - JSON 文字列
+
+**例外：** エディタが破棄済みの場合、`Error: Editor has been destroyed` をスローします。
+
+#### `setDisabled(disabled)`
+
+エディタの無効状態を設定します。
+
+```typescript
+setDisabled(disabled: boolean): void
+```
+
+**戻り値：** `void`
+
+#### `setDisable(disable)`
+
+エディタの無効状態を設定します。
+
+```typescript
+setDisable(disable: boolean): void
+```
+
+**戻り値：** `void`
+
+#### `setReadonly(readonly)`
+
+エディタの読み取り専用状態を設定します。
+
+```typescript
+setReadonly(readonly: boolean): void
+```
+
+**戻り値：** `void`
 
 #### `destroy()`
 
-エディタを破棄し、すべてのリソースとイベントリスナーをクリーンアップします。
+エディタを破棄し、すべてのリソースおよびイベントリスナーをクリーンアップします。
 
 ```typescript
 destroy(): void
@@ -335,34 +412,39 @@ destroy(): void
 
 ## 4. 内蔵プラグイン
 
-以下はすべての利用可能なプラグインキー（`EditorPluginKey`）です：
+以下は利用可能な全プラグインキー（`EditorPluginKey`）の一覧です。
 
-| プラグインキー  | 名前           | 説明                                           |
-| --------------- | -------------- | ---------------------------------------------- |
-| `heading`       | 見出し         | H1～H6 見出しに対応                            |
-| `fontBold`      | 太字           | 太字の切り替え                                 |
-| `fontItalic`    | 斜体           | 斜体の切り替え                                 |
-| `fontColor`     | 文字色         | 文字色を設定                                   |
-| `fontHighlight` | ハイライト     | 背景ハイライトを設定                           |
-| `fontFamily`    | フォント       | フォントファミリを設定                         |
-| `fontSize`      | フォントサイズ | 文字サイズを設定                               |
-| `alignment`     | 配置           | 文字の左揃え／中央揃え／右揃え                 |
-| `link`          | リンク         | リンクの挿入・編集・削除                       |
-| `codeBlock`     | コードブロック | コードブロックを挿入                           |
-| `image`         | 画像           | 画像を挿入（ドラッグ＆ドロップ／貼り付け）     |
-| `video`         | 動画           | 動画を挿入（ドラッグ＆ドロップ／貼り付け）     |
-| `attachment`    | 添付ファイル   | ファイルを添付（ドラッグ＆ドロップ／貼り付け） |
-| `underline`     | 下線           | 文字に下線を追加                               |
-| `strike`        | 取り消し線     | 文字に取り消し線を追加                         |
-| `superscript`   | 上標           | 文字に上標を追加                               |
-| `subscript`     | 下標           | 文字に下標を追加                               |
-| `orderedList`   | 有序リスト     | 有序リストを挿入                               |
-| `bulletList`    | 无序リスト     | 无序リストを挿入                               |
-| `indent`        | インデント     | 文字をインデントする                           |
-| `outdent`       | オーデンデント | 文字をインデントを減少する                     |
-| `lineBreak`     | ド行区切り     | 文字をソフトラインブレーを挿入する             |
+| プラグインキー  | 名称             | 説明                                                           |
+| --------------- | ---------------- | -------------------------------------------------------------- |
+| `heading`       | 見出し           | H1〜H6 見出しに対応                                            |
+| `fontBold`      | 太字             | 文字の太字／解除                                               |
+| `fontItalic`    | 斜体             | 文字の斜体／解除                                               |
+| `fontColor`     | 文字色           | 文字色を設定                                                   |
+| `fontHighlight` | ハイライト       | 文字の背景ハイライトを設定                                     |
+| `fontFamily`    | フォント         | フォントを設定                                                 |
+| `fontSize`      | フォントサイズ   | 文字サイズを設定                                               |
+| `alignment`     | 配置             | 左揃え／中央揃え／右揃え                                       |
+| `link`          | リンク           | リンクの挿入／編集／削除                                       |
+| `codeBlock`     | コードブロック   | コードブロックを挿入                                           |
+| `image`         | 画像             | 画像を挿入（ドラッグ＆ペーストによるアップロード対応）         |
+| `video`         | 動画             | 動画を挿入（ドラッグ＆ペーストによるアップロード対応）         |
+| `attachment`    | 添付ファイル     | 添付ファイルを挿入（ドラッグ＆ペーストによるアップロード対応） |
+| `underline`     | 下線             | 文字に下線を付与                                               |
+| `strike`        | 打消し線         | 文字に打消し線を付与                                           |
+| `superscript`   | 上付き文字       | 文字を上付きに                                                 |
+| `subscript`     | 下付き文字       | 文字を下付きに                                                 |
+| `orderedList`   | 番号付きリスト   | 番号付きリストを挿入                                           |
+| `bulletList`    | 箇条書きリスト   | 箇条書きリストを挿入                                           |
+| `taskList`      | タスクリスト     | チェックボックス付きタスクリストを挿入                         |
+| `indent`        | インデント       | インデントを増やす                                             |
+| `outdent`       | インデント解除   | インデントを減らす                                             |
+| `lineBreak`     | 改行             | 改行を挿入                                                     |
+| `lineHeight`    | 行高             | 段落の行高を設定                                               |
+| `blockquote`    | 引用             | 引用ブロックを挿入                                             |
+| `divider`       | 区切り線         | 水平区切り線を挿入                                             |
+| `inlineCode`    | インラインコード | インラインコード（例：`code`）を挿入                           |
 
-> **ヒント:** `include` または `exclude` 設定を使用して、有効にするプラグインを柔軟に制御できます。
+> **補足：** `include` または `exclude` 設定オプションを利用することで、有効化するプラグインを柔軟に制御できます。
 
 ---
 
@@ -370,7 +452,7 @@ destroy(): void
 
 ### 5.1 設定構造
 
-アップロード設定はメディアタイプごとに3つのカテゴリに分かれています：
+アップロード設定はメディア種別ごとに3種類に分類されます。
 
 ```typescript
 interface MediaUploaderOptions {
@@ -382,11 +464,11 @@ interface MediaUploaderOptions {
 
 ### 5.2 アップロード設定項目 (`MediaUploaderConfig`)
 
-以下は単一メディアタイプのすべての設定項目です：
+以下は各メディア種別で設定可能な全項目です。
 
 #### `action`
 
-アップロード先の URL。
+アップロード先の URL です。
 
 ```typescript
 action?: string
@@ -394,9 +476,9 @@ action?: string
 
 #### `method`
 
-HTTP メソッド。
+HTTP メソッドです。
 
-- **デフォルト:** `"POST"`
+- **デフォルト値：** `"POST"`
 
 ```typescript
 method?: string
@@ -404,7 +486,7 @@ method?: string
 
 #### `headers`
 
-リクエストヘッダー。
+リクエストヘッダーです。
 
 ```typescript
 headers?: HeadersInit
@@ -414,7 +496,7 @@ headers?: HeadersInit
 
 クレデンシャル（Cookie など）を送信するかどうか。
 
-- **デフォルト:** `false`
+- **デフォルト値：** `false`
 
 ```typescript
 withCredentials?: boolean
@@ -422,9 +504,9 @@ withCredentials?: boolean
 
 #### `fieldName`
 
-フォームのフィールド名。
+フォームフィールド名です。
 
-- **デフォルト:** `"file"`
+- **デフォルト値：** `"file"`
 
 ```typescript
 fieldName?: string
@@ -432,9 +514,9 @@ fieldName?: string
 
 #### `maxSize`
 
-最大ファイルサイズ（バイト単位）。
+最大ファイルサイズ（バイト単位）です。
 
-- **デフォルト:** `Infinity`
+- **デフォルト値：** `Infinity`
 
 ```typescript
 maxSize?: number
@@ -442,13 +524,13 @@ maxSize?: number
 
 #### `accept`
 
-受け付けるファイルの MIME タイプの配列。
+許可するファイルの MIME タイプの配列です。
 
 ```typescript
 accept?: string[]
 ```
 
-**例:**
+**例：**
 
 ```typescript
 accept: ["image/png", "image/jpeg"];
@@ -456,7 +538,7 @@ accept: ["image/png", "image/jpeg"];
 
 #### `data`
 
-追加のフォームデータ。オブジェクトまたはオブジェクトを返す関数を指定できます。
+追加のフォームデータです。オブジェクトまたはオブジェクトを返す関数を指定できます。
 
 ```typescript
 data?: Record<string, any> | (() => Record<string, any>)
@@ -464,13 +546,13 @@ data?: Record<string, any> | (() => Record<string, any>)
 
 #### `format`
 
-サーバーレスポンスを整形し、標準の `UploadResult` を返します。
+サーバー応答を整形し、標準の `UploadResult` を返す関数です。
 
 ```typescript
 format?: (result: any) => UploadResult | Promise<UploadResult>
 ```
 
-**例:**
+**例：**
 
 ```typescript
 format: (response) => ({
@@ -481,18 +563,18 @@ format: (response) => ({
 
 #### `upload`
 
-カスタムアップロード関数。設定するとデフォルトのアップロードロジックが置き換えられます。
+カスタムアップロード関数です。この関数を設定すると、デフォルトのアップロードロジックが置き換えられます。
 
 ```typescript
 upload?: (file: File, context: UploadContext) => Promise<UploadResult>
 ```
 
-**パラメータ:**
+**引数：**
 
-- `file` – ファイルオブジェクト
-- `context` – `signal`（中止シグナル）、`config`（設定）、`onProgress`（進捗コールバック）を含むアップロードコンテキスト
+- `file` - ファイルオブジェクト
+- `context` - アップロードコンテキスト。`signal`（中断シグナル）、`config`（設定）、`onProgress`（進捗コールバック）を含みます。
 
-**例:**
+**例：**
 
 ```typescript
 upload: async (file, context) => {
@@ -518,7 +600,7 @@ upload: async (file, context) => {
 
 #### `beforeUpload`
 
-アップロード前のフック。`false` を返すとアップロードをキャンセルし、新しい `File` オブジェクトを返すとファイルを置き換えます。
+アップロード前のフックです。`false` を返すとアップロードをキャンセルし、新しい `File` オブジェクトを返すと元のファイルを置き換えます。
 
 ```typescript
 beforeUpload?: (file: File) => File | false | Promise<File | false>
@@ -526,18 +608,18 @@ beforeUpload?: (file: File) => File | false | Promise<File | false>
 
 #### `validate`
 
-ファイルを検証します。エラーメッセージ文字列を返すと検証失敗とみなします。
+ファイル検証関数です。検証失敗時にはエラーメッセージ文字列を返します。
 
 ```typescript
 validate?: (file: File) => string | void
 ```
 
-**例:**
+**例：**
 
 ```typescript
 validate: (file) => {
   if (file.size > 10 * 1024 * 1024) {
-    return "ファイルサイズは 10MB を超えられません";
+    return "ファイルサイズは 10MB を超えることはできません。";
   }
 };
 ```
@@ -546,31 +628,31 @@ validate: (file) => {
 
 #### `onProgress`
 
-アップロード進捗コールバック。
+アップロード進捗コールバックです。
 
 ```typescript
 onProgress?: (progress: UploadProgress, file: File) => void
 ```
 
-`UploadProgress` 構造：
+`UploadProgress` の構造：
 
 ```typescript
 interface UploadProgress {
-  loaded: number; // 読み込み済みバイト数
-  total: number; // 合計バイト数
+  loaded: number; // アップロード済みバイト数
+  total: number; // 総バイト数
   percent: number; // パーセンテージ
 }
 ```
 
 #### `onSuccess`
 
-アップロード成功コールバック。
+アップロード成功時のコールバックです。
 
 ```typescript
 onSuccess?: (result: UploadResult, file: File) => void
 ```
 
-`UploadResult` 構造：
+`UploadResult` の構造：
 
 ```typescript
 interface UploadResult {
@@ -581,7 +663,7 @@ interface UploadResult {
 
 #### `onUploadError`
 
-アップロードエラーコールバック。
+アップロードエラー時のコールバックです。
 
 ```typescript
 onUploadError?: (error: Error, file: File) => void
@@ -589,7 +671,7 @@ onUploadError?: (error: Error, file: File) => void
 
 #### `onTypeError`
 
-ファイルタイプエラーコールバック。
+ファイルタイプエラー時のコールバックです。
 
 ```typescript
 onTypeError?: (error: Error, file: File) => void
@@ -597,7 +679,7 @@ onTypeError?: (error: Error, file: File) => void
 
 #### `onSizeError`
 
-ファイルサイズエラーコールバック。
+ファイルサイズエラー時のコールバックです。
 
 ```typescript
 onSizeError?: (error: Error, file: File) => void
@@ -605,7 +687,7 @@ onSizeError?: (error: Error, file: File) => void
 
 #### `onValidateError`
 
-検証エラーコールバック。
+検証エラー時のコールバックです。
 
 ```typescript
 onValidateError?: (error: Error, file: File) => void
@@ -650,9 +732,9 @@ const editor = new Editor(document.getElementById("editor"), {
 
 ---
 
-## 6. 国際化（i18n）
+## 6. 国際化 (i18n)
 
-`i18n` は多言語対応を管理するグローバルシングルトンです。
+`i18n` は多言語を管理するグローバルシングルトンです。
 
 ```typescript
 import { i18n } from "@catmasks/free-editor";
@@ -662,7 +744,7 @@ import { i18n } from "@catmasks/free-editor";
 
 #### `locale`
 
-現在のロケール。
+現在の言語です。
 
 ```typescript
 console.log(i18n.locale); // "zh-CN"
@@ -672,20 +754,20 @@ console.log(i18n.locale); // "zh-CN"
 
 #### `t(key, ...args)`
 
-現在のロケールにおける `key` に対応する翻訳テキストを返します。プレースホルダ `{0}`, `{1}`... の置換に対応しています。
+現在の言語における `key` の翻訳テキストを取得します。プレースホルダ `{0}`, `{1}`... による置換に対応しています。
 
 ```typescript
 t(key: string, ...args: any[]): string
 ```
 
-**例:**
+**例：**
 
 ```typescript
 i18n.t("toolbar.bold"); // "太字"
 i18n.t("upload.fileSizeExceeded"); // "ファイルサイズが制限を超えています"
 ```
 
-**利用可能な翻訳キー:**
+**利用可能な翻訳キー：**
 
 | 名前空間     | 説明                       |
 | ------------ | -------------------------- |
@@ -702,34 +784,34 @@ i18n.t("upload.fileSizeExceeded"); // "ファイルサイズが制限を超え�
 
 #### `setLocale(locale)`
 
-現在のロケールを設定します。
+現在の言語を設定します。
 
 ```typescript
 setLocale(locale: Locale): void
 ```
 
-**パラメータ:**
+**引数：**
 
-| パラメータ | 型       | 説明                                       |
-| ---------- | -------- | ------------------------------------------ |
-| `locale`   | `Locale` | 対象ロケール: `"zh-CN"`、`"en"`、`"ja-JP"` |
+| 引数     | 型       | 説明                                     |
+| -------- | -------- | ---------------------------------------- |
+| `locale` | `Locale` | 対象言語：`"zh-CN"` / `"en"` / `"ja-JP"` |
 
 #### `extend(messages)`
 
-現在のロケールのメッセージオブジェクトを拡張します（ディープマージ）。
+現在の言語のメッセージオブジェクトを拡張します（深いマージを行います）。
 
-> **注意:** このメソッドはエディタの初期化**前**に呼び出す必要があります。初期化後に呼び出してもエディタには反映されません。
+> **注意：** このメソッドはエディタ初期化前に呼び出してください。初期化後に呼び出してもエディタには反映されません。
 
 ```typescript
 extend(messages: DeepPartial<LocaleMessages>): void
 ```
 
-**例:**
+**例：**
 
 ```typescript
 import { i18n } from "@catmasks/free-editor";
 
-// エディタを作成する前に翻訳を拡張
+// エディタ作成前に翻訳を拡張
 i18n.extend({
   toolbar: {
     bold: "カスタム太字",
@@ -743,19 +825,19 @@ const editor = new Editor(...);
 
 #### `subscribe(callback)`
 
-ロケール変更イベントを購読します。購読解除関数を返します。
+言語変更イベントを購読します。購読解除関数を返します。
 
-> **注意:** 破棄時に返された購読解除関数を呼び出して、メモリリークを防止してください。
+> **注意：** 破棄時には返された購読解除関数を呼び出し、メモリリークを防止してください。
 
 ```typescript
 subscribe(callback: (locale: Locale) => void): () => void
 ```
 
-**例:**
+**例：**
 
 ```typescript
 const unsubscribe = i18n.subscribe((locale) => {
-  console.log("ロケールが変更されました:", locale);
+  console.log("言語が切り替わりました:", locale);
 });
 
 // 不要になったら購読解除

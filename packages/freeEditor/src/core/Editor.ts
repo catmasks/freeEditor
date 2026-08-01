@@ -81,16 +81,16 @@ export class CoreEditor {
    * 更新编辑器可编辑状态 / Update editor editable state
    * 禁用或只读时都不可编辑
    * 采用多层级策略确保生效：
-   * 1. 调用 Tiptap 官方 setEditable API
-   * 2. 直接设置 DOM 的 contenteditable 属性（兜底方案）
+   * 调用 Tiptap 官方 setEditable API
+   * 直接设置 DOM 的 contenteditable 属性（兜底方案）
    */
   private updateEditable() {
     const editable = !(this.isDisabled || this.isReadonly);
 
-    /** 1. 调用官方 API 设置可编辑状态 */
+    /** 调用官方 API 设置可编辑状态 */
     this.editor.setEditable(editable);
 
-    /** 2. 兜底：直接操作 DOM 设置 contenteditable，确保对所有浏览器生效 */
+    /**兜底：直接操作 DOM 设置 contenteditable，确保对所有浏览器生效 */
     const dom = this.editor.view?.dom as HTMLElement | null | undefined;
     if (dom && dom.setAttribute) {
       const value = editable ? "true" : "false";

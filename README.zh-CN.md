@@ -7,7 +7,7 @@
 <h4 align="center">一个基于 TipTap 内核开发的轻量级富文本编辑器</h4>
 <h4 align="center">开箱即用，支持所有前端框架，内置中英日三种语言</h4>
 <p align="center">
-  <img src="./playground/src/assets/image.png" alt="image">
+  <img src="./playground/src/assets/freeEditor.png" alt="freeEditor">
 </p>
 
 ### 开始使用
@@ -139,6 +139,9 @@ interface EditorOptions {
   content?: string;
   locale?: Locale;
   theme?: EditorTheme;
+  disable?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
   placeholder?: string;
   include?: EditorPluginKey[];
   exclude?: EditorPluginKey[];
@@ -174,6 +177,27 @@ locale?: Locale
 
 ```typescript
 theme?: EditorTheme
+```
+
+### `disabled` | `disable`
+
+是否禁用编辑器。
+
+- **默认值：** `false`
+
+```typescript
+disabled?: boolean
+disable?: boolean
+```
+
+### `readonly`
+
+是否只读编辑器。
+
+- **默认值：** `false`
+
+```typescript
+readonly?: boolean
 ```
 
 ### `placeholder`
@@ -264,6 +288,22 @@ console.log(editor.theme); // "light"
 console.log(editor.isDark); // false
 ```
 
+#### `disabled`
+
+获取编辑器是否已禁用。
+
+```typescript
+console.log(editor.disabled); // false
+```
+
+#### `readonly`
+
+获取编辑器是否只读。
+
+```typescript
+console.log(editor.readonly); // false
+```
+
 #### `locale`
 
 获取当前语言。
@@ -318,9 +358,47 @@ setLocale(locale: Locale): void
 getHtml(): string
 ```
 
-**返回值：** `string` - HTML 字符串
+#### `getJson()`
+
+获取编辑器 JSON 内容。
+
+```typescript
+getJson(): string
+```
+
+**返回值：** `string` - JSON 字符串
 
 **抛出：** 如果编辑器已销毁，抛出 `Error: Editor has been destroyed`
+
+#### `setDisabled(disabled)`
+
+设置编辑器禁用状态。
+
+```typescript
+setDisabled(disabled: boolean): void
+```
+
+**返回值：** `void`
+
+#### `setDisable(disable)`
+
+设置编辑器禁用状态。
+
+```typescript
+setDisable(disable: boolean): void
+```
+
+**返回值：** `void`
+
+#### `setReadonly(readonly)`
+
+设置编辑器只读状态。
+
+```typescript
+setReadonly(readonly: boolean): void
+```
+
+**返回值：** `void`
 
 #### `destroy()`
 
@@ -357,9 +435,14 @@ destroy(): void
 | `subscript`     | 下标     | 文字添加下标                |
 | `orderedList`   | 有序列表 | 插入有序列表                |
 | `bulletList`    | 无序列表 | 插入无序列表                |
+| `taskList`      | 任务列表 | 插入带复选框的任务列表      |
 | `indent`        | 缩进     | 增加缩进                    |
 | `outdent`       | 减少缩进 | 减少缩进                    |
-| `lineBreak`     | 软换行   | 插入软换行                  |
+| `lineBreak`     | 换行     | 插入换行                    |
+| `lineHeight`    | 行高     | 设置段落行高                |
+| `blockquote`    | 引用     | 插入引用块                  |
+| `divider`       | 分割线   | 插入水平分割线              |
+| `inlineCode`    | 行内代码 | 插入行内代码（如 `code`）   |
 
 > **提示：** 使用 `include` 或 `exclude` 配置项可灵活控制启用哪些插件。
 
