@@ -52,6 +52,11 @@ export class MediaEngine {
   private bound = false;
 
   /**
+   * 是否禁用（禁用时不触发任何上传回调） / Whether disabled (no upload callbacks when disabled)
+   */
+  private disabled = false;
+
+  /**
    * 拖拽释放处理器集合（按类型过滤） / Drop handlers set (filtered by type)
    */
   private dropHandlers: TypedHandler<MediaDropHandler>[] = [];
@@ -84,6 +89,14 @@ export class MediaEngine {
     this.root = root;
 
     this.bind();
+  }
+
+  /**
+   * 设置禁用状态 / Set disabled state
+   * @param disabled 是否禁用 / Whether disabled
+   */
+  setDisabled(disabled: boolean) {
+    this.disabled = disabled;
   }
 
   /**
@@ -214,6 +227,10 @@ export class MediaEngine {
     this.bound = true;
 
     this.onDragOver = (e: DragEvent) => {
+      /** 禁用状态下阻止悬停效果，避免误导用户可以拖拽上传 */
+      if (this.disabled) {
+        return;
+      }
       e.preventDefault();
 
       if (e.dataTransfer) {
@@ -222,6 +239,12 @@ export class MediaEngine {
     };
 
     this.onDropEvent = (e: DragEvent) => {
+      /** 禁用状态下阻止所有拖拽释放的回调和上传 */
+      if (this.disabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       const files = Array.from(e.dataTransfer?.files || []);
 
       if (!files.length) {
@@ -235,6 +258,12 @@ export class MediaEngine {
     };
 
     this.onPasteEvent = (e: ClipboardEvent) => {
+      /** 禁用状态下阻止所有粘贴的回调和上传 */
+      if (this.disabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       const dt = e.clipboardData;
 
       if (!dt) {

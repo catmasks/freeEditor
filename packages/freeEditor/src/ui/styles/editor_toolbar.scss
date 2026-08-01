@@ -77,3 +77,31 @@
   padding-top: 2px;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
+
+/**
+ * 工具栏禁用状态（编辑器处于 disabled/readonly 时）
+ * 视觉上整体灰显，光标为 not-allowed，并且所有内部按钮/控件停止交互
+ */
+.free-editor__toolbar--disabled {
+  /** 全局灰显 */
+  opacity: 0.55;
+  filter: grayscale(30%);
+  cursor: not-allowed;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/** 禁用态下子按钮和工具栏项的样式兜底 */
+.free-editor__toolbar--disabled .free-editor__toolbar__item,
+.free-editor__toolbar--disabled button,
+.free-editor__toolbar--disabled select,
+.free-editor__toolbar--disabled [role="button"] {
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.free-editor__toolbar--disabled .free-editor__toolbar__item:hover .free-editor__svg,
+.free-editor__toolbar--disabled .free-editor__toolbar__item.is-active .free-editor__svg {
+  /** 禁用时悬停和激活状态都不再高亮，统一为禁用色 */
+  color: var(--editor-icon-color);
+}

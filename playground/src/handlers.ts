@@ -1,7 +1,11 @@
 import { i18n } from "@catmasks/free-editor";
 import type { Locale } from "@catmasks/free-editor";
 
-import { editor } from "./editor";
+import {
+  editor,
+  toggleDisabled,
+  toggleReadonly,
+} from "./editor";
 import {
   updateLocaleButtons,
   updateDemoTexts,
@@ -66,5 +70,16 @@ export function initEventListeners(): void {
   const extendI18nBtn = document.getElementById("extend-i18n-btn");
   if (extendI18nBtn) {
     extendI18nBtn.addEventListener("click", extendI18n);
+  }
+
+  /** 禁用/只读切换按钮 */
+  const toggleDisabledBtn = document.getElementById("toggle-disabled");
+  if (toggleDisabledBtn) {
+    toggleDisabledBtn.addEventListener("click", toggleDisabled);
+  }
+
+  const toggleReadonlyBtn = document.getElementById("toggle-readonly");
+  if (toggleReadonlyBtn) {
+    toggleReadonlyBtn.addEventListener("click", toggleReadonly);
   }
 }

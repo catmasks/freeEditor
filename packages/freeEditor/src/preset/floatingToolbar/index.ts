@@ -3,6 +3,8 @@ import { Extension } from "@tiptap/core";
 import { FloatingToolbar } from "../../ui/components/FloatingToolbar/index";
 import { FloatingManager } from "../../ui/components/FloatingToolbar/FloatingManager";
 
+import { editorRuntimeState } from "../../core/editorPlugins";
+
 import type {
   FloatingPlacement,
   FloatingToolbarItem,
@@ -210,6 +212,14 @@ export const FloatingToolbarPlugin = Extension.create({
     const refresh = () => {
       if (!currentEditor || currentEditor.isDestroyed) return;
 
+      /** 禁用或只读模式下，悬浮工具栏立即隐藏且不再刷新内容 */
+      if (editorRuntimeState.disabled || editorRuntimeState.readonly) {
+        hide();
+        lastVisibleKeys = "";
+        lastTargetKey = "";
+        return;
+      }
+
       const visibleItems = getVisibleItems();
 
       const visibleKeys = visibleItems.map((i) => i.key).join(",");
@@ -295,6 +305,12 @@ export const FloatingToolbarPlugin = Extension.create({
 
     const show = (target: HTMLElement | DOMRect) => {
       if (!currentEditor || currentEditor.isDestroyed) return;
+
+      /** 禁用或只读模式下，禁止通过 show() 手动显示悬浮工具栏 */
+      if (editorRuntimeState.disabled || editorRuntimeState.readonly) {
+        hide();
+        return;
+      }
 
       const visibleItems = getVisibleItems();
 

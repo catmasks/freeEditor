@@ -107,14 +107,57 @@ function createBaseExtensions(placeholder?: string): AnyExtension[] {
 }
 
 /**
+ * 运行时可写的编辑器全局状态（由 Editor 主类在构造后同步）/ Runtime writable editor global state
+ */
+export const editorRuntimeState = {
+  /**
+   * 是否全局禁用（阻止内容编辑 + 粘贴 + 拖拽上传） / Whether globally disabled
+   */
+  disabled: false,
+  /**
+   * 是否只读（阻止内容编辑 + 隐藏工具栏 + 禁止粘贴/拖拽上传） / Whether readonly
+   */
+  readonly: false,
+};
+
+/**
  * 编辑器默认行为配置 / Default editor behavior configuration
  *
  * 处理编辑器基础能力:
  *
  * - HTML 粘贴清理
  * - 浏览器 clipboard 兼容
+ * - 全局 disable/readonly 生效（通过 runtimeState 动态切换）
  */
 const defaultEditorProps: EditorProps = {
+  /**
+   * 全局可编辑性判定（优先级最高）/ Global editable predicate (highest priority)
+   * 只要 disabled || readonly 就返回 false
+   */
+  editable() {
+    return !(editorRuntimeState.disabled || editorRuntimeState.readonly);
+  },
+
+  /**
+   * 全局粘贴拦截：禁用/只读时直接 return true 表示事件已处理（不再触发上传回调）
+   */
+  handlePaste(_view, _event, _slice) {
+    if (editorRuntimeState.disabled || editorRuntimeState.readonly) {
+      return true;
+    }
+    return false;
+  },
+
+  /**
+   * 全局拖拽释放拦截：禁用/只读时直接 return true
+   */
+  handleDrop(_view, _event, _slice, _moved) {
+    if (editorRuntimeState.disabled || editorRuntimeState.readonly) {
+      return true;
+    }
+    return false;
+  },
+
   /**
    * 清理粘贴 HTML
    */
@@ -289,6 +332,11 @@ export function createEditorPlugins(
     (editor.view as any).editor = editor;
 
     const mediaEngine = root ? new MediaEngine(root) : undefined;
+
+    /** 将 mediaEngine 挂载到 storage，便于主类访问和同步禁用状态 */
+    if (mediaEngine) {
+      (editor.storage as any).mediaEngine = mediaEngine;
+    }
 
     const cleanups: (() => void)[] = [];
 

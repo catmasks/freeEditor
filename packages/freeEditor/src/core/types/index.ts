@@ -221,6 +221,19 @@ export interface EditorOptions {
    * 上传配置 / Upload configuration
    */
   uploader?: MediaUploaderOptions;
+  /**
+   * 是否禁用/ Whether disabled (recommended)
+   */
+  disabled?: boolean;
+  /**
+   * 是否禁用/ Whether disabled (legacy alias)
+   * @deprecated 请使用 disabled / Please use disabled instead
+   */
+  disable?: boolean;
+  /**
+   * 只读 / Read-only
+   */
+  readonly?: boolean;
 }
 
 /**
