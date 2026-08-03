@@ -1,4 +1,6 @@
+// @ts-ignore
 import { Editor, i18n } from "@catmasks/free-editor";
+// @ts-ignore
 import type { UploadResult, UploadContext } from "@catmasks/free-editor";
 
 import { updateDemoTexts } from "./i18n";
@@ -76,8 +78,6 @@ export function initEditor(): void {
   }
 
   editor = new Editor(container, {
-    content: `<p><a href="blob:http://localhost:2000/4db822ab-8e7a-4da7-bfa4-fe86b463f672" target="_blank" rel="noopener noreferrer nofollow">logo.png</a><img id="7ba07856-b683-4d60-b503-102c79c046ff" src="https://cdn.uviewui.com/uview/goods/1.jpg" alt="二次元少女-动漫插画" title="二次元少女-动漫插画" style="width: 150px; height: auto; max-width: 100%; display: inline-block; cursor: pointer;"><video id="41cc4398-1836-4a86-a8a6-8c7392ef97d9" src="http://vjs.zencdn.net/v/oceans.mp4" alt="【哲风壁纸】丁达尔-晨光" title="【哲风壁纸】丁达尔-晨光" style="width: 150px; height: auto; max-width: 100%; display: inline-block; cursor: pointer;"></video><a href="https://baidu.com" target="_blank" rel="noopener noreferrer nofollow">百度一下</a></p>`,
-    placeholder: "请输入...",
     theme: "dark",
     locale: "zh-CN",
     maxHeight: 400,

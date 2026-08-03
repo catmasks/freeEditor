@@ -4,7 +4,7 @@ export default {
     cancel: "取消",
     remove: "删除",
     clear: "清空",
-    placeholder: "请输入文本内容",
+    placeholder: "请输入内容",
     selectPlaceholder: "请选择选项",
     noOptions: "暂无可选项目",
   },

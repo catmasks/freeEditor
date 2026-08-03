@@ -4,7 +4,7 @@ export default {
     cancel: "キャンセル",
     remove: "削除",
     clear: "すべてクリア",
-    placeholder: "テキスト内容を入力してください",
+    placeholder: "内容を入力してください",
     selectPlaceholder: "項目を選択してください",
     noOptions: "選択可能なオプションはありません",
   },

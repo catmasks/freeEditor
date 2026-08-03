@@ -4,7 +4,7 @@ export default {
     cancel: "Cancel",
     remove: "Delete",
     clear: "Clear All",
-    placeholder: "Please enter text content",
+    placeholder: "Please enter content",
     selectPlaceholder: "Please select an option",
     noOptions: "No options available",
   },

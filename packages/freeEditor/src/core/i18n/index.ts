@@ -160,7 +160,7 @@ class I18nStore {
   }
 }
 
-/** 全局单例 */
+/** 国际化实例（单例） */
 export const i18n = new I18nStore();
 
 export { zhCN, en, jaJP };

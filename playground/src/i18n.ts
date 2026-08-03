@@ -1,4 +1,6 @@
+// @ts-ignore
 import { i18n } from "@catmasks/free-editor";
+// @ts-ignore
 import type { Locale } from "@catmasks/free-editor";
 
 const pageI18n: Record<Locale, Record<string, string>> = {

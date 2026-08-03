@@ -1,11 +1,9 @@
+// @ts-ignore
 import { i18n } from "@catmasks/free-editor";
+// @ts-ignore
 import type { Locale } from "@catmasks/free-editor";
 
-import {
-  editor,
-  toggleDisabled,
-  toggleReadonly,
-} from "./editor";
+import { editor, toggleDisabled, toggleReadonly } from "./editor";
 import {
   updateLocaleButtons,
   updateDemoTexts,

@@ -1,16 +1,10 @@
-export * from "./document/index";
-
-export * from "./paragraph/index";
-
-export * from "./text/index";
+export * from "./defaultPlugin/index";
 
 export * from "./fontBold/index";
 
 export * from "./fontItalic/index";
 
 export * from "./heading/index";
-
-export * from "./placeholder/index";
 
 export * from "./codeBlock/index";
 
@@ -34,8 +28,6 @@ export * from "./video/index";
 
 export * from "./attachment/index";
 
-export * from "./floatingToolbar/index";
-
 export * from "./underline/index";
 
 export * from "./strike/index";
@@ -43,10 +35,6 @@ export * from "./strike/index";
 export * from "./superscript/index";
 
 export * from "./subscript/index";
-
-export * from "./listItem/index";
-
-export * from "./taskItem/index";
 
 export * from "./bulletList/index";
 

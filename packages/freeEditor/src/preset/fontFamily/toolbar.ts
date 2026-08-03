@@ -73,7 +73,7 @@ export function createFontFamilyToolbar(editor: Editor) {
     options: getFontFamilyOptions(),
     tooltip: i18n.t("toolbar.fontFamily"),
     width: "auto",
-    dropdownWidth: "80px",
+    dropdownWidth: "100px",
     getValue: () => editor.getAttributes("style").fontFamily || null,
     onChange: (value) => {
       if (value == null) {
