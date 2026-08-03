@@ -60,7 +60,9 @@ export type EditorPluginKey =
   /**分割线 */
   | "divider"
   /**行内代码 */
-  | "inlineCode";
+  | "inlineCode"
+  /**格式刷 */
+  | "formatPainter";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement

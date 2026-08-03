@@ -152,6 +152,14 @@
 
   scrollbar-color: rgba(197, 194, 194, 0.6) transparent;
 }
+/**
+ * 格式刷模式 - 编辑区光标变为十字准星，提示用户处于刷格式状态
+ * Format painter mode - editor cursor changes to crosshair to indicate painting mode
+ */
+.free-editor--format-painter .ProseMirror {
+  cursor: crosshair !important;
+}
+
 .free-editor__button {
   button {
     outline: none;

@@ -36,6 +36,7 @@ export default {
     lineBreak: "改行を挿入",
     blockquote: "引用",
     divider: "区切り線",
+    formatPainter: "書式コピー",
   },
   link: {
     dialogTitle: "リンク設定",

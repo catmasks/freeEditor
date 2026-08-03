@@ -36,6 +36,7 @@ export default {
     lineBreak: "Insert Line Break",
     blockquote: "Blockquote",
     divider: "Divider",
+    formatPainter: "Format Painter",
   },
   link: {
     dialogTitle: "Link Settings",

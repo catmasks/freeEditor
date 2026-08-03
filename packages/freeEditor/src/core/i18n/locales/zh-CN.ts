@@ -36,6 +36,7 @@ export default {
     lineBreak: "插入换行符",
     blockquote: "引用",
     divider: "分割线",
+    formatPainter: "格式刷",
   },
   link: {
     dialogTitle: "链接设置",

@@ -49,12 +49,14 @@ import {
   TaskListPlugin,
   DividerPlugin,
   InlineCodePlugin,
+  FormatPainterPlugin,
 } from "../preset/index";
 
 /**
  * 编辑器插件注册表 / Editor plugin registry
  */
 export const editorPluginRegistry: EditorPlugin[] = [
+  FormatPainterPlugin,
   HeadingPlugin,
   FontFamilyPlugin,
   FontSizePlugin,
