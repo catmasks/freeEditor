@@ -1,8 +1,5 @@
 import { createToolbar } from "./ui/toolbar/index";
-import {
-  createEditorPlugins,
-  CoreEditor,
-} from "./core/editorPlugins";
+import { createEditorPlugins, CoreEditor } from "./core/editorPlugins";
 import { editorRuntimeState } from "./core/editorRuntimeState";
 import { i18n } from "./core/index";
 import type { MediaEngine } from "./core/utils/index";
@@ -85,13 +82,28 @@ export class Editor {
   private isReadonly = false;
 
   /**
+   * 高度配置（像素） / Height configuration (pixels)
+   */
+  private heightOption?: number;
+
+  /**
+   * 最大高度配置（像素） / Max height configuration (pixels)
+   */
+  private maxHeightOption?: number;
+
+  /**
+   * 工具栏尺寸监听器 / Toolbar resize observer
+   */
+  private toolbarObserver: ResizeObserver | null = null;
+
+  /**
    * 构造函数 / Constructor
    * @param el - 挂载的 DOM 元素 / DOM element to mount
    * @param options - 编辑器配置选项 / Editor configuration options
    */
   constructor(el: HTMLElement, options: EditorOptions = {}) {
     /** 先同步一次 runtimeState，确保 CoreEditor 初始化时 editorProps.editable 就返回正确值 */
-    const initialDisabled = Boolean(options.disabled ?? options.disable);
+    const initialDisabled = Boolean(options.disabled);
     const initialReadonly = Boolean(options.readonly);
     editorRuntimeState.disabled = initialDisabled;
     editorRuntimeState.readonly = initialReadonly;
@@ -183,9 +195,16 @@ export class Editor {
       this.refreshPlaceholder();
     });
 
+    /** 应用高度配置 */
+    this.heightOption = options.height;
+    this.maxHeightOption = options.maxHeight;
+    if (this.heightOption || this.maxHeightOption) {
+      this.applyHeightConstraints();
+    }
+
     this.mounted = true;
 
-    /** 应用初始禁用/只读状态（复用构造函数开头的变量，避免重复声明） */
+    /** 应用初始禁用/只读状态 */
     if (initialDisabled) {
       this.setDisabled(true);
     }
@@ -317,17 +336,11 @@ export class Editor {
     /** 同步容器级别的样式和阻止行为（禁用模式下仍显示工具栏，只阻止操作） */
     this.syncContainerState();
 
+    /** 同步媒体节点禁用状态（禁用/只读时移除调整大小手柄） */
+    this.syncMediaNodeState();
+
     /** 强制触发一次编辑器视图刷新（确保 editable 判定重新计算） */
     this.forceRefreshView();
-  }
-
-  /**
-   * 设置禁用状态（兼容别名） / Set disabled state (legacy alias)
-   * @param disabled - 是否禁用 / Whether disabled
-   * @deprecated 请使用 setDisabled / Please use setDisabled instead
-   */
-  setDisable(disabled: boolean) {
-    this.setDisabled(disabled);
   }
 
   /**
@@ -359,6 +372,9 @@ export class Editor {
 
     /** 同步容器级别的样式和行为） */
     this.syncContainerState();
+
+    /** 同步媒体节点禁用状态（禁用/只读时移除调整大小手柄） */
+    this.syncMediaNodeState();
 
     /** 强制触发一次编辑器视图刷新（确保 editable 判定重新计算） */
     this.forceRefreshView();
@@ -493,6 +509,28 @@ export class Editor {
   }
 
   /**
+   * 同步媒体节点状态（禁用/只读时移除调整大小手柄和选中样式）
+   * Sync media node state (remove resize handles and selected style when disabled/readonly)
+   */
+  private syncMediaNodeState() {
+    if (!this.root) return;
+
+    const shouldBlock = this.isDisabled || this.isReadonly;
+    if (!shouldBlock) return;
+
+    this.root
+      .querySelectorAll(".free-editor__media-resizer")
+      .forEach((resizer) => {
+        /** 移除调整大小手柄 */
+        resizer
+          .querySelectorAll(".free-editor__resize-handle")
+          .forEach((h) => h.remove());
+        /** 移除选中样式 */
+        resizer.classList.remove("free-editor__selected");
+      });
+  }
+
+  /**
    * 刷新占位符显示 / Refresh placeholder display
    */
   private refreshPlaceholder() {
@@ -537,6 +575,56 @@ export class Editor {
   }
 
   /**
+   * 应用高度约束 / Apply height constraints
+   * 根据传入的 height / maxHeight 配置，设置根容器和内容区的高度，
+   * 并监听工具栏高度变化，实时更新编辑区可用高度。
+   */
+  private applyHeightConstraints() {
+    if (this.heightOption) {
+      this.root.style.height = `${this.heightOption}px`;
+    }
+    if (this.maxHeightOption) {
+      this.root.style.maxHeight = `${this.maxHeightOption}px`;
+      this.root.style.overflow = "hidden";
+    }
+
+    /** 内容区超出时显示滚动条 */
+    this.content.style.overflowY = "auto";
+
+    /** 初始计算内容区高度 */
+    this.updateContentHeight();
+
+    /** 监听工具栏高度变化，实时更新内容区高度 */
+    this.toolbarObserver = new ResizeObserver(() => {
+      this.updateContentHeight();
+    });
+    this.toolbarObserver.observe(this.toolbar);
+    this.destroyHooks.push(() => {
+      this.toolbarObserver?.disconnect();
+      this.toolbarObserver = null;
+    });
+  }
+
+  /**
+   * 更新内容区高度 / Update content area height
+   * 根据工具栏当前高度重新计算内容区可用高度。
+   * - 固定高度模式（height）：内容区高度 = 总高度 - 工具栏高度
+   * - 最大高度模式（maxHeight）：内容区最大高度 = 最大总高度 - 工具栏高度
+   */
+  private updateContentHeight() {
+    if (!this.toolbar || !this.content) return;
+    if (!this.heightOption && !this.maxHeightOption) return;
+
+    const toolbarH = this.toolbar.offsetHeight;
+
+    if (this.heightOption) {
+      this.content.style.height = `${Math.max(this.heightOption - toolbarH, 0)}px`;
+    } else if (this.maxHeightOption) {
+      this.content.style.maxHeight = `${Math.max(this.maxHeightOption - toolbarH, 0)}px`;
+    }
+  }
+
+  /**
    * 重新构建工具栏 / Rebuild toolbar
    */
   private rebuildToolbar() {
@@ -550,6 +638,13 @@ export class Editor {
 
     /** 重建工具栏后同步显示与交互状态 */
     this.syncToolbarState();
+
+    /** 重建工具栏后重新连接高度监听并更新内容区高度 */
+    if (this.toolbarObserver) {
+      this.toolbarObserver.disconnect();
+      this.toolbarObserver.observe(this.toolbar);
+    }
+    this.updateContentHeight();
   }
 
   /**

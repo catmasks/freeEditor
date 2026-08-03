@@ -60,15 +60,6 @@ export class CoreEditor {
   }
 
   /**
-   * 设置禁用状态（兼容别名） / Set disabled state (legacy alias)
-   * @param disabled 是否禁用 / Whether disabled
-   * @deprecated 请使用 setDisabled / Please use setDisabled instead
-   */
-  setDisable(disabled: boolean) {
-    this.setDisabled(disabled);
-  }
-
-  /**
    * 设置只读状态 / Set readonly state
    * @param readonly 是否只读 / Whether readonly
    */

@@ -191,7 +191,14 @@ export interface EditorOptions {
    * 初始化内容 / Initial content
    */
   content?: string;
-
+  /**
+   * 高度 / Height
+   */
+  height?: number;
+  /**
+   * 最大高度 / Max height
+   */
+  maxHeight?: number;
   /**
    * 主题 / Theme
    */
@@ -222,15 +229,10 @@ export interface EditorOptions {
    */
   uploader?: MediaUploaderOptions;
   /**
-   * 是否禁用/ Whether disabled (recommended)
+   * 是否禁用/ Whether disabled
    */
   disabled?: boolean;
 
-  /**
-   * 是否禁用/ Whether disabled (legacy alias)
-   * @deprecated 请使用 disabled / Please use disabled instead
-   */
-  disable?: boolean;
   /**
    * 只读 / Read-only
    */

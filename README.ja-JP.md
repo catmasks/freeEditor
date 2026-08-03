@@ -138,8 +138,9 @@ const editor = new Editor(document.getElementById("editor"), {
 interface EditorOptions {
   content?: string;
   locale?: Locale;
+  height?: number;
+  maxHeight?: number;
   theme?: EditorTheme;
-  disable?: boolean;
   disabled?: boolean;
   readonly?: boolean;
   placeholder?: string;
@@ -168,6 +169,26 @@ content?: string
 locale?: Locale
 ```
 
+### `height`
+
+エディタの初期高さを設定します。
+
+- **デフォルト値：** `undefined`
+
+```typescript
+height?: number
+```
+
+### `maxHeight`
+
+エディタの最大高さを設定します。
+
+- **デフォルト値：** `undefined`
+
+```typescript
+maxHeight?: number
+```
+
 ### `theme`
 
 エディタのテーマを設定します。
@@ -179,7 +200,7 @@ locale?: Locale
 theme?: EditorTheme
 ```
 
-### `disabled` | `disable`
+### `disabled`
 
 エディタを無効（無効化）にするかどうかを指定します。
 
@@ -187,7 +208,6 @@ theme?: EditorTheme
 
 ```typescript
 disabled?: boolean
-disable?: boolean
 ```
 
 ### `readonly`
@@ -376,16 +396,6 @@ getJson(): string
 
 ```typescript
 setDisabled(disabled: boolean): void
-```
-
-**戻り値：** `void`
-
-#### `setDisable(disable)`
-
-エディタの無効状態を設定します。
-
-```typescript
-setDisable(disable: boolean): void
 ```
 
 **戻り値：** `void`

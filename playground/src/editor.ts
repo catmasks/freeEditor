@@ -80,6 +80,7 @@ export function initEditor(): void {
     placeholder: "请输入...",
     theme: "dark",
     locale: "zh-CN",
+    maxHeight: 400,
     uploader: {
       image: {
         maxSize: 5 * 1024 * 1024,

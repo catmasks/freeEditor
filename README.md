@@ -138,8 +138,9 @@ The second constructor parameter accepts an `EditorOptions` configuration object
 interface EditorOptions {
   content?: string;
   locale?: Locale;
+  height?: number;
+  maxHeight?: number;
   theme?: EditorTheme;
-  disable?: boolean;
   disabled?: boolean;
   readonly?: boolean;
   placeholder?: string;
@@ -168,6 +169,26 @@ Initial locale for the editor.
 locale?: Locale
 ```
 
+### `height`
+
+Initial height of the editor, in pixels.
+
+- **Default:** `undefined`
+
+```typescript
+height?: number
+```
+
+### `maxHeight`
+
+Maximum height of the editor, in pixels.
+
+- **Default:** `undefined`
+
+```typescript
+maxHeight?: number
+```
+
 ### `theme`
 
 Editor theme.
@@ -179,7 +200,7 @@ Editor theme.
 theme?: EditorTheme
 ```
 
-### `disabled` | `disable`
+### `disabled`
 
 Whether the editor is disabled.
 
@@ -187,7 +208,6 @@ Whether the editor is disabled.
 
 ```typescript
 disabled?: boolean
-disable?: boolean
 ```
 
 ### `readonly`
@@ -376,16 +396,6 @@ Sets the editor's disabled state.
 
 ```typescript
 setDisabled(disabled: boolean): void
-```
-
-**Returns:** `void`
-
-#### `setDisable(disable)`
-
-Sets the editor's disabled state.
-
-```typescript
-setDisable(disable: boolean): void
 ```
 
 **Returns:** `void`

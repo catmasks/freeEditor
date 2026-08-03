@@ -103,5 +103,5 @@ pnpm run dev
 
 ```bash
 cd packages/freeEditor
-pnpm publish
+pnpm publish --registry https://registry.npmjs.org
 ```

@@ -138,8 +138,9 @@ const editor = new Editor(document.getElementById("editor"), {
 interface EditorOptions {
   content?: string;
   locale?: Locale;
+  height?: number;
+  maxHeight?: number;
   theme?: EditorTheme;
-  disable?: boolean;
   disabled?: boolean;
   readonly?: boolean;
   placeholder?: string;
@@ -168,6 +169,26 @@ content?: string
 locale?: Locale
 ```
 
+### `height`
+
+编辑器初始高度, 单位`PX`。
+
+- **默认值：** `undefined`
+
+```typescript
+height?: number
+```
+
+### `maxHeight`
+
+编辑器最大高度, 单位`PX`。
+
+- **默认值：** `undefined`
+
+```typescript
+maxHeight?: number
+```
+
 ### `theme`
 
 编辑器主题。
@@ -179,7 +200,7 @@ locale?: Locale
 theme?: EditorTheme
 ```
 
-### `disabled` | `disable`
+### `disabled`
 
 是否禁用编辑器。
 
@@ -187,7 +208,6 @@ theme?: EditorTheme
 
 ```typescript
 disabled?: boolean
-disable?: boolean
 ```
 
 ### `readonly`
@@ -376,16 +396,6 @@ getJson(): string
 
 ```typescript
 setDisabled(disabled: boolean): void
-```
-
-**返回值：** `void`
-
-#### `setDisable(disable)`
-
-设置编辑器禁用状态。
-
-```typescript
-setDisable(disable: boolean): void
 ```
 
 **返回值：** `void`

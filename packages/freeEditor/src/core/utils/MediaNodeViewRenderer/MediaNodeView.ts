@@ -702,6 +702,33 @@ export class MediaNodeView {
     } else {
       this.wrapper.classList.remove("free-editor__selected");
     }
+
+    /** 同步调整大小手柄：禁用/只读时隐藏，恢复正常时显示 */
+    this.syncResizeHandles();
+  }
+
+  /**
+   * 同步调整大小手柄 / Sync resize handles
+   * 根据 isResizable 和选中状态，添加或移除调整大小手柄。
+   * 禁用/只读时自动隐藏，恢复正常时自动显示。
+   */
+  private syncResizeHandles() {
+    /** 先移除所有现有手柄 */
+    this.removeResizeHandles();
+
+    /** 如果可调整大小且处于选中状态，重新渲染手柄 */
+    if (this.isResizable && this.options.selected) {
+      this.renderResizeHandles();
+    }
+  }
+
+  /**
+   * 移除所有调整大小手柄 / Remove all resize handles
+   */
+  private removeResizeHandles() {
+    this.wrapper
+      .querySelectorAll(".free-editor__resize-handle")
+      .forEach((el) => el.remove());
   }
 
   /**
