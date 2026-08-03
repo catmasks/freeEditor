@@ -2,8 +2,8 @@ import { createToolbar } from "./ui/toolbar/index";
 import {
   createEditorPlugins,
   CoreEditor,
-  editorRuntimeState,
 } from "./core/editorPlugins";
+import { editorRuntimeState } from "./core/editorRuntimeState";
 import { i18n } from "./core/index";
 import type { MediaEngine } from "./core/utils/index";
 

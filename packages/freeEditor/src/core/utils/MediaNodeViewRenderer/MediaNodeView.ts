@@ -1,5 +1,6 @@
 import { i18n } from "../../i18n/index";
 import type { MediaNodeAttrs } from "./types";
+import { editorRuntimeState } from "../../editorRuntimeState";
 
 /**
  * 调整大小手柄方向 / Resize handle direction
@@ -107,6 +108,23 @@ export class MediaNodeView {
   private unsubscribeLocale: (() => void) | null = null;
 
   /**
+   * 是否可调整大小（禁用/只读/插件被排除时不可调整）
+   * Whether resizable (not resizable when disabled, readonly, or plugin excluded)
+   */
+  private get isResizable(): boolean {
+    if (editorRuntimeState.disabled || editorRuntimeState.readonly) {
+      return false;
+    }
+
+    const pluginKey = this.options.attrs.type;
+    if (pluginKey && editorRuntimeState.activePluginKeys) {
+      return editorRuntimeState.activePluginKeys.has(pluginKey);
+    }
+
+    return true;
+  }
+
+  /**
    * 构造函数 / Constructor
    * @param options 媒体节点选项 / Media node options
    */
@@ -137,7 +155,7 @@ export class MediaNodeView {
       this.renderMedia();
 
       const isAttachment = attrs.type === "attachment";
-      if (!isAttachment) {
+      if (!isAttachment && this.isResizable) {
         this.renderResizeHandles();
       }
     }
@@ -173,7 +191,7 @@ export class MediaNodeView {
       this.renderMedia();
 
       const isAttachment = attrs.type === "attachment";
-      if (!isAttachment) {
+      if (!isAttachment && this.isResizable) {
         this.renderResizeHandles();
       }
     }
@@ -235,9 +253,9 @@ export class MediaNodeView {
     const cancel = document.createElement("span");
 
     cancel.className = "free-editor__media-node__action danger";
-
-    cancel.style.marginTop = "8px";
-
+    if (attrs.type != "attachment") {
+      cancel.style.marginTop = "8px";
+    }
     cancel.textContent = i18n.t("media.cancelUpload");
 
     cancel.onclick = (e) => {
@@ -566,6 +584,10 @@ export class MediaNodeView {
 
     dir: HandleDirection,
   ) {
+    if (!this.isResizable) {
+      return;
+    }
+
     e.preventDefault();
 
     e.stopPropagation();
@@ -640,6 +662,8 @@ export class MediaNodeView {
         width: this.resizeWidth,
         height: "auto",
       });
+
+      this.resizeWidth = "";
     }
   };
 
@@ -733,7 +757,7 @@ export class MediaNodeView {
     } else {
       this.renderMedia();
 
-      if (!isAttachment) {
+      if (!isAttachment && this.isResizable) {
         this.renderResizeHandles();
       }
     }

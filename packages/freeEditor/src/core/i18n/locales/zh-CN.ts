@@ -49,12 +49,14 @@ export default {
     unsafeLink: "不安全链接",
   },
   fontFamily: {
-    default: "默认字体",
+    default: "字体",
+    system: "系统字体",
     sansSerif: "无衬线体",
     serif: "衬线体",
+    monospace: "等宽字体",
   },
   fontSize: {
-    default: "默认字号",
+    default: "字号",
   },
   alignment: {
     default: "默认",
@@ -63,7 +65,7 @@ export default {
     right: "右对齐",
   },
   lineHeight: {
-    default: "默认行高",
+    default: "行高",
   },
   heading: {
     body: "正文",
@@ -86,11 +88,11 @@ export default {
     uploadFailed: "上传操作失败",
   },
   media: {
-    resetSize: "恢复原始尺寸",
-    cancelUpload: "取消上传操作",
-    uploadFailed: "上传操作失败",
-    retry: "重新尝试",
-    openFile: "打开该文件",
+    resetSize: "还原",
+    cancelUpload: "取消",
+    uploadFailed: "上传失败",
+    retry: "重试",
+    openFile: "打开文件",
   },
   attachment: {
     defaultName: "未命名文档",

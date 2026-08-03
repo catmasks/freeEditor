@@ -1,4 +1,6 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
+import { Plugin } from "@tiptap/pm/state";
+import { editorRuntimeState } from "../../core/editorRuntimeState";
 
 /**
  * 链接标记 / Link mark
@@ -127,6 +129,55 @@ export const CustomLink = Mark.create({
             .run();
         },
     };
+  },
+
+  /**
+   * 添加 ProseMirror 插件（处理链接点击）
+   * Add ProseMirror plugins (handle link click)
+   *
+   * 禁用/只读/链接插件被排除时，点击链接直接打开
+   * 正常编辑模式下让悬浮工具栏处理
+   *
+   * @returns ProseMirror 插件数组 / ProseMirror plugin array
+   */
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          handleClick: (view, pos, event) => {
+            /** 判断是否应该直接打开链接 */
+            const shouldOpenOnClick =
+              editorRuntimeState.disabled ||
+              editorRuntimeState.readonly ||
+              (editorRuntimeState.activePluginKeys !== null &&
+                !editorRuntimeState.activePluginKeys.has("link"));
+
+            if (!shouldOpenOnClick) {
+              return false;
+            }
+
+            const $pos = view.state.doc.resolve(pos);
+
+            /** 获取点击位置所在的链接标记 */
+            const linkMark = $pos.marks().find((m) => m.type === this.type);
+
+            if (linkMark?.attrs.href) {
+              event.preventDefault();
+
+              window.open(
+                linkMark.attrs.href,
+                linkMark.attrs.target || "_blank",
+                "noopener,noreferrer",
+              );
+
+              return true;
+            }
+
+            return false;
+          },
+        },
+      }),
+    ];
   },
 });
 

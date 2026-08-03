@@ -29,7 +29,7 @@ export function MediaNodeViewRenderer(
 
     const node = props.editor.state.doc.nodeAt(pos);
 
-    if (!node) {
+    if (!node || node.isText) {
       return;
     }
 

@@ -3,7 +3,7 @@ import { Extension } from "@tiptap/core";
 import { FloatingToolbar } from "../../ui/components/FloatingToolbar/index";
 import { FloatingManager } from "../../ui/components/FloatingToolbar/FloatingManager";
 
-import { editorRuntimeState } from "../../core/editorPlugins";
+import { editorRuntimeState } from "../../core/editorRuntimeState";
 
 import type {
   FloatingPlacement,

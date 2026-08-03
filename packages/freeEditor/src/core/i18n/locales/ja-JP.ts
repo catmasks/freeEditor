@@ -50,11 +50,13 @@ export default {
   },
   fontFamily: {
     default: "デフォルトフォント",
+    system: "システムフォント",
     sansSerif: "サンセリフ体",
     serif: "セリフ体",
+    monospace: "等幅フォント",
   },
   fontSize: {
-    default: "デフォルトフォントサイズ",
+    default: "フォントサイズ",
   },
   alignment: {
     default: "デフォルト",
@@ -63,7 +65,7 @@ export default {
     right: "右揃え",
   },
   lineHeight: {
-    default: "既定の行の高さ",
+    default: "行間",
   },
   heading: {
     body: "本文",
@@ -86,11 +88,11 @@ export default {
     uploadFailed: "アップロード操作に失敗しました",
   },
   media: {
-    resetSize: "元のサイズに戻す",
-    cancelUpload: "アップロード操作をキャンセル",
-    uploadFailed: "アップロード操作に失敗しました",
-    retry: "操作を再試行",
-    openFile: "このファイルを開く",
+    resetSize: "サイズを元に戻す",
+    cancelUpload: "アップロードをキャンセル",
+    uploadFailed: "アップロードに失敗しました",
+    retry: "再試行",
+    openFile: "ファイルを開く",
   },
   attachment: {
     defaultName: "無題ドキュメント",

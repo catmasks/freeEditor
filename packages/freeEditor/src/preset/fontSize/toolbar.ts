@@ -10,8 +10,15 @@ import { i18n } from "../../core/index";
 const getFontSizeOptions = (): SelectOption[] => [
   { value: null, label: i18n.t("fontSize.default") },
   { value: "12px", label: "12px" },
+  { value: "14px", label: "14px" },
   { value: "16px", label: "16px" },
+  { value: "18px", label: "18px" },
+  { value: "20px", label: "20px" },
   { value: "24px", label: "24px" },
+  { value: "28px", label: "28px" },
+  { value: "32px", label: "32px" },
+  { value: "36px", label: "36px" },
+  { value: "48px", label: "48px" },
 ];
 
 /**

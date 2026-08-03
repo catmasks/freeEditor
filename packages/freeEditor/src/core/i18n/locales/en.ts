@@ -49,12 +49,14 @@ export default {
     unsafeLink: "Potentially Unsafe Link",
   },
   fontFamily: {
-    default: "Default Font",
+    default: "Font",
+    system: "System Font",
     sansSerif: "Sans Serif",
     serif: "Serif",
+    monospace: "Monospace",
   },
   fontSize: {
-    default: "Default Font Size",
+    default: "Font Size",
   },
   alignment: {
     default: "Default",
@@ -86,11 +88,11 @@ export default {
     uploadFailed: "Upload operation failed",
   },
   media: {
-    resetSize: "Restore Original Size",
-    cancelUpload: "Cancel Upload Operation",
-    uploadFailed: "Upload operation failed",
-    retry: "Retry Operation",
-    openFile: "Open This File",
+    resetSize: "Reset",
+    cancelUpload: "Cancel",
+    uploadFailed: "Upload Failed",
+    retry: "Retry",
+    openFile: "Open File",
   },
   attachment: {
     defaultName: "Untitled Document",

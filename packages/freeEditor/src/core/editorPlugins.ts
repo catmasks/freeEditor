@@ -8,6 +8,7 @@ import type {
 } from "./types/index";
 
 import { MediaEngine, useMediaUploader } from "./utils/index";
+import { editorRuntimeState } from "./editorRuntimeState";
 import Gapcursor from "@tiptap/extension-gapcursor";
 
 import {
@@ -105,20 +106,6 @@ function createBaseExtensions(placeholder?: string): AnyExtension[] {
     FloatingToolbarPlugin,
   ];
 }
-
-/**
- * 运行时可写的编辑器全局状态（由 Editor 主类在构造后同步）/ Runtime writable editor global state
- */
-export const editorRuntimeState = {
-  /**
-   * 是否全局禁用（阻止内容编辑 + 粘贴 + 拖拽上传） / Whether globally disabled
-   */
-  disabled: false,
-  /**
-   * 是否只读（阻止内容编辑 + 隐藏工具栏 + 禁止粘贴/拖拽上传） / Whether readonly
-   */
-  readonly: false,
-};
 
 /**
  * 编辑器默认行为配置 / Default editor behavior configuration
@@ -274,21 +261,28 @@ export function createEditorPlugins(
 
   const baseExtensions = createBaseExtensions(placeholder);
 
-  let plugins = [...editorPluginRegistry];
+  /**
+   * 所有插件（用于扩展注册，保证被排除插件的标签也能被解析）
+   */
+  const allPlugins = [...editorPluginRegistry];
 
   /**
-   * 包含指定插件
+   * 激活插件（用于工具栏、粘贴拖拽、setup）
    */
+  let activePlugins = [...editorPluginRegistry];
+
   if (include.length) {
-    plugins = plugins.filter((p) => include.includes(p.key));
+    activePlugins = activePlugins.filter((p) => include.includes(p.key));
   }
 
-  /**
-   * 排除指定插件
-   */
   if (exclude.length) {
-    plugins = plugins.filter((p) => !exclude.includes(p.key));
+    activePlugins = activePlugins.filter((p) => !exclude.includes(p.key));
   }
+
+  /** 同步激活插件列表到运行时状态，供节点视图（如 MediaNodeView）判断是否显示尺寸手柄等 */
+  editorRuntimeState.activePluginKeys = new Set(
+    activePlugins.map((p) => p.key),
+  );
 
   /**
    * 去重扩展
@@ -297,7 +291,7 @@ export function createEditorPlugins(
 
   for (const ext of [
     ...baseExtensions,
-    ...plugins.flatMap((p) => p.extensions || []),
+    ...allPlugins.flatMap((p) => p.extensions || []),
   ]) {
     extensionMap.set(ext.name, ext);
   }
@@ -307,15 +301,17 @@ export function createEditorPlugins(
   /**
    * 工具栏插件
    */
-  const toolbars = plugins.filter((p) => p.toolbar);
+  const toolbars = activePlugins.filter((p) => p.toolbar);
 
   /**
-   * 合并 editorProps
+   * 合并 editorProps（仅激活的插件，排除的插件不注册粘贴/拖拽处理）
    */
   const editorProps = mergeEditorProps([
     defaultEditorProps,
 
-    ...(plugins.map((p) => p.editorProps).filter(Boolean) as EditorProps[]),
+    ...(activePlugins
+      .map((p) => p.editorProps)
+      .filter(Boolean) as EditorProps[]),
   ]);
 
   /**
@@ -340,7 +336,7 @@ export function createEditorPlugins(
 
     const cleanups: (() => void)[] = [];
 
-    for (const plugin of plugins) {
+    for (const plugin of activePlugins) {
       const cleanup = plugin.setup?.(editor, {
         uploader,
         mediaEngine,
