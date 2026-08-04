@@ -424,35 +424,38 @@ destroy(): void
 
 Below are all available plugin keys (`EditorPluginKey`):
 
-| Plugin Key      | Name          | Description                                                 |
-| --------------- | ------------- | ----------------------------------------------------------- |
-| `heading`       | Heading       | Supports H1–H6 headings                                     |
-| `fontBold`      | Bold          | Toggle bold text                                            |
-| `fontItalic`    | Italic        | Toggle italic text                                          |
-| `fontColor`     | Font Color    | Set text color                                              |
-| `fontHighlight` | Highlight     | Set text background highlight                               |
-| `fontFamily`    | Font Family   | Set font family                                             |
-| `fontSize`      | Font Size     | Set font size                                               |
-| `alignment`     | Alignment     | Align text left, center, or right                           |
-| `link`          | Link          | Insert, edit, or remove links                               |
-| `codeBlock`     | Code Block    | Insert code blocks                                          |
-| `image`         | Image         | Insert images; supports drag-and-drop and paste upload      |
-| `video`         | Video         | Insert videos; supports drag-and-drop and paste upload      |
-| `attachment`    | Attachment    | Insert attachments; supports drag-and-drop and paste upload |
-| `underline`     | Underline     | Underline text                                              |
-| `strike`        | Strikethrough | Strike through text                                         |
-| `superscript`   | Superscript   | Apply superscript                                           |
-| `subscript`     | Subscript     | Apply subscript                                             |
-| `orderedList`   | Ordered List  | Insert ordered list                                         |
-| `bulletList`    | Bullet List   | Insert unordered list                                       |
-| `taskList`      | Task List     | Insert checklist with checkboxes                            |
-| `indent`        | Indent        | Increase indentation                                        |
-| `outdent`       | Outdent       | Decrease indentation                                        |
-| `lineBreak`     | Line Break    | Insert a line break                                         |
-| `lineHeight`    | Line Height   | Set paragraph line height                                   |
-| `blockquote`    | Blockquote    | Insert a blockquote                                         |
-| `divider`       | Divider       | Insert a horizontal divider                                 |
-| `inlineCode`    | Inline Code   | Insert inline code (e.g., `code`)                           |
+| Plugin Key      | Name           | Description                                                 |
+| --------------- | -------------- | ----------------------------------------------------------- |
+| `heading`       | Heading        | Supports H1–H6 headings                                     |
+| `fontBold`      | Bold           | Toggle bold text                                            |
+| `fontItalic`    | Italic         | Toggle italic text                                          |
+| `fontColor`     | Font Color     | Set text color                                              |
+| `fontHighlight` | Highlight      | Set text background highlight                               |
+| `fontFamily`    | Font Family    | Set font family                                             |
+| `fontSize`      | Font Size      | Set font size                                               |
+| `alignment`     | Alignment      | Align text left, center, or right                           |
+| `link`          | Link           | Insert, edit, or remove links                               |
+| `codeBlock`     | Code Block     | Insert code blocks                                          |
+| `image`         | Image          | Insert images; supports drag-and-drop and paste upload      |
+| `video`         | Video          | Insert videos; supports drag-and-drop and paste upload      |
+| `attachment`    | Attachment     | Insert attachments; supports drag-and-drop and paste upload |
+| `underline`     | Underline      | Underline text                                              |
+| `strike`        | Strikethrough  | Strike through text                                         |
+| `superscript`   | Superscript    | Apply superscript                                           |
+| `subscript`     | Subscript      | Apply subscript                                             |
+| `orderedList`   | Ordered List   | Insert ordered list                                         |
+| `bulletList`    | Bullet List    | Insert unordered list                                       |
+| `taskList`      | Task List      | Insert checklist with checkboxes                            |
+| `indent`        | Indent         | Increase indentation                                        |
+| `outdent`       | Outdent        | Decrease indentation                                        |
+| `lineBreak`     | Line Break     | Insert a line break                                         |
+| `lineHeight`    | Line Height    | Set paragraph line height                                   |
+| `blockquote`    | Blockquote     | Insert a blockquote                                         |
+| `divider`       | Divider        | Insert a horizontal divider                                 |
+| `inlineCode`    | Inline Code    | Insert inline code (e.g., `code`)                           |
+| `formatPainter` | Format Painter | Format painter plugin, used to set text format              |
+| `undo`          | Undo           | Undo the last action                                        |
+| `redo`          | Redo           | Redo the last action                                        |
 
 > **Tip:** Use the `include` or `exclude` configuration options to flexibly control which plugins are enabled.
 

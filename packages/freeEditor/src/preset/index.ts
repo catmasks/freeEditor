@@ -55,3 +55,7 @@ export * from "./divider/index";
 export * from "./inlineCode/index";
 
 export * from "./formatPainter/index";
+
+export * from "./undo/index";
+
+export * from "./redo/index";

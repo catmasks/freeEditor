@@ -50,12 +50,16 @@ import {
   DividerPlugin,
   InlineCodePlugin,
   FormatPainterPlugin,
+  UndoPlugin,
+  RedoPlugin,
 } from "../preset/index";
 
 /**
  * 编辑器插件注册表 / Editor plugin registry
  */
 export const editorPluginRegistry: EditorPlugin[] = [
+  UndoPlugin,
+  RedoPlugin,
   FormatPainterPlugin,
   HeadingPlugin,
   FontFamilyPlugin,

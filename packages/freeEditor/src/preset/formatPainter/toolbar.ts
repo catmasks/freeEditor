@@ -7,7 +7,7 @@ import { i18n } from "../../core/index";
  * 格式刷图标 SVG / Format painter icon SVG
  */
 const FORMAT_PAINTER_ICON = `
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg>
 `;
 
 /**
@@ -254,45 +254,13 @@ export function createFormatPainterToolbar(editor: Editor): HTMLElement {
   }
 
   /**
-   * 应用格式并退出刷模式 / Apply format and exit painter mode
-   */
-  function applyAndDeactivate(): void {
-    const state = getState(editor);
-
-    if (!state.active || !state.formatData) return;
-
-    const { selection } = editor.state;
-
-    // 仅当选区非空时应用格式 / Only apply when selection is non-empty
-    if (!selection.empty) {
-      applyFormat(editor, state.formatData);
-    }
-
-    deactivate();
-  }
-
-  /**
-   * 选区更新处理函数 / Selection update handler
-   */
-  function onSelectionUpdate(): void {
-    const state = getState(editor);
-
-    if (state.active && state.formatData) {
-      applyAndDeactivate();
-    }
-  }
-
-  /**
-   * 键盘事件处理函数 / Keyboard event handler
-   */
-  function onKeyDown(event: KeyboardEvent): void {
-    if (event.key === "Escape") {
-      deactivate();
-    }
-  }
-
-  /**
    * 进入格式刷模式 / Enter format painter mode
+   *
+   * 核心机制：
+   * - 点击格式刷按钮后，捕获当前选区格式，进入刷模式
+   * - 在编辑区释放鼠标（pointerup）时，若选区非空则自动应用格式
+   * - 键盘选区（Shift+方向键）通过 selectionUpdate 检测
+   * - 使用 isPointerDown 标志区分鼠标拖拽和键盘选区，避免鼠标拖拽过程中误触发
    */
   function activate(): void {
     // 捕获当前格式 / Capture current format
@@ -304,25 +272,87 @@ export function createFormatPainterToolbar(editor: Editor): HTMLElement {
       return;
     }
 
-    // 注册事件监听 / Register event listeners
-    editor.on("selectionUpdate", onSelectionUpdate);
+    /** 鼠标是否正在按下（用于区分鼠标拖拽和键盘选区） */
+    let isPointerDown = false;
 
-    const keyDownHandler = (event: KeyboardEvent) => onKeyDown(event);
-    document.addEventListener("keydown", keyDownHandler);
+    /** 是否已经应用过格式（防止重复触发） */
+    let applied = false;
+
+    /**
+     * 应用格式并退出 / Apply format and exit
+     */
+    function applyAndDeactivate(): void {
+      if (applied) return;
+      applied = true;
+
+      const { selection } = editor.state;
+
+      if (!selection.empty) {
+        applyFormat(editor, formatData);
+      }
+
+      deactivate();
+    }
+
+    /**
+     * 编辑区 pointerdown：鼠标按下，标记拖拽开始
+     */
+    function onPointerDown(): void {
+      isPointerDown = true;
+    }
+
+    /**
+     * 编辑区 pointerup：鼠标释放
+     * - 如果是鼠标拖拽选中的文本（选区非空），应用格式
+     * - 如果是单纯点击定位光标（选区为空），不做任何操作，保持刷模式
+     */
+    function onPointerUp(): void {
+      isPointerDown = false;
+
+      const { selection } = editor.state;
+
+      if (!selection.empty) {
+        applyAndDeactivate();
+      }
+    }
+
+    /**
+     * 选区变化
+     * - 鼠标拖拽过程中：isPointerDown 为 true，跳过，交给 pointerup 处理
+     * - 键盘选区（Shift+方向键）：isPointerDown 为 false，直接应用
+     */
+    function onSelectionUpdate(): void {
+      if (isPointerDown) return;
+      if (applied) return;
+
+      const { selection } = editor.state;
+
+      if (!selection.empty) {
+        applyAndDeactivate();
+      }
+    }
+
+    // 注册事件监听 / Register event listeners
+    const editorDom = editor.view.dom;
+
+    editorDom.addEventListener("pointerdown", onPointerDown);
+    editorDom.addEventListener("pointerup", onPointerUp);
+    editor.on("selectionUpdate", onSelectionUpdate);
 
     // 存储清理函数 / Store cleanup function
     setState(editor, {
       active: true,
       formatData,
       cleanup: () => {
+        editorDom.removeEventListener("pointerdown", onPointerDown);
+        editorDom.removeEventListener("pointerup", onPointerUp);
         editor.off("selectionUpdate", onSelectionUpdate);
-        document.removeEventListener("keydown", keyDownHandler);
       },
     });
 
     // 添加格式刷类名到编辑器根容器
     // Add format painter class to editor root container
-    const root = editor.view.dom.closest(".free-editor");
+    const root = editorDom.closest(".free-editor");
 
     if (root) {
       root.classList.add("free-editor--format-painter");
@@ -348,7 +378,7 @@ export function createFormatPainterToolbar(editor: Editor): HTMLElement {
   const wrapper = createSimpleToolbar({
     editor,
     iconSvg: FORMAT_PAINTER_ICON,
-    tooltip: { text: i18n.t("toolbar.formatPainter"), keyboard: "Esc" },
+    tooltip: i18n.t("toolbar.formatPainter"),
     isActive: () => getState(editor)?.active || false,
     onClick: () => toggle(),
   });

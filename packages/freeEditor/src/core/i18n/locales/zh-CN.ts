@@ -37,6 +37,8 @@ export default {
     blockquote: "引用",
     divider: "分割线",
     formatPainter: "格式刷",
+    undo: "撤销",
+    redo: "重做",
   },
   link: {
     dialogTitle: "链接设置",

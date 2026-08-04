@@ -37,6 +37,8 @@ export default {
     blockquote: "引用",
     divider: "区切り線",
     formatPainter: "書式コピー",
+    undo: "元に戻す",
+    redo: "やり直す",
   },
   link: {
     dialogTitle: "リンク設定",

@@ -37,6 +37,8 @@ export default {
     blockquote: "Blockquote",
     divider: "Divider",
     formatPainter: "Format Painter",
+    undo: "Undo",
+    redo: "Redo",
   },
   link: {
     dialogTitle: "Link Settings",

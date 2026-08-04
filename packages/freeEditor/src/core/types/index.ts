@@ -62,7 +62,11 @@ export type EditorPluginKey =
   /**行内代码 */
   | "inlineCode"
   /**格式刷 */
-  | "formatPainter";
+  | "formatPainter"
+  /**撤销 */
+  | "undo"
+  /**重做 */
+  | "redo";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement
