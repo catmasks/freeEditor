@@ -1,4 +1,4 @@
-import { CustomVideo } from "./extension";
+import { CustomVideo, CustomVideoSchema } from "./extension";
 
 import { createVideoToolbar } from "./toolbar";
 
@@ -178,6 +178,8 @@ export const VideoPlugin: EditorPlugin = {
   /**
    * 扩展实例数组 / Extension instance array
    */
+  schema: [CustomVideoSchema],
+
   extensions: [CustomVideo],
 
   /**

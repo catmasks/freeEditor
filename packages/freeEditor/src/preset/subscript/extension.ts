@@ -110,6 +110,21 @@ export const Subscript = Mark.create({
   },
 });
 
+/**
+ * 下标 schema 扩展 / Subscript schema extension
+ *
+ * 仅保留 mark schema，命令和快捷键由 Subscript feature 扩展注册。
+ */
+export const SubscriptSchema = Subscript.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     subscript: {

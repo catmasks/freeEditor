@@ -291,13 +291,24 @@ export function createEditorPlugins(
   );
 
   /**
+   * schema 扩展：从所有插件加载，永远注册。
+   */
+  const schemaExtensions = allPlugins.flatMap((p) => p.schema ?? []);
+
+  /**
+   * feature 扩展：只从激活插件加载，受 include/exclude 控制。
+   */
+  const featureExtensions = activePlugins.flatMap((p) => p.extensions ?? []);
+
+  /**
    * 去重扩展
    */
   const extensionMap = new Map<string, AnyExtension>();
 
   for (const ext of [
     ...baseExtensions,
-    ...allPlugins.flatMap((p) => p.extensions || []),
+    ...schemaExtensions,
+    ...featureExtensions,
   ]) {
     extensionMap.set(ext.name, ext);
   }

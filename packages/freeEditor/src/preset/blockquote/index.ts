@@ -1,4 +1,4 @@
-import { Blockquote } from "./extension";
+import { Blockquote, BlockquoteSchema } from "./extension";
 
 import { createBlockquoteToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const BlockquotePlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: Blockquote,
+  schema: [BlockquoteSchema],
+
+  extensions: [Blockquote],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

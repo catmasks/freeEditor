@@ -1,4 +1,4 @@
-import { Subscript } from "./extension";
+import { Subscript, SubscriptSchema } from "./extension";
 
 import { createSubscriptToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const SubscriptPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: Subscript,
+  schema: [SubscriptSchema],
+
+  extensions: [Subscript],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

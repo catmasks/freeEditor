@@ -1,4 +1,4 @@
-import { Underline } from "./extension";
+import { Underline, UnderlineSchema } from "./extension";
 
 import { createUnderlineToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const UnderlinePlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: Underline,
+  schema: [UnderlineSchema],
+
+  extensions: [Underline],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

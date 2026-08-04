@@ -1,4 +1,5 @@
-import { History } from "./extension";
+import { History } from "./extensions/history";
+import { UndoShortcut } from "./extensions/undo-shortcut";
 
 import { createUndoToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -13,9 +14,14 @@ export const UndoPlugin: EditorPlugin = {
   key: "undo",
 
   /**
-   * 扩展实例 / Extension instance
+   * schema 扩展：永久存在 / Schema extensions
    */
-  extensions: [History],
+  schema: [History],
+
+  /**
+   * feature 扩展：可关闭功能 / Feature extensions
+   */
+  extensions: [UndoShortcut],
 
   /**
    * 工具栏创建函数 / Toolbar creation function
@@ -23,4 +29,5 @@ export const UndoPlugin: EditorPlugin = {
   toolbar: createUndoToolbar,
 };
 
-export { History } from "./extension";
+export { History } from "./extensions/history";
+export { UndoShortcut } from "./extensions/undo-shortcut";

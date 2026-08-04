@@ -16,7 +16,7 @@ export const RedoPlugin: EditorPlugin = {
    * 扩展实例（复用 History 扩展，提供 redo 命令）
    * Extension instance (reuses History extension, provides redo command)
    */
-  extensions: [History],
+  schema: [History],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

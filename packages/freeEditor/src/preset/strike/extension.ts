@@ -107,6 +107,21 @@ export const Strike = Mark.create({
   },
 });
 
+/**
+ * 删除线 schema 扩展 / Strike schema extension
+ *
+ * 仅保留 mark schema，命令和快捷键由 Strike feature 扩展注册。
+ */
+export const StrikeSchema = Strike.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     strike: {

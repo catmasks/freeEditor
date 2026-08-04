@@ -138,6 +138,21 @@ export const BulletList = Node.create({
   },
 });
 
+/**
+ * 无序列表 schema 扩展 / Bullet list schema extension
+ *
+ * 仅保留 node schema，命令和快捷键由 BulletList feature 扩展注册。
+ */
+export const BulletListSchema = BulletList.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     bulletList: {

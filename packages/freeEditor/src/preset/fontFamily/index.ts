@@ -1,4 +1,4 @@
-import { CustomFontFamily } from "./extension";
+import { CustomFontFamily, CustomFontFamilySchema } from "./extension";
 
 import { createFontFamilyToolbar } from "./toolbar";
 import { Style, type EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const FontFamilyPlugin: EditorPlugin = {
   /**
    * 扩展实例数组 / Extension instance array
    */
-  extensions: [Style, CustomFontFamily],
+  schema: [Style, CustomFontFamilySchema],
+
+  extensions: [CustomFontFamily],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

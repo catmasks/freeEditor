@@ -1,4 +1,4 @@
-import { CustomFontSize } from "./extension";
+import { CustomFontSize, CustomFontSizeSchema } from "./extension";
 
 import { createFontSizeToolbar } from "./toolbar";
 import { Style, type EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const FontSizePlugin: EditorPlugin = {
   /**
    * 扩展实例数组 / Extension instance array
    */
-  extensions: [Style, CustomFontSize],
+  schema: [Style, CustomFontSizeSchema],
+
+  extensions: [CustomFontSize],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

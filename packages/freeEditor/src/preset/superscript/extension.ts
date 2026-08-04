@@ -110,6 +110,21 @@ export const Superscript = Mark.create({
   },
 });
 
+/**
+ * 上标 schema 扩展 / Superscript schema extension
+ *
+ * 仅保留 mark schema，命令和快捷键由 Superscript feature 扩展注册。
+ */
+export const SuperscriptSchema = Superscript.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     superscript: {

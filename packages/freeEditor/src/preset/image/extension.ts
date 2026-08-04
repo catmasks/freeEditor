@@ -218,3 +218,18 @@ export const CustomImage = Node.create({
     };
   },
 });
+
+/**
+ * 图片 schema 扩展 / Image schema extension
+ *
+ * 仅保留 node schema，节点视图和命令由 CustomImage feature 扩展注册。
+ */
+export const CustomImageSchema = CustomImage.extend({
+  addNodeView() {
+    return undefined as any;
+  },
+
+  addCommands() {
+    return {};
+  },
+});

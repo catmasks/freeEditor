@@ -107,6 +107,21 @@ export const Underline = Mark.create({
   },
 });
 
+/**
+ * 下划线 schema 扩展 / Underline schema extension
+ *
+ * 仅保留 mark schema，命令和快捷键由 Underline feature 扩展注册。
+ */
+export const UnderlineSchema = Underline.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     underline: {

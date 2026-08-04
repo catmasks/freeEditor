@@ -107,6 +107,21 @@ export const Bold = Mark.create({
   },
 });
 
+/**
+ * 粗体 schema 扩展 / Bold schema extension
+ *
+ * 仅保留 mark schema，命令和快捷键由 Bold feature 扩展注册。
+ */
+export const BoldSchema = Bold.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     bold: {

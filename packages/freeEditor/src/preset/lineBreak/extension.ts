@@ -113,6 +113,21 @@ export const LineBreak = Node.create({
   },
 });
 
+/**
+ * 换行 schema 扩展 / Line break schema extension
+ *
+ * 仅保留 node schema，命令和快捷键由 LineBreak feature 扩展注册。
+ */
+export const LineBreakSchema = LineBreak.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     lineBreak: {

@@ -1,4 +1,4 @@
-import { Bold } from "./extension";
+import { Bold, BoldSchema } from "./extension";
 
 import { createBoldToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const BoldPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: Bold,
+  schema: [BoldSchema],
+
+  extensions: [Bold],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

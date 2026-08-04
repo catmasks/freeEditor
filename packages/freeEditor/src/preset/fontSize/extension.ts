@@ -92,6 +92,17 @@ export const CustomFontSize = Extension.create({
   },
 });
 
+/**
+ * 字号 schema 扩展 / Font size schema extension
+ *
+ * 仅保留全局属性 schema，命令由 CustomFontSize feature 扩展注册。
+ */
+export const CustomFontSizeSchema = CustomFontSize.extend({
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     fontSize: {

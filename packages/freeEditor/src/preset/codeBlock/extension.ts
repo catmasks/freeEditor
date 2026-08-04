@@ -190,6 +190,21 @@ export const CustomCodeBlock = Node.create({
   },
 });
 
+/**
+ * 代码块 schema 扩展 / Code block schema extension
+ *
+ * 仅保留 node schema，命令和快捷键由 CustomCodeBlock feature 扩展注册。
+ */
+export const CustomCodeBlockSchema = CustomCodeBlock.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     codeBlock: {

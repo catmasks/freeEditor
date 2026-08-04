@@ -92,6 +92,17 @@ export const CustomFontColor = Extension.create({
   },
 });
 
+/**
+ * 字体颜色 schema 扩展 / Font color schema extension
+ *
+ * 仅保留全局属性 schema，命令由 CustomFontColor feature 扩展注册。
+ */
+export const CustomFontColorSchema = CustomFontColor.extend({
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     color: {

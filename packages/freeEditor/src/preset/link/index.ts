@@ -1,4 +1,4 @@
-import { CustomLink } from "./extension";
+import { CustomLink, CustomLinkSchema } from "./extension";
 
 import { createLinkToolbar } from "./toolbar";
 import { i18n } from "../../core";
@@ -143,9 +143,13 @@ export const LinkPlugin: EditorPlugin = {
   /**
    * 扩展实例（配置关闭点击打开链接）/ Extension instance (configured to disable click-to-open)
    */
-  extensions: CustomLink.configure({
+  schema: [CustomLinkSchema.configure({
     openOnClick: false,
-  }),
+  })],
+
+  extensions: [CustomLink.configure({
+    openOnClick: false,
+  })],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

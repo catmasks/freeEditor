@@ -143,6 +143,21 @@ export const TaskList = Node.create({
   },
 });
 
+/**
+ * 任务列表 schema 扩展 / Task list schema extension
+ *
+ * 仅保留 node schema，命令和快捷键由 TaskList feature 扩展注册。
+ */
+export const TaskListSchema = TaskList.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     taskList: {

@@ -1,4 +1,4 @@
-import { CustomCodeBlock } from "./extension";
+import { CustomCodeBlock, CustomCodeBlockSchema } from "./extension";
 
 import { createCodeBlockToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const CodeBlockPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: CustomCodeBlock,
+  schema: [CustomCodeBlockSchema],
+
+  extensions: [CustomCodeBlock],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

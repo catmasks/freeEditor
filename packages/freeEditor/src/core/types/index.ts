@@ -640,6 +640,17 @@ export interface EditorPlugin {
   key: EditorPluginKey;
 
   /**
+   * schema 扩展 / Schema extensions
+   *
+   * 永久注册:
+   * - Node
+   * - Mark
+   * - Document
+   * - Paragraph
+   */
+  schema?: AnyExtension[];
+
+  /**
    * 工具栏渲染函数 / Toolbar render function
    * @param editor 编辑器实例 / Editor instance
    * @returns 工具栏元素 / Toolbar element
@@ -647,9 +658,16 @@ export interface EditorPlugin {
   toolbar?: (editor: Editor) => HTMLElement;
 
   /**
-   * 扩展 / Extensions
+   * feature 扩展 / Feature extensions
+   *
+   * 根据 include/exclude 动态注册:
+   * - keyboard shortcuts
+   * - commands
+   * - inputRules
+   * - ProseMirror plugins
+   * - paste/drop handlers
    */
-  extensions?: AnyExtension | AnyExtension[];
+  extensions?: AnyExtension[];
 
   /**
    * 编辑器属性 / Editor properties

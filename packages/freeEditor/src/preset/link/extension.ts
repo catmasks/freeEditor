@@ -181,6 +181,21 @@ export const CustomLink = Mark.create({
   },
 });
 
+/**
+ * 链接 schema 扩展 / Link schema extension
+ *
+ * 仅保留 mark schema，命令和 ProseMirror plugin 由 CustomLink feature 扩展注册。
+ */
+export const CustomLinkSchema = CustomLink.extend({
+  addCommands() {
+    return {};
+  },
+
+  addProseMirrorPlugins() {
+    return [];
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     link: {

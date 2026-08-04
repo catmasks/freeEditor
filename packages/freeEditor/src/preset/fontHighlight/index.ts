@@ -1,4 +1,4 @@
-import { CustomFontHighlight } from "./extension";
+import { CustomFontHighlight, CustomFontHighlightSchema } from "./extension";
 
 import { createFontHighlightToolbar } from "./toolbar";
 import { Style, type EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const FontHighlightPlugin: EditorPlugin = {
   /**
    * 扩展实例数组 / Extension instance array
    */
-  extensions: [Style, CustomFontHighlight],
+  schema: [Style, CustomFontHighlightSchema],
+
+  extensions: [CustomFontHighlight],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

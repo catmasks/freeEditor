@@ -1,4 +1,4 @@
-import { CustomImage } from "./extension";
+import { CustomImage, CustomImageSchema } from "./extension";
 
 import { createImageToolbar } from "./toolbar";
 
@@ -178,6 +178,8 @@ export const ImagePlugin: EditorPlugin = {
   /**
    * 扩展实例数组 / Extension instance array
    */
+  schema: [CustomImageSchema],
+
   extensions: [CustomImage],
 
   /**

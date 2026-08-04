@@ -107,6 +107,21 @@ export const Italic = Mark.create({
   },
 });
 
+/**
+ * 斜体 schema 扩展 / Italic schema extension
+ *
+ * 仅保留 mark schema，命令和快捷键由 Italic feature 扩展注册。
+ */
+export const ItalicSchema = Italic.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     italic: {

@@ -95,6 +95,17 @@ export const CustomFontHighlight = Extension.create({
   },
 });
 
+/**
+ * 文本高亮 schema 扩展 / Font highlight schema extension
+ *
+ * 仅保留全局属性 schema，命令由 CustomFontHighlight feature 扩展注册。
+ */
+export const CustomFontHighlightSchema = CustomFontHighlight.extend({
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     highlight: {

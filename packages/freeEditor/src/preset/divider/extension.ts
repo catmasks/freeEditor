@@ -108,6 +108,21 @@ export const Divider = Node.create({
   },
 });
 
+/**
+ * 分割线 schema 扩展 / Divider schema extension
+ *
+ * 仅保留 node schema，命令和快捷键由 Divider feature 扩展注册。
+ */
+export const DividerSchema = Divider.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     divider: {

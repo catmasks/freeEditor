@@ -1,4 +1,4 @@
-import { Italic } from "./extension";
+import { Italic, ItalicSchema } from "./extension";
 
 import { createItalicToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const ItalicPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: Italic,
+  schema: [ItalicSchema],
+
+  extensions: [Italic],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

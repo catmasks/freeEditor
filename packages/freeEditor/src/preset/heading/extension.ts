@@ -198,6 +198,21 @@ export const CustomHeading = Node.create({
   },
 });
 
+/**
+ * 标题 schema 扩展 / Heading schema extension
+ *
+ * 仅保留 node schema，命令和快捷键由 CustomHeading feature 扩展注册。
+ */
+export const CustomHeadingSchema = CustomHeading.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     heading: {

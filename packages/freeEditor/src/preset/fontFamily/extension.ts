@@ -92,6 +92,17 @@ export const CustomFontFamily = Extension.create({
   },
 });
 
+/**
+ * 字体 schema 扩展 / Font family schema extension
+ *
+ * 仅保留全局属性 schema，命令由 CustomFontFamily feature 扩展注册。
+ */
+export const CustomFontFamilySchema = CustomFontFamily.extend({
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     fontFamily: {

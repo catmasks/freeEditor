@@ -1,4 +1,4 @@
-import { Superscript } from "./extension";
+import { Superscript, SuperscriptSchema } from "./extension";
 
 import { createSuperscriptToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const SuperscriptPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: Superscript,
+  schema: [SuperscriptSchema],
+
+  extensions: [Superscript],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

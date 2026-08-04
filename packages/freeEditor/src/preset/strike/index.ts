@@ -1,4 +1,4 @@
-import { Strike } from "./extension";
+import { Strike, StrikeSchema } from "./extension";
 
 import { createStrikeToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const StrikePlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: Strike,
+  schema: [StrikeSchema],
+
+  extensions: [Strike],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

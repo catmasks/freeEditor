@@ -1,4 +1,4 @@
-import { CustomFontColor } from "./extension";
+import { CustomFontColor, CustomFontColorSchema } from "./extension";
 
 import { createFontColorToolbar } from "./toolbar";
 import { Style, type EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const FontColorPlugin: EditorPlugin = {
   /**
    * 扩展实例数组 / Extension instance array
    */
-  extensions: [Style, CustomFontColor],
+  schema: [Style, CustomFontColorSchema],
+
+  extensions: [CustomFontColor],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

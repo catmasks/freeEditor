@@ -1,4 +1,4 @@
-import { CustomAttachment } from "./extension";
+import { CustomAttachment, CustomAttachmentSchema } from "./extension";
 
 import { createAttachmentToolbar } from "./toolbar";
 
@@ -178,6 +178,8 @@ export const AttachmentPlugin: EditorPlugin = {
   /**
    * 扩展实例数组 / Extension instance array
    */
+  schema: [CustomAttachmentSchema],
+
   extensions: [CustomAttachment],
 
   /**

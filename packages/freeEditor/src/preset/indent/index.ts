@@ -1,4 +1,4 @@
-import { Indent } from "./extension";
+import { IndentFeature, IndentSchema } from "./extension";
 
 import { createIndentToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const IndentPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: [Indent],
+  schema: [IndentSchema],
+
+  extensions: [IndentFeature],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

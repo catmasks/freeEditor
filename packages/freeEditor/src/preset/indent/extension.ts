@@ -166,6 +166,85 @@ export const Indent = Extension.create({
   },
 });
 
+/**
+ * 缩进 schema 扩展 / Indent schema extension
+ *
+ * 仅保留全局属性 schema，命令和快捷键由 Indent feature 扩展注册。
+ */
+export const IndentSchema = Indent.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
+/**
+ * 增加缩进 feature 扩展 / Indent feature extension
+ *
+ * 仅注册增加缩进命令和 Tab 快捷键。
+ */
+export const IndentFeature = Extension.create({
+  name: "indentFeature",
+
+  addCommands() {
+    return {
+      setIndent:
+        (levels: number = 1) =>
+        ({ tr, state, dispatch }) => {
+          const changed = mutateIndent(state, tr, (l) => l + levels);
+          if (changed && dispatch) dispatch(tr);
+          return changed;
+        },
+
+      unsetIndent:
+        () =>
+        ({ tr, state, dispatch }) => {
+          const changed = mutateIndent(state, tr, () => 0);
+          if (changed && dispatch) dispatch(tr);
+          return changed;
+        },
+    };
+  },
+
+  addKeyboardShortcuts() {
+    return {
+      /** Tab 增加缩进 */
+      Tab: () => this.editor.commands.setIndent(),
+    };
+  },
+});
+
+/**
+ * 减少缩进 feature 扩展 / Outdent feature extension
+ *
+ * 仅注册减少缩进命令和 Shift+Tab 快捷键。
+ */
+export const OutdentFeature = Extension.create({
+  name: "outdentFeature",
+
+  addCommands() {
+    return {
+      setOutdent:
+        (levels: number = 1) =>
+        ({ tr, state, dispatch }) => {
+          const changed = mutateIndent(state, tr, (l) => l - levels);
+          if (changed && dispatch) dispatch(tr);
+          return changed;
+        },
+    };
+  },
+
+  addKeyboardShortcuts() {
+    return {
+      /** Shift + Tab 减少缩进 */
+      "Shift-Tab": () => this.editor.commands.setOutdent(),
+    };
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     indent: {

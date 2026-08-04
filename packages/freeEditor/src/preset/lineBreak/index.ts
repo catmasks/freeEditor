@@ -1,4 +1,4 @@
-import { LineBreak } from "./extension";
+import { LineBreak, LineBreakSchema } from "./extension";
 
 import { createLineBreakToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,6 +15,8 @@ export const LineBreakPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
+  schema: [LineBreakSchema],
+
   extensions: [LineBreak],
 
   /**

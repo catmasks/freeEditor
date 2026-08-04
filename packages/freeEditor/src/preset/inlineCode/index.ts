@@ -1,4 +1,4 @@
-import { InlineCode } from "./extension";
+import { InlineCode, InlineCodeSchema } from "./extension";
 
 import { createInlineCodeToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const InlineCodePlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: InlineCode,
+  schema: [InlineCodeSchema],
+
+  extensions: [InlineCode],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

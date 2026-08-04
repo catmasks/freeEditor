@@ -1,4 +1,4 @@
-import { CustomHeading } from "./extension";
+import { CustomHeading, CustomHeadingSchema } from "./extension";
 
 import { createHeadingToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const HeadingPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: CustomHeading,
+  schema: [CustomHeadingSchema],
+
+  extensions: [CustomHeading],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

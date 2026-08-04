@@ -1,4 +1,4 @@
-import { OrderedList } from "./extension";
+import { OrderedList, OrderedListSchema } from "./extension";
 
 import { createOrderedListToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const OrderedListPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: OrderedList,
+  schema: [OrderedListSchema],
+
+  extensions: [OrderedList],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

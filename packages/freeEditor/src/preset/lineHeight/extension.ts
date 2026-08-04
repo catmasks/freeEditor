@@ -116,6 +116,17 @@ export const LineHeight = Extension.create({
   },
 });
 
+/**
+ * 行高 schema 扩展 / Line height schema extension
+ *
+ * 仅保留全局属性 schema，命令由 LineHeight feature 扩展注册。
+ */
+export const LineHeightSchema = LineHeight.extend({
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     lineHeight: {

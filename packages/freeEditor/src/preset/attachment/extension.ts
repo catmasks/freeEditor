@@ -254,3 +254,18 @@ export const CustomAttachment = Node.create({
     };
   },
 });
+
+/**
+ * 附件 schema 扩展 / Attachment schema extension
+ *
+ * 仅保留 node schema，节点视图和命令由 CustomAttachment feature 扩展注册。
+ */
+export const CustomAttachmentSchema = CustomAttachment.extend({
+  addNodeView() {
+    return undefined as any;
+  },
+
+  addCommands() {
+    return {};
+  },
+});

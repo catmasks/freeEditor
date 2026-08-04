@@ -117,6 +117,21 @@ export const Blockquote = Node.create({
   },
 });
 
+/**
+ * 引用 schema 扩展 / Blockquote schema extension
+ *
+ * 仅保留 node schema，命令和快捷键由 Blockquote feature 扩展注册。
+ */
+export const BlockquoteSchema = Blockquote.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     blockquote: {

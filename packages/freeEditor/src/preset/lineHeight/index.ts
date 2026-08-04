@@ -1,4 +1,4 @@
-import { LineHeight } from "./extension";
+import { LineHeight, LineHeightSchema } from "./extension";
 
 import { createLineHeightToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,6 +15,8 @@ export const LineHeightPlugin: EditorPlugin = {
   /**
    * 扩展实例数组 / Extension instance array
    */
+  schema: [LineHeightSchema],
+
   extensions: [LineHeight],
 
   /**

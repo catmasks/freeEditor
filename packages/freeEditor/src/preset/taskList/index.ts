@@ -1,4 +1,4 @@
-import { TaskList } from "./extension";
+import { TaskList, TaskListSchema } from "./extension";
 
 import { createTaskListToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const TaskListPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: TaskList,
+  schema: [TaskListSchema],
+
+  extensions: [TaskList],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

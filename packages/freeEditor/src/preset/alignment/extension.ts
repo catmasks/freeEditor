@@ -116,6 +116,17 @@ export const Alignment = Extension.create({
   },
 });
 
+/**
+ * 对齐 schema 扩展 / Alignment schema extension
+ *
+ * 仅保留全局属性 schema，命令由 Alignment feature 扩展注册。
+ */
+export const AlignmentSchema = Alignment.extend({
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     alignment: {

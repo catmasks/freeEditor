@@ -1,4 +1,4 @@
-import { BulletList } from "./extension";
+import { BulletList, BulletListSchema } from "./extension";
 
 import { createBulletListToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,7 +15,9 @@ export const BulletListPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
-  extensions: BulletList,
+  schema: [BulletListSchema],
+
+  extensions: [BulletList],
 
   /**
    * 工具栏创建函数 / Toolbar creation function

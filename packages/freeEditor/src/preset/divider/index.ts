@@ -1,4 +1,4 @@
-import { Divider } from "./extension";
+import { Divider, DividerSchema } from "./extension";
 
 import { createDividerToolbar } from "./toolbar";
 import type { EditorPlugin } from "../../core";
@@ -15,6 +15,8 @@ export const DividerPlugin: EditorPlugin = {
   /**
    * 扩展实例 / Extension instance
    */
+  schema: [DividerSchema],
+
   extensions: [Divider],
 
   /**

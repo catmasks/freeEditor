@@ -200,3 +200,18 @@ export const CustomVideo = Node.create({
     };
   },
 });
+
+/**
+ * 视频 schema 扩展 / Video schema extension
+ *
+ * 仅保留 node schema，节点视图和命令由 CustomVideo feature 扩展注册。
+ */
+export const CustomVideoSchema = CustomVideo.extend({
+  addNodeView() {
+    return undefined as any;
+  },
+
+  addCommands() {
+    return {};
+  },
+});

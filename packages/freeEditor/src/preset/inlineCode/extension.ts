@@ -129,6 +129,21 @@ export const InlineCode = Mark.create({
   },
 });
 
+/**
+ * 行内代码 schema 扩展 / Inline code schema extension
+ *
+ * 仅保留 mark schema，命令和快捷键由 InlineCode feature 扩展注册。
+ */
+export const InlineCodeSchema = InlineCode.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+
+  addCommands() {
+    return {};
+  },
+});
+
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     inlineCode: {
