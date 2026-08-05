@@ -1,0 +1,54 @@
+.free-editor__table-picker {
+  user-select: none;
+}
+
+.free-editor__table-picker-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--editor-text-secondary);
+  padding: 0 2px;
+}
+
+.free-editor__table-picker-title-text {
+  font-weight: 500;
+}
+
+.free-editor__table-picker-size {
+  color: var(--editor-color-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.free-editor__table-picker-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.free-editor__table-picker-row {
+  display: flex;
+  gap: 4px;
+}
+
+.free-editor__table-picker-cell {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--editor-border-color);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--editor-color-primary);
+  }
+
+  &.is-active {
+    background-color: var(
+      --editor-color-primary-light,
+      rgba(22, 119, 255, 0.2)
+    );
+    border-color: var(--editor-color-primary);
+  }
+}

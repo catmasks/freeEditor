@@ -39,6 +39,7 @@ export default {
     formatPainter: "Format Painter",
     undo: "Undo",
     redo: "Redo",
+    table: "Table",
   },
   link: {
     dialogTitle: "Link Settings",
@@ -99,5 +100,18 @@ export default {
   },
   attachment: {
     defaultName: "Untitled Document",
+  },
+  table: {
+    default: "Insert Table",
+    placeholder: "Select Size",
+    addRowBefore: "Add Row Before",
+    addRowAfter: "Add Row After",
+    deleteRow: "Delete Row",
+    addColumnBefore: "Add Column Before",
+    addColumnAfter: "Add Column After",
+    deleteColumn: "Delete Column",
+    toggleHeaderRow: "Toggle Header Row",
+    toggleHeaderColumn: "Toggle Header Column",
+    deleteTable: "Delete Table",
   },
 };

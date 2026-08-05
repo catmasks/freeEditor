@@ -1,0 +1,40 @@
+.free-editor__table-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  min-width: 140px;
+  background: var(--editor-floating-bg);
+}
+
+.free-editor__table-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--editor-text-secondary);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--editor-hover-bg);
+    color: var(--editor-color-primary);
+  }
+
+  &.is-danger {
+    &:hover {
+      color: var(--editor-color-danger);
+      background: rgba(245, 108, 108, 0.1);
+    }
+  }
+}
+
+.free-editor__table-menu-divider {
+  height: 1px;
+  background: var(--editor-border-color);
+  margin: 4px 0;
+  opacity: 0.6;
+}

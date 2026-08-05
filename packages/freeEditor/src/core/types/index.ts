@@ -66,7 +66,9 @@ export type EditorPluginKey =
   /**撤销 */
   | "undo"
   /**重做 */
-  | "redo";
+  | "redo"
+  /**表格 */
+  | "table";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement

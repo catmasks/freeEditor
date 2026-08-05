@@ -39,6 +39,7 @@ export default {
     formatPainter: "書式コピー",
     undo: "元に戻す",
     redo: "やり直す",
+    table: "テーブル",
   },
   link: {
     dialogTitle: "リンク設定",
@@ -99,5 +100,18 @@ export default {
   },
   attachment: {
     defaultName: "無題ドキュメント",
+  },
+  table: {
+    default: "テーブルを挿入",
+    placeholder: "サイズを選択",
+    addRowBefore: "行を上方に挿入",
+    addRowAfter: "行を下方に挿入",
+    deleteRow: "現在の行を削除",
+    addColumnBefore: "列を左側に挿入",
+    addColumnAfter: "列を右側に挿入",
+    deleteColumn: "現在の列を削除",
+    toggleHeaderRow: "ヘッダー行の切り替え",
+    toggleHeaderColumn: "ヘッダー列の切り替え",
+    deleteTable: "テーブル全体を削除",
   },
 };

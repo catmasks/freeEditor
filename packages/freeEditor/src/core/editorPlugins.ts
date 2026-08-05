@@ -52,6 +52,7 @@ import {
   FormatPainterPlugin,
   UndoPlugin,
   RedoPlugin,
+  TablePlugin,
 } from "../preset/index";
 
 /**
@@ -88,6 +89,7 @@ export const editorPluginRegistry: EditorPlugin[] = [
   ImagePlugin,
   VideoPlugin,
   AttachmentPlugin,
+  TablePlugin,
 ];
 
 /**

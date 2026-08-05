@@ -456,6 +456,7 @@ Below are all available plugin keys (`EditorPluginKey`):
 | `formatPainter` | Format Painter | Format painter plugin, used to set text format              |
 | `undo`          | Undo           | Undo the last action                                        |
 | `redo`          | Redo           | Redo the last action                                        |
+| `table`         | Table          | Insert/edit tables                                          |
 
 > **Tip:** Use the `include` or `exclude` configuration options to flexibly control which plugins are enabled.
 

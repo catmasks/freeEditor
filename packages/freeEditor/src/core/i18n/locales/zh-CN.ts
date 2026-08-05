@@ -39,6 +39,7 @@ export default {
     formatPainter: "格式刷",
     undo: "撤销",
     redo: "重做",
+    table: "表格",
   },
   link: {
     dialogTitle: "链接设置",
@@ -99,5 +100,18 @@ export default {
   },
   attachment: {
     defaultName: "未命名文档",
+  },
+  table: {
+    default: "插入表格",
+    placeholder: "选择大小",
+    addRowBefore: "在上方插入行",
+    addRowAfter: "在下方插入行",
+    deleteRow: "删除当前行",
+    addColumnBefore: "在左侧插入列",
+    addColumnAfter: "在右侧插入列",
+    deleteColumn: "删除当前列",
+    toggleHeaderRow: "切换表头行",
+    toggleHeaderColumn: "切换表头列",
+    deleteTable: "删除整个表格",
   },
 };

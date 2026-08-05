@@ -5,6 +5,8 @@
 @use "./floatingToolbar.scss";
 @use "./select.scss";
 @use "./colorPickerDropdown.scss";
+@use "./tablePicker.scss";
+@use "./tableMenu.scss";
 
 /**
  * 全局主题变量
@@ -15,7 +17,10 @@
    * 编辑区文字默认颜色
    */
   --editor-text-default: none;
-
+  /**
+   * 次要文字颜色
+   */
+  --editor-text-secondary: #606266;
   /**
    * 光标颜色
    */
@@ -29,7 +34,7 @@
   /**
    * 主要颜色
    */
-  --editor-color-primary: #57abff;
+  --editor-color-primary: #4994df;
 
   /**
    * 危险颜色
