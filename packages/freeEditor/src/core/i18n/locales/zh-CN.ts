@@ -37,6 +37,7 @@ export default {
     blockquote: "引用",
     divider: "分割线",
     formatPainter: "格式刷",
+    clearFormat: "清除格式",
     undo: "撤销",
     redo: "重做",
     table: "表格",

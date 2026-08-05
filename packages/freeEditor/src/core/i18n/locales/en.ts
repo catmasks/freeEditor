@@ -37,6 +37,7 @@ export default {
     blockquote: "Blockquote",
     divider: "Divider",
     formatPainter: "Format Painter",
+    clearFormat: "Clear Format",
     undo: "Undo",
     redo: "Redo",
     table: "Table",

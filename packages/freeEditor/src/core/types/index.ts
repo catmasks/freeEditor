@@ -63,6 +63,8 @@ export type EditorPluginKey =
   | "inlineCode"
   /**格式刷 */
   | "formatPainter"
+  /**清除格式 */
+  | "clearFormat"
   /**撤销 */
   | "undo"
   /**重做 */

@@ -454,6 +454,7 @@ The following plugin keys (`EditorPluginKey`) are available:
 | `undo`          | Undo            | Undo the last action                                    |
 | `redo`          | Redo            | Redo the last undone action                             |
 | `table`         | Table           | Insert or edit a table                                  |
+| `clearFormat`   | Clear Format    | Clear all text styles from the selected text            |
 
 > **💡 Tip:** Use the `include` or `exclude` options to flexibly control which plugins are enabled.
 

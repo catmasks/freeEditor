@@ -7,7 +7,7 @@ import { i18n } from "../../core/index";
  * 格式刷图标 SVG / Format painter icon SVG
  */
 const FORMAT_PAINTER_ICON = `
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg>
 `;
 
 /**
@@ -95,7 +95,7 @@ function captureFormat(editor: Editor): FormatData {
   const marks: CapturedMark[] = [];
   const nodeAttrs: CapturedNodeAttr[] = [];
 
-  // 1. 捕获 style mark 的非空属性 / Capture non-empty style mark attributes
+  // 捕获 style mark 的非空属性 / Capture non-empty style mark attributes
   const styleAttrs = editor.getAttributes("style");
   const filteredStyleAttrs: Record<string, any> = {};
 
@@ -109,7 +109,7 @@ function captureFormat(editor: Editor): FormatData {
     marks.push({ name: "style", attrs: filteredStyleAttrs });
   }
 
-  // 2. 捕获其他标记（bold, italic, underline, strike, superscript, subscript, inlineCode, link）
+  // 捕获其他标记（bold, italic, underline, strike, superscript, subscript, inlineCode, link）
   // Capture other marks
   const markTypes = Object.values(editor.schema.marks);
 
@@ -130,7 +130,7 @@ function captureFormat(editor: Editor): FormatData {
     }
   }
 
-  // 3. 捕获节点属性（alignment, lineHeight, indent）/ Capture node attributes
+  // 捕获节点属性（alignment, lineHeight, indent）/ Capture node attributes
   const { $from } = editor.state.selection;
 
   for (let d = $from.depth; d >= 0; d--) {
@@ -168,7 +168,7 @@ function captureFormat(editor: Editor): FormatData {
 function applyFormat(editor: Editor, formatData: FormatData): void {
   const { marks, nodeAttrs } = formatData;
 
-  // 1. 清除所有未在捕获数据中的标记 / Clear marks not in captured data
+  // 清除所有未在捕获数据中的标记 / Clear marks not in captured data
   const capturedMarkNames = new Set(marks.map((m) => m.name));
   const markTypes = Object.values(editor.schema.marks);
 
@@ -180,14 +180,14 @@ function applyFormat(editor: Editor, formatData: FormatData): void {
     }
   }
 
-  // 2. 应用捕获的标记 / Apply captured marks
+  // 应用捕获的标记 / Apply captured marks
   for (const mark of marks) {
     chain.setMark(mark.name, mark.attrs);
   }
 
   chain.run();
 
-  // 3. 应用节点属性（使用事务直接操作，因为 chain 不支持 setNodeAttribute）
+  // 应用节点属性（使用事务直接操作，因为 chain 不支持 setNodeAttribute）
   // Apply node attributes (using transaction directly since chain doesn't support setNodeAttribute)
   if (nodeAttrs.length > 0) {
     const { selection } = editor.state;
@@ -255,12 +255,6 @@ export function createFormatPainterToolbar(editor: Editor): HTMLElement {
 
   /**
    * 进入格式刷模式 / Enter format painter mode
-   *
-   * 核心机制：
-   * - 点击格式刷按钮后，捕获当前选区格式，进入刷模式
-   * - 在编辑区释放鼠标（pointerup）时，若选区非空则自动应用格式
-   * - 键盘选区（Shift+方向键）通过 selectionUpdate 检测
-   * - 使用 isPointerDown 标志区分鼠标拖拽和键盘选区，避免鼠标拖拽过程中误触发
    */
   function activate(): void {
     // 捕获当前格式 / Capture current format
@@ -303,8 +297,6 @@ export function createFormatPainterToolbar(editor: Editor): HTMLElement {
 
     /**
      * 编辑区 pointerup：鼠标释放
-     * - 如果是鼠标拖拽选中的文本（选区非空），应用格式
-     * - 如果是单纯点击定位光标（选区为空），不做任何操作，保持刷模式
      */
     function onPointerUp(): void {
       isPointerDown = false;
@@ -318,8 +310,6 @@ export function createFormatPainterToolbar(editor: Editor): HTMLElement {
 
     /**
      * 选区变化
-     * - 鼠标拖拽过程中：isPointerDown 为 true，跳过，交给 pointerup 处理
-     * - 键盘选区（Shift+方向键）：isPointerDown 为 false，直接应用
      */
     function onSelectionUpdate(): void {
       if (isPointerDown) return;
