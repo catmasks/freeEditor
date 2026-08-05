@@ -10,9 +10,41 @@
   <img src="./playground/src/assets/freeEditor.png" alt="freeEditor">
 </p>
 
-### 开始使用
+---
 
-如果有帮助到您，请点一个 star，这样，在发布新的版本时，您可以及时获得通知。
+## 🧭 导航
+
+- [1. 快速开始](#quick-start)
+- [2. 配置项](#configuration)
+- [3. 实例属性与方法](#instance-properties-methods)
+- [4. 内置插件](#built-in-plugins)
+- [5. 媒体上传](#media-upload)
+- [6. 国际化 (i18n)](#i18n)
+
+---
+
+## 🚀 <a id="quick-start"></a>1. 快速开始
+
+### 基础用法
+
+```typescript
+import { Editor } from "@catmasks/free-editor";
+import "@catmasks/free-editor/style.css";
+
+// 创建编辑器
+const editor = new Editor(document.getElementById("editor"), {
+  content: "<p>Hello World</p>",
+  placeholder: "请输入内容...",
+});
+```
+
+### 💡 提示
+
+> 如果有帮助到您，请点一个 ⭐，这样，在发布新的版本时，您可以及时获得通知。
+
+---
+
+## 📦 安装
 
 ```bash
 npm install @catmasks/free-editor
@@ -28,7 +60,7 @@ pnpm add @catmasks/free-editor
 
 如果你的项目不使用打包工具，可以通过 ESM CDN 直接在浏览器中使用。
 
-> **注意**：
+> **⚠️ 注意**：
 >
 > - 本包仅提供 ESM 格式，必须使用 `<script type="module">` 方式加载，不支持传统 `<script>` 标签引入。
 > - 由于 `@tiptap/core`、`@tiptap/pm`、`@tiptap/extension-gapcursor` 作为 peerDependencies 外部化，CDN 引入时需确保这些依赖可被解析。使用 esm.sh 等支持自动依赖解析的 CDN 可省去手动配置。
@@ -48,8 +80,6 @@ pnpm add @catmasks/free-editor
 ```
 
 **使用 importmap（可选）**
-
-如果你希望使用裸导入风格，可以配合 importmap：
 
 ```html
 <script type="importmap">
@@ -93,7 +123,7 @@ pnpm add @catmasks/free-editor
     i18n,
   } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/index.js";
   import "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/style.css";
-  // ... 使用 edito
+  // ... 使用 editor
 </script>
 ```
 
@@ -102,35 +132,9 @@ pnpm add @catmasks/free-editor
 > - 请将 `@0.0.4` 替换为你实际使用的版本号。
 > - 样式文件 `style.css` **必须单独引入**，否则编辑器将无法正常显示。
 
-## 导航
-
-- [1. 快速开始](#1-快速开始)
-- [2. 配置项](#2-配置项)
-- [3. 实例属性与方法](#3-实例属性与方法)
-- [4. 内置插件](#4-内置插件)
-- [5. 媒体上传](#5-媒体上传)
-- [6. 国际化 (i18n)](#6-国际化-i18n)
-
 ---
 
-## 1. 快速开始
-
-### 基础用法
-
-```typescript
-import { Editor } from "@catmasks/free-editor";
-import "@catmasks/free-editor/style.css";
-
-// 创建编辑器
-const editor = new Editor(document.getElementById("editor"), {
-  content: "<p>Hello World</p>",
-  placeholder: "请输入内容...",
-});
-```
-
----
-
-## 2. 配置项
+## ⚙️ <a id="configuration"></a>2. 配置项
 
 构造函数第二个参数接受 `EditorOptions` 配置对象：
 
@@ -171,7 +175,7 @@ locale?: Locale
 
 ### `height`
 
-编辑器初始高度, 单位`PX`。
+编辑器初始高度，单位 `PX`。
 
 - **默认值：** `undefined`
 
@@ -181,7 +185,7 @@ height?: number
 
 ### `maxHeight`
 
-编辑器最大高度, 单位`PX`。
+编辑器最大高度，单位 `PX`。
 
 - **默认值：** `undefined`
 
@@ -264,7 +268,7 @@ exclude: ["codeBlock"];
 
 ### `uploader`
 
-媒体上传配置，支持图片、视频、附件三种类型的独立配置。详见 [第 5 章](#5-媒体上传)。
+媒体上传配置，支持图片、视频、附件三种类型的独立配置。详见 [第 5 章](#media-upload)。
 
 ```typescript
 uploader?: MediaUploaderOptions
@@ -272,7 +276,7 @@ uploader?: MediaUploaderOptions
 
 ---
 
-## 3. 实例属性与方法
+## 🧩 <a id="instance-properties-methods"></a>3. 实例属性与方法
 
 ### 3.1 实例属性
 
@@ -342,8 +346,6 @@ console.log(editor.locale); // "zh-CN"
 setTheme(theme: EditorTheme): void
 ```
 
-**参数：**
-
 | 参数    | 类型          | 说明                            |
 | ------- | ------------- | ------------------------------- |
 | `theme` | `EditorTheme` | 主题名称，`"light"` 或 `"dark"` |
@@ -363,8 +365,6 @@ toggleTheme(): void
 ```typescript
 setLocale(locale: Locale): void
 ```
-
-**参数：**
 
 | 参数     | 类型     | 说明                                       |
 | -------- | -------- | ------------------------------------------ |
@@ -386,8 +386,7 @@ getHtml(): string
 getJson(): string
 ```
 
-**返回值：** `string` - JSON 字符串
-
+**返回值：** `string` - JSON 字符串  
 **抛出：** 如果编辑器已销毁，抛出 `Error: Editor has been destroyed`
 
 #### `setDisabled(disabled)`
@@ -398,8 +397,6 @@ getJson(): string
 setDisabled(disabled: boolean): void
 ```
 
-**返回值：** `void`
-
 #### `setReadonly(readonly)`
 
 设置编辑器只读状态。
@@ -407,8 +404,6 @@ setDisabled(disabled: boolean): void
 ```typescript
 setReadonly(readonly: boolean): void
 ```
-
-**返回值：** `void`
 
 #### `destroy()`
 
@@ -420,7 +415,7 @@ destroy(): void
 
 ---
 
-## 4. 内置插件
+## 📋 <a id="built-in-plugins"></a>4. 内置插件
 
 以下是所有可用的插件键名（`EditorPluginKey`）：
 
@@ -458,11 +453,11 @@ destroy(): void
 | `redo`          | 重做     | 重做上一步操作               |
 | `table`         | 表格     | 插入/编辑表格                |
 
-> **提示：** 使用 `include` 或 `exclude` 配置项可灵活控制启用哪些插件。
+> **💡 提示：** 使用 `include` 或 `exclude` 配置项可灵活控制启用哪些插件。
 
 ---
 
-## 5. 媒体上传
+## 📎 <a id="media-upload"></a>5. 媒体上传
 
 ### 5.1 配置结构
 
@@ -746,42 +741,82 @@ const editor = new Editor(document.getElementById("editor"), {
 
 ---
 
-## 6. 国际化 (i18n)
+## 🌐 <a id="i18n"></a>6. 国际化（i18n）
 
-`i18n` 是一个全局单例，用于管理多语言。
+`i18n` 是 Free Editor 提供的全局国际化单例，用于管理编辑器的语言、翻译消息以及自定义语言扩展。
 
 ```typescript
 import { i18n } from "@catmasks/free-editor";
 ```
 
+Free Editor 默认提供以下内置语言：
+
+- `zh-CN`：简体中文
+- `en`：English
+- `ja-JP`：日本語
+
+同时支持通过 `addMessages()` 注册自定义语言。
+
+---
+
 ### 6.1 属性
 
 #### `locale`
 
-当前语言。
+获取当前使用的语言。
 
 ```typescript
-console.log(i18n.locale); // "zh-CN"
+console.log(i18n.locale);
+// "zh-CN"
 ```
+
+类型：
+
+```typescript
+Locale;
+```
+
+---
 
 ### 6.2 方法
 
 #### `t(key, ...args)`
 
-获取当前语言下 `key` 的翻译文本。支持占位符替换 `{0}`, `{1}`...。
+获取当前语言下指定 `key` 的翻译文本。
+
+支持使用点路径访问嵌套的翻译内容，并支持 `{0}`、`{1}` 等占位符参数。
 
 ```typescript
-t(key: string, ...args: any[]): string
+t(key: string, ...args: unknown[]): string
 ```
 
 **示例：**
 
 ```typescript
-i18n.t("toolbar.bold"); // "粗体"
-i18n.t("upload.fileSizeExceeded"); // "文件大小超出限制"
+i18n.t("toolbar.bold");
+// "粗体"
+
+i18n.t("upload.fileSizeExceeded");
+// "文件大小超出限制"
 ```
 
-**可用的翻译键：**
+使用占位符：
+
+```typescript
+i18n.t("common.count", 10);
+// 例如："共 10 项"
+```
+
+如果指定的翻译键不存在，则返回传入的 `key`：
+
+```typescript
+i18n.t("unknown.key");
+// "unknown.key"
+```
+
+**主要翻译命名空间：**
+
+---
 
 | 命名空间     | 说明         |
 | ------------ | ------------ |
@@ -791,14 +826,18 @@ i18n.t("upload.fileSizeExceeded"); // "文件大小超出限制"
 | `fontFamily` | 字体相关文本 |
 | `fontSize`   | 字号相关文本 |
 | `alignment`  | 对齐相关文本 |
+| `lineHeight` | 行高相关文本 |
 | `heading`    | 标题相关文本 |
 | `upload`     | 上传相关文本 |
 | `media`      | 媒体节点文本 |
 | `attachment` | 附件相关文本 |
+| `table`      | 表格相关文本 |
+
+---
 
 #### `setLocale(locale)`
 
-设置当前语言。
+切换当前语言。
 
 ```typescript
 setLocale(locale: Locale): void
@@ -806,46 +845,285 @@ setLocale(locale: Locale): void
 
 **参数：**
 
-| 参数     | 类型     | 说明                                     |
-| -------- | -------- | ---------------------------------------- |
-| `locale` | `Locale` | 目标语言：`"zh-CN"` / `"en"` / `"ja-JP"` |
+| 参数     | 类型     | 说明             |
+| -------- | -------- | ---------------- |
+| `locale` | `Locale` | 已注册的语言标识 |
+
+内置语言：
+
+```typescript
+i18n.setLocale("zh-CN");
+i18n.setLocale("en");
+i18n.setLocale("ja-JP");
+```
+
+如果指定的语言尚未注册，则不会进行切换。
+
+```typescript
+i18n.setLocale("ko-KR");
+// 如果 ko-KR 尚未通过 addMessages() 注册，则不会发生任何变化
+```
+
+切换语言后，已经通过 `subscribe()` 注册的订阅者会收到语言变化通知。
+
+---
+
+#### `getLocales()`
+
+获取当前已经注册的所有语言。
+
+```typescript
+getLocales(): Locale[]
+```
+
+**示例：**
+
+```typescript
+const locales = i18n.getLocales();
+
+console.log(locales);
+// ["zh-CN", "en", "ja-JP"]
+```
+
+如果通过 `addMessages()` 注册了自定义语言：
+
+```typescript
+i18n.addMessages("ko-KR", koKR);
+
+console.log(i18n.getLocales());
+// ["zh-CN", "en", "ja-JP", "ko-KR"]
+```
+
+返回的是新的数组，不会直接修改 i18n 内部的语言注册表。
+
+---
+
+#### `hasLocale(locale)`
+
+判断指定语言是否已经注册。
+
+```typescript
+hasLocale(locale: Locale): boolean
+```
+
+**示例：**
+
+```typescript
+i18n.hasLocale("zh-CN");
+// true
+
+i18n.hasLocale("ko-KR");
+// false
+```
+
+注册自定义语言后：
+
+```typescript
+i18n.addMessages("ko-KR", koKR);
+
+i18n.hasLocale("ko-KR");
+// true
+```
+
+该方法可以用于在调用 `setLocale()` 或 `addMessages()` 前检查语言是否存在。
+
+---
+
+#### `getMessages(locale)`
+
+获取指定语言的原始消息对象。
+
+```typescript
+getMessages(locale: Locale): LocaleMessages | undefined
+```
+
+**示例：**
+
+```typescript
+const messages = i18n.getMessages("zh-CN");
+
+console.log(messages?.toolbar.bold);
+// "粗体"
+```
+
+如果指定语言不存在，则返回 `undefined`：
+
+```typescript
+const messages = i18n.getMessages("ko-KR");
+
+console.log(messages);
+// undefined
+```
+
+> **注意：**
+> `getMessages()` 返回的是语言注册时保存的**原始语言包**，不包含 `extend()` 对当前消息对象产生的扩展。
+
+---
+
+#### `getCurrentMessages()`
+
+获取当前语言最终使用的消息对象。
+
+```typescript
+getCurrentMessages(): LocaleMessages
+```
+
+与 `getMessages()` 不同，该方法返回的是当前实际使用的 `_messages`，因此包含通过 `extend()` 添加的扩展内容。
+
+**示例：**
+
+```typescript
+i18n.extend({
+  toolbar: {
+    bold: "自定义粗体",
+  },
+});
+
+const messages = i18n.getCurrentMessages();
+
+console.log(messages.toolbar.bold);
+// "自定义粗体"
+```
+
+可以简单理解为：
+
+```text
+getMessages()
+    ↓
+获取指定语言的原始语言包
+
+getCurrentMessages()
+    ↓
+获取当前语言最终使用的语言包
+    ↓
+包含 extend() 的扩展内容
+```
+
+---
+
+#### `addMessages(locale, messages)`
+
+注册一个新的语言。
+
+```typescript
+addMessages(
+  locale: Locale,
+  messages: LocaleMessages,
+): void
+```
+
+该方法**只能注册尚未存在的语言**，不能覆盖已经注册的语言。
+
+因此，内置语言不能通过该方法覆盖：
+
+```typescript
+i18n.addMessages("zh-CN", messages);
+// ❌ 不允许
+
+i18n.addMessages("en", messages);
+// ❌ 不允许
+
+i18n.addMessages("ja-JP", messages);
+// ❌ 不允许
+```
+
+自定义语言可以正常注册：
+
+```typescript
+import koKR from "./locales/ko-KR";
+
+i18n.addMessages("ko-KR", koKR);
+```
+
+注册后即可切换：
+
+```typescript
+i18n.setLocale("ko-KR");
+
+console.log(i18n.locale);
+// "ko-KR"
+```
+
+也可以注册其他语言：
+
+```typescript
+i18n.addMessages("fr-FR", frFR);
+i18n.addMessages("de-DE", deDE);
+```
+
+> **注意：**
+> `addMessages()` 不会覆盖已经存在的语言，包括通过 `addMessages()` 注册的自定义语言。如果重复注册同一个语言，会抛出异常。
+
+---
 
 #### `extend(messages)`
 
-扩展当前语言的消息对象（深度合并）。
-
-> **注意：** 该方法必须在编辑器初始化前调用，否则对编辑器无效果。
+扩展当前语言的消息对象。
 
 ```typescript
-extend(messages: DeepPartial<LocaleMessages>): void
+extend(
+  messages: DeepPartial<LocaleMessages>,
+): void
 ```
+
+该方法使用**深度合并**，只需要提供需要修改或新增的字段。
 
 **示例：**
 
 ```typescript
 import { i18n } from "@catmasks/free-editor";
 
-// 在编辑器创建前扩展翻译
 i18n.extend({
   toolbar: {
     bold: "自定义粗体",
     italic: "自定义斜体",
   },
 });
-
-// 然后创建编辑器
-const editor = new Editor(...);
 ```
+
+原语言包中其他没有指定的字段会继续保留。
+
+例如：
+
+```typescript
+i18n.extend({
+  toolbar: {
+    bold: "加粗",
+  },
+});
+```
+
+只会修改：
+
+```typescript
+toolbar.bold;
+```
+
+不会影响：
+
+```typescript
+toolbar.italic;
+toolbar.underline;
+toolbar.strike;
+```
+
+> **注意：**
+> `extend()` 修改的是当前最终使用的消息对象，不会修改通过 `getMessages()` 获取到的原始语言包。
+> 当调用 `setLocale()` 切换语言后，当前消息对象会重新根据目标语言的原始语言包构建，因此之前针对当前语言的 `extend()` 修改不会自动应用到其他语言。
+
+---
 
 #### `subscribe(callback)`
 
-订阅语言变化事件。返回一个取消订阅函数。
-
-> **注意：** 销毁时请调用返回的取消订阅函数，防止内存泄漏。
+订阅语言变化事件。
 
 ```typescript
-subscribe(callback: (locale: Locale) => void): () => void
+subscribe(
+  callback: (locale: Locale) => void,
+): () => void
 ```
+
+当调用 `setLocale()` 切换语言时，所有订阅者都会收到新的语言标识。
 
 **示例：**
 
@@ -854,6 +1132,103 @@ const unsubscribe = i18n.subscribe((locale) => {
   console.log("语言切换为:", locale);
 });
 
-// 不再需要时取消订阅
+i18n.setLocale("en");
+// "语言切换为: en"
+```
+
+`subscribe()` 返回一个取消订阅函数：
+
+```typescript
 unsubscribe();
 ```
+
+取消订阅后，该回调将不会再收到语言变化通知。
+
+> **注意：**
+> 如果组件或模块不再需要监听语言变化，请及时调用取消订阅函数，以避免不必要的回调和潜在的内存泄漏。
+
+---
+
+### 6.3 自定义语言
+
+Free Editor 支持通过 `addMessages()` 注册自定义语言。
+
+例如添加韩语：
+
+```typescript
+import { i18n } from "@catmasks/free-editor";
+import koKR from "./locales/ko-KR";
+
+i18n.addMessages("ko-KR", koKR);
+
+i18n.setLocale("ko-KR");
+
+console.log(i18n.locale);
+// "ko-KR"
+```
+
+注册完成后，可以正常使用：
+
+```typescript
+i18n.t("toolbar.bold");
+```
+
+也可以通过：
+
+```typescript
+i18n.getLocales();
+```
+
+获取所有已经注册的语言：
+
+```typescript
+["zh-CN", "en", "ja-JP", "ko-KR"];
+```
+
+---
+
+### 6.4 API 总览
+
+| API                    | 类型                          | 说明                             |
+| ---------------------- | ----------------------------- | -------------------------------- |
+| `locale`               | `Locale`                      | 当前语言                         |
+| `t()`                  | `string`                      | 获取翻译文本                     |
+| `setLocale()`          | `void`                        | 切换当前语言                     |
+| `getLocales()`         | `Locale[]`                    | 获取所有已注册语言               |
+| `hasLocale()`          | `boolean`                     | 判断语言是否已注册               |
+| `getMessages()`        | `LocaleMessages \| undefined` | 获取指定语言的原始语言包         |
+| `getCurrentMessages()` | `LocaleMessages`              | 获取当前最终使用的语言包         |
+| `addMessages()`        | `void`                        | 注册新的语言，不允许覆盖已有语言 |
+| `extend()`             | `void`                        | 扩展当前语言消息                 |
+| `subscribe()`          | `() => void`                  | 订阅语言变化                     |
+
+### 6.5 内置语言与自定义语言
+
+Free Editor 内置：
+
+```typescript
+type BuiltinLocale = "zh-CN" | "en" | "ja-JP";
+```
+
+`Locale` 在此基础上支持自定义语言：
+
+```typescript
+type Locale = BuiltinLocale | (string & {});
+```
+
+因此既可以使用内置语言：
+
+```typescript
+i18n.setLocale("zh-CN");
+i18n.setLocale("en");
+i18n.setLocale("ja-JP");
+```
+
+也可以注册并使用自定义语言：
+
+```typescript
+i18n.addMessages("ko-KR", koKR);
+i18n.setLocale("ko-KR");
+```
+
+---

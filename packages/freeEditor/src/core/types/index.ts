@@ -189,7 +189,8 @@ export interface FloatingToolbarAPI {
 /**
  * 语言类型 / Locale type
  */
-export type Locale = "zh-CN" | "en" | "ja-JP";
+export type BuiltinLocale = "zh-CN" | "en" | "ja-JP";
+export type Locale = BuiltinLocale | (string & {});
 
 /**
  * 编辑器选项 / Editor options

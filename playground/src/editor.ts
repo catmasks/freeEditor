@@ -80,7 +80,7 @@ export function initEditor(): void {
   editor = new Editor(container, {
     theme: "dark",
     locale: "zh-CN",
-    maxHeight: 400,
+    height: 300,
     uploader: {
       image: {
         maxSize: 5 * 1024 * 1024,

@@ -4,36 +4,68 @@
   <img src="./playground/src/assets/logo.png" alt="logo">
 </p>
 <h1 align="center">FreeEditor</h1>
-<h4 align="center">A Lightweight Rich-Text Editor Built on the TipTap Core</h4>
-<h4 align="center">Ready to Use, Supports All Front-End Frameworks, Built-in Chinese, English, and Japanese</h4>
+<h4 align="center">A lightweight rich text editor built on the TipTap core</h4>
+<h4 align="center">Out‑of‑the‑box, supports all front‑end frameworks, with built‑in Chinese, English, and Japanese</h4>
 <p align="center">
   <img src="./playground/src/assets/freeEditor.png" alt="freeEditor">
 </p>
 
-### Getting Started
+---
 
-If this project has been helpful to you, please consider giving it a star, so that you can be notified when new versions are released.
+## 🧭 Table of Contents
+
+- [1. Quick Start](#quick-start)
+- [2. Configuration Options](#configuration)
+- [3. Instance Properties and Methods](#instance-properties-methods)
+- [4. Built‑in Plugins](#built-in-plugins)
+- [5. Media Upload](#media-upload)
+- [6. Internationalization (i18n)](#i18n)
+
+---
+
+## 🚀 <a id="quick-start"></a>1. Quick Start
+
+### Basic Usage
+
+```typescript
+import { Editor } from "@catmasks/free-editor";
+import "@catmasks/free-editor/style.css";
+
+// Create the editor
+const editor = new Editor(document.getElementById("editor"), {
+  content: "<p>Hello World</p>",
+  placeholder: "Please enter content...",
+});
+```
+
+### 💡 Tip
+
+> If this project has been helpful to you, please consider giving it a ⭐. This way, you will receive timely notifications when new versions are released.
+
+---
+
+## 📦 Installation
 
 ```bash
 npm install @catmasks/free-editor
 ```
 
-Or
+or
 
 ```bash
 pnpm add @catmasks/free-editor
 ```
 
-### CDN Integration
+### CDN Usage
 
-If your project does not use a bundler, you can use the editor directly in the browser via ESM CDN.
+If your project does not use a bundler, you can use Free Editor directly in the browser via an ESM CDN.
 
-> **Note**:
+> **⚠️ Note**:
 >
-> - This package is provided exclusively in ESM format and must be loaded using `<script type="module">`; traditional `<script>` tags are not supported.
-> - Since `@tiptap/core`, `@tiptap/pm`, and `@tiptap/extension-gapcursor` are externalized as peerDependencies, you must ensure these dependencies are resolvable when using CDN. Using a CDN that supports automatic dependency resolution, such as esm.sh, eliminates the need for manual configuration.
+> - This package is provided exclusively in ESM format. It must be loaded using `<script type="module">`; traditional `<script>` tags are not supported.
+> - Since `@tiptap/core`, `@tiptap/pm`, and `@tiptap/extension-gapcursor` are externalised as peer dependencies, you need to ensure these dependencies are resolvable when using a CDN. Using a CDN like esm.sh that supports automatic dependency resolution can simplify this.
 
-**Using esm.sh (Recommended)**
+**Using esm.sh (recommended)**
 
 ```html
 <script type="module">
@@ -47,9 +79,9 @@ If your project does not use a bundler, you can use the editor directly in the b
 </script>
 ```
 
-**Using importmap (Optional)**
+**Using importmap (optional)**
 
-If you prefer bare import specifiers, you can combine with importmap:
+If you prefer bare import specifiers, you can use an importmap:
 
 ```html
 <script type="importmap">
@@ -71,9 +103,9 @@ If you prefer bare import specifiers, you can combine with importmap:
 </script>
 ```
 
-**Using jsdelivr / unpkg (Alternative)**
+**Using jsdelivr / unpkg (alternative)**
 
-When using jsdelivr or unpkg, you must ensure that peerDependencies are also loaded correctly (using a CDN with automatic resolution like esm.sh is recommended).
+When using jsdelivr or unpkg, ensure that peer dependencies are also loaded correctly (esm.sh, which supports automatic resolution, is recommended).
 
 ```html
 <script type="importmap">
@@ -97,42 +129,16 @@ When using jsdelivr or unpkg, you must ensure that peerDependencies are also loa
 </script>
 ```
 
-> **Tip**:
+> **Note**:
 >
-> - Please replace `@0.0.4` with the actual version you are using.
-> - The stylesheet `style.css` **must be imported separately**; otherwise, the editor will not render correctly.
-
-## Navigation
-
-- [1. Quick Start](#1-quick-start)
-- [2. Configuration Options](#2-configuration-options)
-- [3. Instance Properties and Methods](#3-instance-properties-and-methods)
-- [4. Built-in Plugins](#4-built-in-plugins)
-- [5. Media Upload](#5-media-upload)
-- [6. Internationalization (i18n)](#6-internationalization-i18n)
+> - Replace `@0.0.4` with the actual version you are using.
+> - The stylesheet `style.css` **must be imported separately**; otherwise the editor will not render correctly.
 
 ---
 
-## 1. Quick Start
+## ⚙️ <a id="configuration"></a>2. Configuration Options
 
-### Basic Usage
-
-```typescript
-import { Editor } from "@catmasks/free-editor";
-import "@catmasks/free-editor/style.css";
-
-// Create the editor
-const editor = new Editor(document.getElementById("editor"), {
-  content: "<p>Hello World</p>",
-  placeholder: "Please enter content...",
-});
-```
-
----
-
-## 2. Configuration Options
-
-The second constructor parameter accepts an `EditorOptions` configuration object:
+The constructor accepts an `EditorOptions` configuration object as its second argument:
 
 ```typescript
 interface EditorOptions {
@@ -152,7 +158,7 @@ interface EditorOptions {
 
 ### `content`
 
-Initial content of the editor, provided as an HTML string.
+The initial content of the editor, provided as an HTML string.
 
 ```typescript
 content?: string
@@ -160,7 +166,7 @@ content?: string
 
 ### `locale`
 
-Initial locale for the editor.
+The initial locale for the editor.
 
 - **Default:** `"zh-CN"`
 - **Allowed values:** `"zh-CN"` | `"en"` | `"ja-JP"`
@@ -171,7 +177,7 @@ locale?: Locale
 
 ### `height`
 
-Initial height of the editor, in pixels.
+The initial height of the editor, in pixels.
 
 - **Default:** `undefined`
 
@@ -181,7 +187,7 @@ height?: number
 
 ### `maxHeight`
 
-Maximum height of the editor, in pixels.
+The maximum height of the editor, in pixels.
 
 - **Default:** `undefined`
 
@@ -191,7 +197,7 @@ maxHeight?: number
 
 ### `theme`
 
-Editor theme.
+The editor theme.
 
 - **Default:** `"light"`
 - **Allowed values:** `"light"` | `"dark"`
@@ -212,7 +218,7 @@ disabled?: boolean
 
 ### `readonly`
 
-Whether the editor is read-only.
+Whether the editor is read‑only.
 
 - **Default:** `false`
 
@@ -222,7 +228,7 @@ readonly?: boolean
 
 ### `placeholder`
 
-Placeholder text displayed when the editor is empty.
+The placeholder text displayed when the editor is empty.
 
 - **Default:** `"Please enter content..."`
 
@@ -232,15 +238,15 @@ placeholder?: string
 
 ### `include`
 
-Specifies which plugins to include. If empty, all plugins are included.
+Only include the specified plugins. If empty, all plugins are included.
 
-- **Default:** `[]` (all plugins included)
+- **Default:** `[]` (all plugins)
 
 ```typescript
 include?: EditorPluginKey[]
 ```
 
-**Example:** Enable only heading and bold.
+**Example:** Enable only headings and bold
 
 ```typescript
 include: ["heading", "fontBold"];
@@ -248,15 +254,15 @@ include: ["heading", "fontBold"];
 
 ### `exclude`
 
-Specifies which plugins to exclude.
+Exclude the specified plugins.
 
-- **Default:** `[]` (no plugins excluded)
+- **Default:** `[]` (exclude none)
 
 ```typescript
 exclude?: EditorPluginKey[]
 ```
 
-**Example:** Exclude code block.
+**Example:** Exclude code blocks
 
 ```typescript
 exclude: ["codeBlock"];
@@ -264,7 +270,7 @@ exclude: ["codeBlock"];
 
 ### `uploader`
 
-Media upload configuration, supporting independent settings for images, videos, and attachments. See [Chapter 5](#5-media-upload) for details.
+Media upload configuration, supporting independent settings for images, videos, and attachments. See [Chapter 5](#media-upload) for details.
 
 ```typescript
 uploader?: MediaUploaderOptions
@@ -272,13 +278,13 @@ uploader?: MediaUploaderOptions
 
 ---
 
-## 3. Instance Properties and Methods
+## 🧩 <a id="instance-properties-methods"></a>3. Instance Properties and Methods
 
 ### 3.1 Instance Properties
 
 #### `isMounted`
 
-Returns whether the editor has been mounted.
+Returns whether the editor is mounted.
 
 ```typescript
 console.log(editor.isMounted); // true
@@ -286,7 +292,7 @@ console.log(editor.isMounted); // true
 
 #### `isDestroyed`
 
-Returns whether the editor has been destroyed.
+Returns whether the editor is destroyed.
 
 ```typescript
 console.log(editor.isDestroyed); // false
@@ -294,7 +300,7 @@ console.log(editor.isDestroyed); // false
 
 #### `theme`
 
-Gets the current theme, returning `"light"` or `"dark"`.
+Returns the current theme, either `"light"` or `"dark"`.
 
 ```typescript
 console.log(editor.theme); // "light"
@@ -302,7 +308,7 @@ console.log(editor.theme); // "light"
 
 #### `isDark`
 
-Returns whether the current theme is dark mode.
+Returns whether dark mode is active.
 
 ```typescript
 console.log(editor.isDark); // false
@@ -318,7 +324,7 @@ console.log(editor.disabled); // false
 
 #### `readonly`
 
-Returns whether the editor is read-only.
+Returns whether the editor is read‑only.
 
 ```typescript
 console.log(editor.readonly); // false
@@ -326,7 +332,7 @@ console.log(editor.readonly); // false
 
 #### `locale`
 
-Gets the current locale.
+Returns the current locale.
 
 ```typescript
 console.log(editor.locale); // "zh-CN"
@@ -336,13 +342,11 @@ console.log(editor.locale); // "zh-CN"
 
 #### `setTheme(theme)`
 
-Sets the editor theme.
+Sets the theme.
 
 ```typescript
 setTheme(theme: EditorTheme): void
 ```
-
-**Parameters:**
 
 | Parameter | Type          | Description                       |
 | --------- | ------------- | --------------------------------- |
@@ -364,15 +368,13 @@ Sets the editor locale.
 setLocale(locale: Locale): void
 ```
 
-**Parameters:**
-
 | Parameter | Type     | Description                                    |
 | --------- | -------- | ---------------------------------------------- |
-| `locale`  | `Locale` | Target locale: `"zh-CN"`, `"en"`, or `"ja-JP"` |
+| `locale`  | `Locale` | Target locale, `"zh-CN"`, `"en"`, or `"ja-JP"` |
 
 #### `getHtml()`
 
-Retrieves the editor content as HTML.
+Returns the editor content as HTML.
 
 ```typescript
 getHtml(): string
@@ -380,35 +382,30 @@ getHtml(): string
 
 #### `getJson()`
 
-Retrieves the editor content as a JSON string.
+Returns the editor content as a JSON string.
 
 ```typescript
 getJson(): string
 ```
 
-**Returns:** `string` - JSON string
-
+**Returns:** `string` – JSON string  
 **Throws:** If the editor has been destroyed, throws `Error: Editor has been destroyed`
 
 #### `setDisabled(disabled)`
 
-Sets the editor's disabled state.
+Sets the disabled state of the editor.
 
 ```typescript
 setDisabled(disabled: boolean): void
 ```
 
-**Returns:** `void`
-
 #### `setReadonly(readonly)`
 
-Sets the editor's read-only state.
+Sets the read‑only state of the editor.
 
 ```typescript
 setReadonly(readonly: boolean): void
 ```
-
-**Returns:** `void`
 
 #### `destroy()`
 
@@ -420,53 +417,53 @@ destroy(): void
 
 ---
 
-## 4. Built-in Plugins
+## 📋 <a id="built-in-plugins"></a>4. Built‑in Plugins
 
-Below are all available plugin keys (`EditorPluginKey`):
+The following plugin keys (`EditorPluginKey`) are available:
 
-| Plugin Key      | Name           | Description                                                 |
-| --------------- | -------------- | ----------------------------------------------------------- |
-| `heading`       | Heading        | Supports H1–H6 headings                                     |
-| `fontBold`      | Bold           | Toggle bold text                                            |
-| `fontItalic`    | Italic         | Toggle italic text                                          |
-| `fontColor`     | Font Color     | Set text color                                              |
-| `fontHighlight` | Highlight      | Set text background highlight                               |
-| `fontFamily`    | Font Family    | Set font family                                             |
-| `fontSize`      | Font Size      | Set font size                                               |
-| `alignment`     | Alignment      | Align text left, center, or right                           |
-| `link`          | Link           | Insert, edit, or remove links                               |
-| `codeBlock`     | Code Block     | Insert code blocks                                          |
-| `image`         | Image          | Insert images; supports drag-and-drop and paste upload      |
-| `video`         | Video          | Insert videos; supports drag-and-drop and paste upload      |
-| `attachment`    | Attachment     | Insert attachments; supports drag-and-drop and paste upload |
-| `underline`     | Underline      | Underline text                                              |
-| `strike`        | Strikethrough  | Strike through text                                         |
-| `superscript`   | Superscript    | Apply superscript                                           |
-| `subscript`     | Subscript      | Apply subscript                                             |
-| `orderedList`   | Ordered List   | Insert ordered list                                         |
-| `bulletList`    | Bullet List    | Insert unordered list                                       |
-| `taskList`      | Task List      | Insert checklist with checkboxes                            |
-| `indent`        | Indent         | Increase indentation                                        |
-| `outdent`       | Outdent        | Decrease indentation                                        |
-| `lineBreak`     | Line Break     | Insert a line break                                         |
-| `lineHeight`    | Line Height    | Set paragraph line height                                   |
-| `blockquote`    | Blockquote     | Insert a blockquote                                         |
-| `divider`       | Divider        | Insert a horizontal divider                                 |
-| `inlineCode`    | Inline Code    | Insert inline code (e.g., `code`)                           |
-| `formatPainter` | Format Painter | Format painter plugin, used to set text format              |
-| `undo`          | Undo           | Undo the last action                                        |
-| `redo`          | Redo           | Redo the last action                                        |
-| `table`         | Table          | Insert/edit tables                                          |
+| Plugin Key      | Name            | Description                                             |
+| --------------- | --------------- | ------------------------------------------------------- |
+| `heading`       | Heading         | Supports H1–H6 headings                                 |
+| `fontBold`      | Bold            | Toggle bold formatting                                  |
+| `fontItalic`    | Italic          | Toggle italic formatting                                |
+| `fontColor`     | Font Color      | Set text color                                          |
+| `fontHighlight` | Highlight       | Set background highlight                                |
+| `fontFamily`    | Font Family     | Set font family                                         |
+| `fontSize`      | Font Size       | Set font size                                           |
+| `alignment`     | Alignment       | Left, center, or right alignment                        |
+| `link`          | Link            | Insert, edit, or remove links                           |
+| `codeBlock`     | Code Block      | Insert a code block                                     |
+| `image`         | Image           | Insert images with drag‑and‑drop and paste support      |
+| `video`         | Video           | Insert videos with drag‑and‑drop and paste support      |
+| `attachment`    | Attachment      | Insert attachments with drag‑and‑drop and paste support |
+| `underline`     | Underline       | Toggle underline                                        |
+| `strike`        | Strikethrough   | Toggle strikethrough                                    |
+| `superscript`   | Superscript     | Toggle superscript                                      |
+| `subscript`     | Subscript       | Toggle subscript                                        |
+| `orderedList`   | Ordered List    | Insert an ordered list                                  |
+| `bulletList`    | Bullet List     | Insert an unordered list                                |
+| `taskList`      | Task List       | Insert a task list with checkboxes                      |
+| `indent`        | Increase Indent | Increase indentation                                    |
+| `outdent`       | Decrease Indent | Decrease indentation                                    |
+| `lineBreak`     | Line Break      | Insert a line break                                     |
+| `lineHeight`    | Line Height     | Set paragraph line height                               |
+| `blockquote`    | Blockquote      | Insert a blockquote                                     |
+| `divider`       | Divider         | Insert a horizontal divider                             |
+| `inlineCode`    | Inline Code     | Insert inline code (e.g., `code`)                       |
+| `formatPainter` | Format Painter  | Format painter for copying text styles                  |
+| `undo`          | Undo            | Undo the last action                                    |
+| `redo`          | Redo            | Redo the last undone action                             |
+| `table`         | Table           | Insert or edit a table                                  |
 
-> **Tip:** Use the `include` or `exclude` configuration options to flexibly control which plugins are enabled.
+> **💡 Tip:** Use the `include` or `exclude` options to flexibly control which plugins are enabled.
 
 ---
 
-## 5. Media Upload
+## 📎 <a id="media-upload"></a>5. Media Upload
 
 ### 5.1 Configuration Structure
 
-Upload configuration is categorized into three media types:
+Upload configuration is divided into three media types:
 
 ```typescript
 interface MediaUploaderOptions {
@@ -476,13 +473,13 @@ interface MediaUploaderOptions {
 }
 ```
 
-### 5.2 Upload Configuration Items (`MediaUploaderConfig`)
+### 5.2 Upload Configuration (`MediaUploaderConfig`)
 
-The following configuration items are available for each media type:
+The following options are available for each media type:
 
 #### `action`
 
-Upload endpoint URL.
+The upload endpoint URL.
 
 ```typescript
 action?: string
@@ -490,7 +487,7 @@ action?: string
 
 #### `method`
 
-HTTP request method.
+The HTTP request method.
 
 - **Default:** `"POST"`
 
@@ -508,7 +505,7 @@ headers?: HeadersInit
 
 #### `withCredentials`
 
-Whether to include credentials (cookies, etc.).
+Whether to send credentials (cookies, etc.) with the request.
 
 - **Default:** `false`
 
@@ -518,7 +515,7 @@ withCredentials?: boolean
 
 #### `fieldName`
 
-Form field name for the file.
+The form field name for the file.
 
 - **Default:** `"file"`
 
@@ -538,7 +535,7 @@ maxSize?: number
 
 #### `accept`
 
-Array of accepted MIME types.
+An array of allowed MIME types.
 
 ```typescript
 accept?: string[]
@@ -560,7 +557,7 @@ data?: Record<string, any> | (() => Record<string, any>)
 
 #### `format`
 
-Formats the server response, returning a standard `UploadResult`.
+A function to format the server response, returning a standard `UploadResult`.
 
 ```typescript
 format?: (result: any) => UploadResult | Promise<UploadResult>
@@ -577,7 +574,7 @@ format: (response) => ({
 
 #### `upload`
 
-Custom upload function. When provided, the default upload logic is replaced.
+A custom upload function. If provided, it replaces the default upload logic.
 
 ```typescript
 upload?: (file: File, context: UploadContext) => Promise<UploadResult>
@@ -585,8 +582,8 @@ upload?: (file: File, context: UploadContext) => Promise<UploadResult>
 
 **Parameters:**
 
-- `file` - The file object
-- `context` - Upload context, containing `signal` (abort signal), `config` (configuration), and `onProgress` (progress callback)
+- `file` – The file to upload.
+- `context` – Upload context, containing `signal` (abort signal), `config` (configuration), and `onProgress` (progress callback).
 
 **Example:**
 
@@ -614,7 +611,7 @@ upload: async (file, context) => {
 
 #### `beforeUpload`
 
-Pre-upload hook. Returning `false` cancels the upload; returning a new `File` object replaces the original file.
+A hook called before upload. Return `false` to cancel, or return a new `File` to replace the original.
 
 ```typescript
 beforeUpload?: (file: File) => File | false | Promise<File | false>
@@ -622,7 +619,7 @@ beforeUpload?: (file: File) => File | false | Promise<File | false>
 
 #### `validate`
 
-Validates the file. Returning a string indicates a validation error.
+Validate the file. Return an error message string to indicate failure.
 
 ```typescript
 validate?: (file: File) => string | void
@@ -633,7 +630,7 @@ validate?: (file: File) => string | void
 ```typescript
 validate: (file) => {
   if (file.size > 10 * 1024 * 1024) {
-    return "File size must not exceed 10MB.";
+    return "File size must not exceed 10 MB";
   }
 };
 ```
@@ -642,7 +639,7 @@ validate: (file) => {
 
 #### `onProgress`
 
-Upload progress callback.
+Progress callback during upload.
 
 ```typescript
 onProgress?: (progress: UploadProgress, file: File) => void
@@ -652,15 +649,15 @@ onProgress?: (progress: UploadProgress, file: File) => void
 
 ```typescript
 interface UploadProgress {
-  loaded: number; // Bytes loaded
+  loaded: number; // Bytes uploaded so far
   total: number; // Total bytes
-  percent: number; // Percentage
+  percent: number; // Percentage complete
 }
 ```
 
 #### `onSuccess`
 
-Upload success callback.
+Success callback.
 
 ```typescript
 onSuccess?: (result: UploadResult, file: File) => void
@@ -677,7 +674,7 @@ interface UploadResult {
 
 #### `onUploadError`
 
-Upload error callback.
+Error callback for upload failures.
 
 ```typescript
 onUploadError?: (error: Error, file: File) => void
@@ -685,7 +682,7 @@ onUploadError?: (error: Error, file: File) => void
 
 #### `onTypeError`
 
-File type error callback.
+Callback for file type errors.
 
 ```typescript
 onTypeError?: (error: Error, file: File) => void
@@ -693,7 +690,7 @@ onTypeError?: (error: Error, file: File) => void
 
 #### `onSizeError`
 
-File size error callback.
+Callback for file size errors.
 
 ```typescript
 onSizeError?: (error: Error, file: File) => void
@@ -701,7 +698,7 @@ onSizeError?: (error: Error, file: File) => void
 
 #### `onValidateError`
 
-Validation error callback.
+Callback for validation errors.
 
 ```typescript
 onValidateError?: (error: Error, file: File) => void
@@ -717,7 +714,7 @@ const editor = new Editor(document.getElementById("editor"), {
   uploader: {
     // Image upload configuration
     image: {
-      maxSize: 5 * 1024 * 1024, // 5MB
+      maxSize: 5 * 1024 * 1024, // 5 MB
       accept: ["image/png", "image/jpeg"],
       async upload(file: File, ctx: UploadContext) {
         return new Promise<UploadResult>((resolve, reject) => {
@@ -728,7 +725,7 @@ const editor = new Editor(document.getElementById("editor"), {
     },
     // Video upload configuration
     video: {
-      maxSize: 500 * 1024 * 1024, // 500MB
+      maxSize: 500 * 1024 * 1024, // 500 MB
       accept: ["video/*"],
       onUploadError(error) {
         alert(i18n.t("upload.uploadFailed"));
@@ -746,59 +743,101 @@ const editor = new Editor(document.getElementById("editor"), {
 
 ---
 
-## 6. Internationalization (i18n)
+## 🌐 <a id="i18n"></a>6. Internationalization (i18n)
 
-`i18n` is a global singleton that manages multilingual support.
+`i18n` is the global internationalisation singleton provided by Free Editor. It manages the editor's language, translation messages, and custom language extensions.
 
 ```typescript
 import { i18n } from "@catmasks/free-editor";
 ```
 
+Free Editor includes the following built‑in languages:
+
+- `zh-CN`: Simplified Chinese
+- `en`: English
+- `ja-JP`: Japanese
+
+Custom languages can be registered via `addMessages()`.
+
+---
+
 ### 6.1 Properties
 
 #### `locale`
 
-Current locale.
+Returns the currently active language.
 
 ```typescript
-console.log(i18n.locale); // "zh-CN"
+console.log(i18n.locale);
+// "zh-CN"
 ```
+
+Type:
+
+```typescript
+Locale;
+```
+
+---
 
 ### 6.2 Methods
 
 #### `t(key, ...args)`
 
-Retrieves the translation for the given `key` in the current locale. Supports placeholder substitution using `{0}`, `{1}`, etc.
+Retrieves the translation for the specified `key` in the current language.
+
+Supports dot‑notation for nested keys and placeholder replacement with `{0}`, `{1}`, etc.
 
 ```typescript
-t(key: string, ...args: any[]): string
+t(key: string, ...args: unknown[]): string
 ```
 
-**Example:**
+**Examples:**
 
 ```typescript
-i18n.t("toolbar.bold"); // "Bold"
-i18n.t("upload.fileSizeExceeded"); // "File size exceeds limit"
+i18n.t("toolbar.bold");
+// "Bold"
+
+i18n.t("upload.fileSizeExceeded");
+// "File size exceeds the limit"
 ```
 
-**Available translation keys:**
+With placeholders:
 
-| Namespace    | Description              |
-| ------------ | ------------------------ |
-| `common`     | Common text              |
-| `toolbar`    | Toolbar text             |
-| `link`       | Link-related text        |
-| `fontFamily` | Font family-related text |
-| `fontSize`   | Font size-related text   |
-| `alignment`  | Alignment-related text   |
-| `heading`    | Heading-related text     |
-| `upload`     | Upload-related text      |
-| `media`      | Media node text          |
-| `attachment` | Attachment-related text  |
+```typescript
+i18n.t("common.count", 10);
+// e.g., "Total 10 items"
+```
+
+If the key does not exist, the key itself is returned:
+
+```typescript
+i18n.t("unknown.key");
+// "unknown.key"
+```
+
+**Main translation namespaces:**
+
+| Namespace    | Description         |
+| ------------ | ------------------- |
+| `common`     | Common text         |
+| `toolbar`    | Toolbar labels      |
+| `link`       | Link‑related text   |
+| `fontFamily` | Font family labels  |
+| `fontSize`   | Font size labels    |
+| `alignment`  | Alignment labels    |
+| `lineHeight` | Line height labels  |
+| `heading`    | Heading labels      |
+| `upload`     | Upload‑related text |
+| `media`      | Media node labels   |
+| `attachment` | Attachment labels   |
+| `table`      | Table‑related text  |
+
+---
 
 #### `setLocale(locale)`
 
-Sets the current locale.
+Switches the current language.
 
 ```typescript
 setLocale(locale: Locale): void
@@ -806,54 +845,372 @@ setLocale(locale: Locale): void
 
 **Parameters:**
 
-| Parameter | Type     | Description                                    |
-| --------- | -------- | ---------------------------------------------- |
-| `locale`  | `Locale` | Target locale: `"zh-CN"`, `"en"`, or `"ja-JP"` |
+| Parameter | Type     | Description             |
+| --------- | -------- | ----------------------- |
+| `locale`  | `Locale` | A registered locale key |
+
+Built‑in locales:
+
+```typescript
+i18n.setLocale("zh-CN");
+i18n.setLocale("en");
+i18n.setLocale("ja-JP");
+```
+
+If the specified locale has not been registered, the call has no effect.
+
+```typescript
+i18n.setLocale("ko-KR");
+// No change if "ko-KR" has not been registered via addMessages()
+```
+
+After switching, all subscribers registered via `subscribe()` will be notified.
+
+---
+
+#### `getLocales()`
+
+Returns an array of all registered locales.
+
+```typescript
+getLocales(): Locale[]
+```
+
+**Example:**
+
+```typescript
+const locales = i18n.getLocales();
+
+console.log(locales);
+// ["zh-CN", "en", "ja-JP"]
+```
+
+After registering a custom language:
+
+```typescript
+i18n.addMessages("ko-KR", koKR);
+
+console.log(i18n.getLocales());
+// ["zh-CN", "en", "ja-JP", "ko-KR"]
+```
+
+The returned array is a new copy; it does not directly mutate the internal registry.
+
+---
+
+#### `hasLocale(locale)`
+
+Checks whether a given locale has been registered.
+
+```typescript
+hasLocale(locale: Locale): boolean
+```
+
+**Example:**
+
+```typescript
+i18n.hasLocale("zh-CN");
+// true
+
+i18n.hasLocale("ko-KR");
+// false
+```
+
+After registering a custom language:
+
+```typescript
+i18n.addMessages("ko-KR", koKR);
+
+i18n.hasLocale("ko-KR");
+// true
+```
+
+This method is useful for checking before calling `setLocale()` or `addMessages()`.
+
+---
+
+#### `getMessages(locale)`
+
+Returns the original message object for the specified locale.
+
+```typescript
+getMessages(locale: Locale): LocaleMessages | undefined
+```
+
+**Example:**
+
+```typescript
+const messages = i18n.getMessages("zh-CN");
+
+console.log(messages?.toolbar.bold);
+// "Bold" (in Chinese)
+```
+
+If the locale does not exist, returns `undefined`:
+
+```typescript
+const messages = i18n.getMessages("ko-KR");
+
+console.log(messages);
+// undefined
+```
+
+> **Note:**
+> `getMessages()` returns the **original** locale messages as registered, without any extensions applied via `extend()`.
+
+---
+
+#### `getCurrentMessages()`
+
+Returns the final message object used by the current locale.
+
+```typescript
+getCurrentMessages(): LocaleMessages
+```
+
+Unlike `getMessages()`, this method returns the actual `_messages` in use, so it includes any extensions added via `extend()`.
+
+**Example:**
+
+```typescript
+i18n.extend({
+  toolbar: {
+    bold: "Custom Bold",
+  },
+});
+
+const messages = i18n.getCurrentMessages();
+
+console.log(messages.toolbar.bold);
+// "Custom Bold"
+```
+
+Conceptually:
+
+```text
+getMessages()
+    ↓
+Returns the original locale messages
+
+getCurrentMessages()
+    ↓
+Returns the final messages currently in use
+    ↓
+Includes extensions from extend()
+```
+
+---
+
+#### `addMessages(locale, messages)`
+
+Registers a new language.
+
+```typescript
+addMessages(
+  locale: Locale,
+  messages: LocaleMessages,
+): void
+```
+
+This method **can only register languages that do not already exist**; it cannot override an existing one.
+
+Therefore, built‑in languages cannot be overridden:
+
+```typescript
+i18n.addMessages("zh-CN", messages);
+// ❌ Not allowed
+
+i18n.addMessages("en", messages);
+// ❌ Not allowed
+
+i18n.addMessages("ja-JP", messages);
+// ❌ Not allowed
+```
+
+Custom languages can be registered normally:
+
+```typescript
+import koKR from "./locales/ko-KR";
+
+i18n.addMessages("ko-KR", koKR);
+```
+
+Once registered, you can switch to it:
+
+```typescript
+i18n.setLocale("ko-KR");
+
+console.log(i18n.locale);
+// "ko-KR"
+```
+
+You can also register other languages:
+
+```typescript
+i18n.addMessages("fr-FR", frFR);
+i18n.addMessages("de-DE", deDE);
+```
+
+> **Note:**
+> `addMessages()` does not override an existing locale, including custom ones registered earlier. Attempting to re‑register an existing locale will throw an error.
+
+---
 
 #### `extend(messages)`
 
-Extends the current locale's message object (deep merge).
-
-> **Note:** This method must be called before the editor is initialized; otherwise, it will have no effect on the editor.
+Extends the message object of the current locale.
 
 ```typescript
-extend(messages: DeepPartial<LocaleMessages>): void
+extend(
+  messages: DeepPartial<LocaleMessages>,
+): void
 ```
+
+This method performs a **deep merge**, so you only need to provide the fields you wish to add or override.
 
 **Example:**
 
 ```typescript
 import { i18n } from "@catmasks/free-editor";
 
-// Extend translations before creating the editor
 i18n.extend({
   toolbar: {
     bold: "Custom Bold",
     italic: "Custom Italic",
   },
 });
-
-// Then create the editor
-const editor = new Editor(...);
 ```
+
+Other fields in the original locale messages remain unchanged.
+
+For instance:
+
+```typescript
+i18n.extend({
+  toolbar: {
+    bold: "Bold",
+  },
+});
+```
+
+Only `toolbar.bold` is modified; `toolbar.italic`, `toolbar.underline`, `toolbar.strike` are unaffected.
+
+> **Note:**
+> `extend()` modifies the final message object currently in use. It does **not** modify the original messages returned by `getMessages()`. When `setLocale()` is called, the message object is rebuilt from the target locale's original messages, so any `extend()` modifications made for the previous locale will not automatically carry over.
+
+---
 
 #### `subscribe(callback)`
 
-Subscribes to locale change events. Returns an unsubscribe function.
-
-> **Note:** Be sure to call the returned unsubscribe function when no longer needed to prevent memory leaks.
+Subscribes to language change events.
 
 ```typescript
-subscribe(callback: (locale: Locale) => void): () => void
+subscribe(
+  callback: (locale: Locale) => void,
+): () => void
 ```
+
+Whenever `setLocale()` is called, all subscribers will be invoked with the new locale.
 
 **Example:**
 
 ```typescript
 const unsubscribe = i18n.subscribe((locale) => {
-  console.log("Locale changed to:", locale);
+  console.log("Language changed to:", locale);
 });
 
-// Unsubscribe when no longer needed
+i18n.setLocale("en");
+// "Language changed to: en"
+```
+
+`subscribe()` returns an unsubscribe function:
+
+```typescript
 unsubscribe();
 ```
+
+After unsubscribing, the callback will no longer receive notifications.
+
+> **Note:**
+> If a component or module no longer needs to listen for language changes, be sure to call the unsubscribe function to avoid unnecessary callbacks and potential memory leaks.
+
+---
+
+### 6.3 Custom Languages
+
+Free Editor supports registering custom languages via `addMessages()`.
+
+For example, to add Korean:
+
+```typescript
+import { i18n } from "@catmasks/free-editor";
+import koKR from "./locales/ko-KR";
+
+i18n.addMessages("ko-KR", koKR);
+
+i18n.setLocale("ko-KR");
+
+console.log(i18n.locale);
+// "ko-KR"
+```
+
+After registration, you can use it normally:
+
+```typescript
+i18n.t("toolbar.bold");
+```
+
+You can also retrieve all registered locales with:
+
+```typescript
+i18n.getLocales();
+// ["zh-CN", "en", "ja-JP", "ko-KR"]
+```
+
+---
+
+### 6.4 API Summary
+
+| API                    | Type                          | Description                                      |
+| ---------------------- | ----------------------------- | ------------------------------------------------ |
+| `locale`               | `Locale`                      | Current locale                                   |
+| `t()`                  | `string`                      | Translate a key                                  |
+| `setLocale()`          | `void`                        | Switch the current locale                        |
+| `getLocales()`         | `Locale[]`                    | Get all registered locales                       |
+| `hasLocale()`          | `boolean`                     | Check if a locale is registered                  |
+| `getMessages()`        | `LocaleMessages \| undefined` | Get the original messages for a locale           |
+| `getCurrentMessages()` | `LocaleMessages`              | Get the final messages currently in use          |
+| `addMessages()`        | `void`                        | Register a new locale (cannot override existing) |
+| `extend()`             | `void`                        | Extend the current locale messages               |
+| `subscribe()`          | `() => void`                  | Subscribe to language changes                    |
+
+### 6.5 Built‑in and Custom Locales
+
+Free Editor defines:
+
+```typescript
+type BuiltinLocale = "zh-CN" | "en" | "ja-JP";
+```
+
+`Locale` extends this to allow custom locales:
+
+```typescript
+type Locale = BuiltinLocale | (string & {});
+```
+
+Thus, you can use built‑in locales:
+
+```typescript
+i18n.setLocale("zh-CN");
+i18n.setLocale("en");
+i18n.setLocale("ja-JP");
+```
+
+And also register and use custom ones:
+
+```typescript
+i18n.addMessages("ko-KR", koKR);
+i18n.setLocale("ko-KR");
+```
+
+---
