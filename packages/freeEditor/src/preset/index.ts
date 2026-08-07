@@ -61,3 +61,5 @@ export * from "./clearFormat/index";
 export * from "./undo/index";
 export * from "./redo/index";
 export * from "./table/index";
+
+export * from "./markdown/index";

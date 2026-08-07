@@ -54,6 +54,7 @@ import {
   UndoPlugin,
   RedoPlugin,
   TablePlugin,
+  MarkdownPlugin,
 } from "../preset/index";
 
 /**
@@ -92,6 +93,7 @@ export const editorPluginRegistry: EditorPlugin[] = [
   VideoPlugin,
   AttachmentPlugin,
   TablePlugin,
+  MarkdownPlugin,
 ];
 
 /**

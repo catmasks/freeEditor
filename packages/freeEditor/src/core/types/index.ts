@@ -70,7 +70,9 @@ export type EditorPluginKey =
   /**重做 */
   | "redo"
   /**表格 */
-  | "table";
+  | "table"
+  /**Markdown */
+  | "markdown";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement
