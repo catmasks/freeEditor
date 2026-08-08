@@ -61,7 +61,9 @@
   "peerDependencies": {
     "@tiptap/core": "^3.26.1",
     "@tiptap/extension-gapcursor": "^3.26.1",
-    "@tiptap/pm": "^3.26.1",
+    "@tiptap/pm": "^3.26.1"
+  },
+  "dependencies": {
     "markdown-it": "^14.1.0",
     "prosemirror-markdown": "^1.13.5"
   },

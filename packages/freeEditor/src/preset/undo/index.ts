@@ -29,5 +29,4 @@ export const UndoPlugin: EditorPlugin = {
   toolbar: createUndoToolbar,
 };
 
-export { History } from "./extensions/history";
-export { UndoShortcut } from "./extensions/undo-shortcut";
+

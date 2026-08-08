@@ -56,8 +56,7 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
     storage.serializer = serializer;
 
     storage.getMarkdown = () => {
-      const node = editor.schema.nodeFromJSON(editor.getJSON());
-      return serializer.serialize(node, {
+      return serializer.serialize(editor.state.doc, {
         tightLists: this.options.serializer?.tightLists ?? false,
       });
     };

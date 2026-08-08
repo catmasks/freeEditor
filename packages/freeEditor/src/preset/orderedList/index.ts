@@ -25,4 +25,4 @@ export const OrderedListPlugin: EditorPlugin = {
   toolbar: createOrderedListToolbar,
 };
 
-export { OrderedList, createOrderedListToolbar };
+

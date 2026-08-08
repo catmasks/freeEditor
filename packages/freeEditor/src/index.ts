@@ -22,13 +22,13 @@ import type {
   FloatingToolbarAPI,
 } from "./core/index";
 
+/* ==================== 编辑器核心 ==================== */
 export { Editor, i18n };
 
 export type {
   EditorOptions,
   EditorTheme,
   EditorPluginKey,
-  EditorPlugin,
   MediaUploaderOptions,
   MediaUploaderConfig,
   UploadResult,
@@ -39,6 +39,4 @@ export type {
   MediaType,
   Locale,
   LocaleMessages,
-  FloatingToolbarItem,
-  FloatingToolbarAPI,
 };

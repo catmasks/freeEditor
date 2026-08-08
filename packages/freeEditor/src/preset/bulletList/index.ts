@@ -25,4 +25,4 @@ export const BulletListPlugin: EditorPlugin = {
   toolbar: createBulletListToolbar,
 };
 
-export { BulletList, createBulletListToolbar };
+

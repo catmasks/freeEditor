@@ -1,13 +1,18 @@
-export * from "./document/index";
+export { CustomDocument } from "./document/index";
 
-export * from "./paragraph/index";
+export { CustomParagraph } from "./paragraph/index";
 
-export * from "./text/index";
+export { CustomText } from "./text/index";
 
-export * from "./placeholder/index";
+export { PlaceholderPlugin } from "./placeholder/index";
 
-export * from "./floatingToolbar/index";
+export { FloatingToolbarPlugin } from "./floatingToolbar/index";
+export type {
+  FloatingToolbarItem,
+  FloatingToolbarAPI,
+  FloatingPlacement,
+} from "./floatingToolbar/index";
 
-export * from "./listItem/index";
+export { ListItem } from "./listItem/index";
 
-export * from "./taskItem/index";
+export { TaskItem } from "./taskItem/index";

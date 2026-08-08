@@ -24,5 +24,3 @@ export const BlockquotePlugin: EditorPlugin = {
    */
   toolbar: createBlockquoteToolbar,
 };
-
-export { Blockquote, createBlockquoteToolbar };

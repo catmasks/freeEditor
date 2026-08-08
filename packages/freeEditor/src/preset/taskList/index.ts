@@ -25,4 +25,4 @@ export const TaskListPlugin: EditorPlugin = {
   toolbar: createTaskListToolbar,
 };
 
-export { TaskList, createTaskListToolbar };
+

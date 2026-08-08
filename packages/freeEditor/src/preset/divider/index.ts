@@ -25,4 +25,4 @@ export const DividerPlugin: EditorPlugin = {
   toolbar: createDividerToolbar,
 };
 
-export { Divider, createDividerToolbar };
+
