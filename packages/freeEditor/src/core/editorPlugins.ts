@@ -55,6 +55,8 @@ import {
   RedoPlugin,
   TablePlugin,
   MarkdownPlugin,
+  ExportWordPlugin,
+  ImportWordPlugin,
 } from "../preset/index";
 
 /**
@@ -94,6 +96,8 @@ export const editorPluginRegistry: EditorPlugin[] = [
   AttachmentPlugin,
   TablePlugin,
   MarkdownPlugin,
+  ExportWordPlugin,
+  ImportWordPlugin,
 ];
 
 /**

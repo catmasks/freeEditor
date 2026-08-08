@@ -102,6 +102,10 @@ export default {
   attachment: {
     defaultName: "Untitled Document",
   },
+  word: {
+    export: "Export Word",
+    import: "Import Word",
+  },
   table: {
     default: "Insert Table",
     placeholder: "Select Size",

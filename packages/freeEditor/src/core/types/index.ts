@@ -72,7 +72,11 @@ export type EditorPluginKey =
   /**表格 */
   | "table"
   /**Markdown */
-  | "markdown";
+  | "markdown"
+  /**导出 Word */
+  | "exportWord"
+  /**导入 Word */
+  | "importWord";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement

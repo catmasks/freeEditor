@@ -102,6 +102,10 @@ export default {
   attachment: {
     defaultName: "未命名文档",
   },
+  word: {
+    export: "导出 Word",
+    import: "导入 Word",
+  },
   table: {
     default: "插入表格",
     placeholder: "选择大小",

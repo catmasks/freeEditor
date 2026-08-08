@@ -7,7 +7,6 @@ import type {
   EditorOptions,
   EditorTheme,
   EditorPluginKey,
-  EditorPlugin,
   MediaUploaderOptions,
   MediaUploaderConfig,
   UploadResult,
@@ -18,8 +17,6 @@ import type {
   MediaType,
   Locale,
   LocaleMessages,
-  FloatingToolbarItem,
-  FloatingToolbarAPI,
 } from "./core/index";
 
 /* ==================== 编辑器核心 ==================== */

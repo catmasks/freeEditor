@@ -102,6 +102,10 @@ export default {
   attachment: {
     defaultName: "無題ドキュメント",
   },
+  word: {
+    export: "Word をエクスポート",
+    import: "Word をインポート",
+  },
   table: {
     default: "テーブルを挿入",
     placeholder: "サイズを選択",

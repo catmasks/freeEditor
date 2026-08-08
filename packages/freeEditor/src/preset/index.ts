@@ -1,11 +1,7 @@
 /**
  * 编辑器预设插件导出 / Editor preset plugin exports
- *
- * 每个插件只导出 XXXPlugin 实例，作为公共 API 白名单
- * 内部实现（Extension、Schema、Toolbar、工具函数等）保持私有
  */
 
-/* ==================== 默认插件（内部扩展，非 EditorPlugin） ==================== */
 export {
   CustomDocument,
   CustomParagraph,
@@ -55,3 +51,5 @@ export { UndoPlugin } from "./undo/index";
 export { RedoPlugin } from "./redo/index";
 export { TablePlugin } from "./table/index";
 export { MarkdownPlugin } from "./markdown/index";
+export { ExportWordPlugin } from "./exportWord/index";
+export { ImportWordPlugin } from "./importWord/index";
