@@ -106,6 +106,9 @@ export default {
     export: "导出 Word",
     import: "导入 Word",
   },
+  pdf: {
+    export: "导出 PDF",
+  },
   table: {
     default: "插入表格",
     placeholder: "选择大小",

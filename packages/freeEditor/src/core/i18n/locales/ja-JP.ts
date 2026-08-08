@@ -106,6 +106,9 @@ export default {
     export: "Word をエクスポート",
     import: "Word をインポート",
   },
+  pdf: {
+    export: "PDF をエクスポート",
+  },
   table: {
     default: "テーブルを挿入",
     placeholder: "サイズを選択",

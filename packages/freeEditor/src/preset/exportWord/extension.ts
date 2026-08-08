@@ -4,7 +4,7 @@
 
 import { Extension } from "@tiptap/core";
 import type { Editor } from "@tiptap/core";
-import { saveAs } from "file-saver";
+import { getEditorHTML, downloadFile } from "../../core/utils/export";
 import {
   Document,
   Packer,
@@ -498,11 +498,11 @@ async function htmlToDocxDocument(html: string): Promise<Document> {
  */
 async function exportHtmlToDocx(
   html: string,
-  fileName = "document.docx",
+  fileName = "freeEditor.docx",
 ): Promise<void> {
   const document = await htmlToDocxDocument(html);
   const blob = await Packer.toBlob(document);
-  saveAs(blob, fileName);
+  downloadFile(blob, fileName);
 }
 
 /**
@@ -523,7 +523,7 @@ export const ExportWord = Extension.create<ExportWordOptions>({
 
   addOptions() {
     return {
-      fileName: "document.docx",
+      fileName: "freeEditor.docx",
     };
   },
 
@@ -532,8 +532,8 @@ export const ExportWord = Extension.create<ExportWordOptions>({
       exportWord:
         () =>
         ({ editor }: { editor: Editor }) => {
-          const html = editor.getHTML();
-          const fileName = this.options.fileName || "document.docx";
+          const html = getEditorHTML(editor);
+          const fileName = this.options.fileName || "freeEditor.docx";
           // 异步导出，不阻塞命令链
           exportHtmlToDocx(html, fileName).catch((err) => {
             console.error("[ExportWord] 导出失败:", err);

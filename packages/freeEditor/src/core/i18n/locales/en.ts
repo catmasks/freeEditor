@@ -106,6 +106,9 @@ export default {
     export: "Export Word",
     import: "Import Word",
   },
+  pdf: {
+    export: "Export PDF",
+  },
   table: {
     default: "Insert Table",
     placeholder: "Select Size",

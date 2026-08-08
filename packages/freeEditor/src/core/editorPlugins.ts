@@ -57,6 +57,7 @@ import {
   MarkdownPlugin,
   ExportWordPlugin,
   ImportWordPlugin,
+  ExportPdfPlugin,
 } from "../preset/index";
 
 /**
@@ -98,6 +99,7 @@ export const editorPluginRegistry: EditorPlugin[] = [
   MarkdownPlugin,
   ExportWordPlugin,
   ImportWordPlugin,
+  ExportPdfPlugin,
 ];
 
 /**

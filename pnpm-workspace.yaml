@@ -3,3 +3,4 @@ packages:
   - "playground"
 allowBuilds:
   '@parcel/watcher': true
+  core-js: true

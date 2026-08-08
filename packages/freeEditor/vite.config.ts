@@ -34,13 +34,9 @@ export default defineConfig({
        * 外部依赖不打包进入产物
        *
        * peerDependencies:
-       * - @tiptap/core
-       * - @tiptap/pm
-       * - @tiptap/extension-gapcursor
-       *
+       *  ....
        * dependencies:
-       * - markdown-it
-       * - prosemirror-markdown
+       *  ....
        *
        * 都由用户环境提供
        */

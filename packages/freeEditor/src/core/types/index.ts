@@ -76,7 +76,9 @@ export type EditorPluginKey =
   /**导出 Word */
   | "exportWord"
   /**导入 Word */
-  | "importWord";
+  | "importWord"
+  /**导出 PDF */
+  | "exportPdf";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement

@@ -53,3 +53,4 @@ export { TablePlugin } from "./table/index";
 export { MarkdownPlugin } from "./markdown/index";
 export { ExportWordPlugin } from "./exportWord/index";
 export { ImportWordPlugin } from "./importWord/index";
+export { ExportPdfPlugin } from "./exportPdf/index";
