@@ -25,7 +25,13 @@ export class CoreEditor {
    * @param el 挂载元素 / Mount element
    * @param options 编辑器配置 / Editor configuration
    */
-  constructor(el: HTMLElement, options: EditorConfig) {
+  constructor(el: HTMLDivElement, options: EditorConfig) {
+    if (!el) {
+      throw new Error(
+        "DOM element is required, please pass a valid HTMLDivElement element.",
+      );
+    }
+
     this.editor = new TiptapEditor({
       element: el,
       content: options.content || "",

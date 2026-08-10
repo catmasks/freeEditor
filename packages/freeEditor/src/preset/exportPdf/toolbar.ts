@@ -23,10 +23,35 @@ const EXPORT_PDF_ICON = `
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-  <polyline points="14 2 14 8 20 8" />
-  <path d="M9 15h6" />
-  <path d="M12 12v6" />
+  <path
+    d="M6 2h8l4 4v9"
+  />
+  <path
+    d="M14 2v4h4"
+  />
+  <path
+    d="M6 2
+       a2 2 0 0 0-2 2
+       v16
+       a2 2 0 0 0 2 2
+       h8"
+  />
+  <path
+  d="
+  M11 10
+  c0-1.2-1.2-1.2-1.2 0
+  c0 2 .6 3.2-.8 4.5
+  c-1.2 1-2.8.8-2.8 0
+  c0-1 2-1.4 3.5-1.8
+  c2-.5 3.5 0 4.8.8
+  "
+/>
+<path
+  d="M18 17v5"
+/>
+<path
+  d="M16 20l2 2 2-2"
+/>
 </svg>
 `;
 
