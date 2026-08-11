@@ -58,12 +58,10 @@
     "**/*.css",
     "**/*.scss"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "@tiptap/core": "^3.26.1",
     "@tiptap/extension-gapcursor": "^3.26.1",
-    "@tiptap/pm": "^3.26.1"
-  },
-  "dependencies": {
+    "@tiptap/pm": "^3.26.1",
     "docx": "^9.7.1",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
@@ -73,14 +71,9 @@
     "prosemirror-markdown": "^1.13.5"
   },
   "devDependencies": {
-    "@tiptap/core": "^3.26.1",
-    "@tiptap/extension-gapcursor": "^3.26.1",
-    "@tiptap/pm": "^3.26.1",
     "@types/file-saver": "^2.0.7",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^24.12.3",
-    "markdown-it": "^14.1.0",
-    "prosemirror-markdown": "^1.13.5",
     "sass-embedded": "^1.100.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.12",

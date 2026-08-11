@@ -56,83 +56,177 @@ or
 pnpm add @catmasks/free-editor
 ```
 
-### CDN Usage
+### CDN Integration
 
-If your project does not use a bundler, you can use Free Editor directly in the browser via an ESM CDN.
+If your project does not use build tools such as Vite or Webpack, you can use the Editor directly in the browser via an ESM CDN.
 
-> **⚠️ Note**:
+> **⚠️ Note**
 >
-> - This package is provided exclusively in ESM format. It must be loaded using `<script type="module">`; traditional `<script>` tags are not supported.
-> - Since `@tiptap/core`, `@tiptap/pm`, and `@tiptap/extension-gapcursor` are externalised as peer dependencies, you need to ensure these dependencies are resolvable when using a CDN. Using a CDN like esm.sh that supports automatic dependency resolution can simplify this.
+> - This package provides both ESM and CommonJS build formats. For browser CDN scenarios, please use the ESM format.
+> - Runtime dependencies are declared via `dependencies` and are automatically installed by npm/pnpm in package-manager environments.
+> - To avoid bundling third-party dependencies repeatedly into Free Editor, the build process marks runtime dependencies as external. Therefore, in native browser ESM environments, a CDN is required to resolve these npm dependencies into browser-loadable URLs.
+> - **esm.sh** is recommended, as it automatically resolves npm dependencies without the need to manually configure dependencies such as Tiptap, ProseMirror, PDF, Word, or Markdown.
+> - The `style.css` file must be imported separately.
 
-**Using esm.sh (recommended)**
+#### Using esm.sh (Recommended)
 
-```html
-<script type="module">
-  import { Editor, i18n } from "https://esm.sh/@catmasks/free-editor@0.0.4";
-  import "https://esm.sh/@catmasks/free-editor@0.0.4/style.css";
-
-  const editor = new Editor(document.getElementById("editor"), {
-    content: "<p>Hello World</p>",
-    placeholder: "Please enter content...",
-  });
-</script>
-```
-
-**Using importmap (optional)**
-
-If you prefer bare import specifiers, you can use an importmap:
+esm.sh automatically resolves `@catmasks/free-editor` and its `dependencies`, so there is no need to manually configure Tiptap, ProseMirror, or other dependencies.
 
 ```html
-<script type="importmap">
-  {
-    "imports": {
-      "@catmasks/free-editor": "https://esm.sh/@catmasks/free-editor@0.0.4",
-      "@catmasks/free-editor/style.css": "https://esm.sh/@catmasks/free-editor@0.0.4/style.css"
-    }
-  }
-</script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<script type="module">
-  import { Editor, i18n } from "@catmasks/free-editor";
-  import "@catmasks/free-editor/style.css";
+    <title>Free Editor CDN</title>
 
-  const editor = new Editor(document.getElementById("editor"), {
-    content: "<p>Hello World</p>",
-  });
-</script>
+    <link
+      rel="stylesheet"
+      href="https://esm.sh/@catmasks/free-editor@0.0.5/style.css"
+    />
+  </head>
+
+  <body>
+    <div id="editor"></div>
+
+    <script type="module">
+      import { Editor, i18n } from "https://esm.sh/@catmasks/free-editor@0.0.5";
+
+      const editor = new Editor(document.getElementById("editor"), {
+        content: "<p>Hello World</p>",
+        placeholder: "Please enter content...",
+      });
+    </script>
+  </body>
+</html>
 ```
 
-**Using jsdelivr / unpkg (alternative)**
+#### Using importmap
 
-When using jsdelivr or unpkg, ensure that peer dependencies are also loaded correctly (esm.sh, which supports automatic resolution, is recommended).
+If you prefer to use standard package names in your code:
+
+```js
+import { Editor } from "@catmasks/free-editor";
+```
+
+You can map the npm package to esm.sh via an importmap.
 
 ```html
-<script type="importmap">
-  {
-    "imports": {
-      "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
-      "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
-      "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
-      "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
-      "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1"
-    }
-  }
-</script>
-<script type="module">
-  import {
-    Editor,
-    i18n,
-  } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/index.js";
-  import "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/style.css";
-  // ... use the editor
-</script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Free Editor CDN</title>
+
+    <link
+      rel="stylesheet"
+      href="https://esm.sh/@catmasks/free-editor@0.0.5/style.css"
+    />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@catmasks/free-editor": "https://esm.sh/@catmasks/free-editor@0.0.5"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="editor"></div>
+
+    <script type="module">
+      import { Editor, i18n } from "@catmasks/free-editor";
+
+      const editor = new Editor(document.getElementById("editor"), {
+        content: "<p>Hello World</p>",
+        placeholder: "Please enter content...",
+      });
+    </script>
+  </body>
+</html>
 ```
 
-> **Note**:
+> **Explanation**
+> When using esm.sh, only `@catmasks/free-editor` needs to be mapped; its runtime dependencies are automatically resolved by esm.sh.
+
+#### Using jsDelivr / unpkg
+
+If you use jsDelivr or unpkg to load `dist/index.js` directly, note that bare module imports such as:
+
+```js
+import { Editor } from "@tiptap/core";
+import { jsPDF } from "jspdf";
+```
+
+cannot be resolved natively by the browser's ESM loader.
+Because the Free Editor build externalises runtime dependencies, when using jsDelivr or unpkg, you must explicitly map the relevant dependencies via importmap.
+
+For example:
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Free Editor CDN</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.5/dist/style.css"
+    />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
+          "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
+          "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
+          "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
+          "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
+
+          "docx": "https://esm.sh/docx@9.7.1",
+          "file-saver": "https://esm.sh/file-saver@2.0.5",
+          "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+          "jspdf": "https://esm.sh/jspdf@4.2.1",
+          "mammoth": "https://esm.sh/mammoth@1.12.0",
+          "markdown-it": "https://esm.sh/markdown-it@14.1.0",
+          "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="editor"></div>
+
+    <script type="module">
+      import {
+        Editor,
+        i18n,
+      } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.5/dist/index.js";
+
+      const editor = new Editor(document.getElementById("editor"), {
+        content: "<p>Hello World</p>",
+        placeholder: "Please enter content...",
+      });
+    </script>
+  </body>
+</html>
+```
+
+> **Tips**
 >
-> - Replace `@0.0.4` with the actual version you are using.
-> - The stylesheet `style.css` **must be imported separately**; otherwise the editor will not render correctly.
+> - Please replace `@0.0.5` with the actual version of `@catmasks/free-editor` you are using.
+> - When using jsDelivr or unpkg, in addition to Tiptap and ProseMirror, you must also map other runtime dependencies that `@catmasks/free-editor` has externalised.
+> - It is recommended to use esm.sh as the primary choice, as it avoids the need to manually maintain a complete importmap.
+> - The `style.css` file must be imported separately; otherwise, the editor styles will not load correctly.
+> - The browser CDN approach is suitable for rapid evaluation and simple page integration. For production projects, it is recommended to use npm/pnpm with a build tool such as Vite.
 
 ---
 

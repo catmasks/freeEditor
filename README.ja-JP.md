@@ -56,83 +56,177 @@ npm install @catmasks/free-editor
 pnpm add @catmasks/free-editor
 ```
 
-### CDN での利用
+### CDN による導入
 
-プロジェクトでバンドラを使用しない場合、ESM CDN を介してブラウザで直接 FreeEditor を利用できます。
+プロジェクトが Vite や Webpack などのビルドツールを使用しない場合、ESM CDN を介してブラウザ上で本エディタを直接利用することができる。
 
-> **⚠️ 注意**:
+> **⚠️ 注意事項**
 >
-> - このパッケージは ESM 形式のみを提供します。`<script type="module">` を使用して読み込む必要があり、従来の `<script>` タグはサポートされていません。
-> - `@tiptap/core`、`@tiptap/pm`、`@tiptap/extension-gapcursor` は peerDependencies として外部化されているため、CDN を使用する際にはこれらの依存関係が解決可能であることを確認する必要があります。依存関係の自動解決をサポートする esm.sh などの CDN を使用すると簡便です。
+> - 本パッケージは ESM および CommonJS の二つのビルド形式を提供する。ブラウザ CDN のシナリオでは ESM 形式を使用すること。
+> - 実行時依存関係は `dependencies` に宣言されており、npm/pnpm によりパッケージマネージャ環境で自動的にインストールされる。
+> - サードパーティの依存関係を Free Editor に繰り返しバンドルすることを避けるため、本パッケージのビルド時には実行時依存関係を external としてマークしている。したがって、ブラウザのネイティブ ESM 環境では、これらの npm 依存関係をブラウザが読み込み可能な URL に解決するために CDN を利用する必要がある。
+> - **esm.sh** の使用を推奨する。esm.sh は npm 依存関係を自動的に解決するため、Tiptap、ProseMirror、PDF、Word、Markdown などの依存関係を手動で設定する必要がない。
+> - `style.css` は個別にインポートしなければならない。
 
-**esm.sh を使用（推奨）**
+#### esm.sh を使用する（推奨）
 
-```html
-<script type="module">
-  import { Editor, i18n } from "https://esm.sh/@catmasks/free-editor@0.0.4";
-  import "https://esm.sh/@catmasks/free-editor@0.0.4/style.css";
-
-  const editor = new Editor(document.getElementById("editor"), {
-    content: "<p>Hello World</p>",
-    placeholder: "内容を入力してください...",
-  });
-</script>
-```
-
-**importmap を使用（オプション）**
-
-ベアインポート指定子を使用したい場合は、importmap を利用できます。
+esm.sh は `@catmasks/free-editor` およびその `dependencies` を自動的に解決するため、Tiptap や ProseMirror などの依存関係を手動で設定する必要はない。
 
 ```html
-<script type="importmap">
-  {
-    "imports": {
-      "@catmasks/free-editor": "https://esm.sh/@catmasks/free-editor@0.0.4",
-      "@catmasks/free-editor/style.css": "https://esm.sh/@catmasks/free-editor@0.0.4/style.css"
-    }
-  }
-</script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<script type="module">
-  import { Editor, i18n } from "@catmasks/free-editor";
-  import "@catmasks/free-editor/style.css";
+    <title>Free Editor CDN</title>
 
-  const editor = new Editor(document.getElementById("editor"), {
-    content: "<p>Hello World</p>",
-  });
-</script>
+    <link
+      rel="stylesheet"
+      href="https://esm.sh/@catmasks/free-editor@0.0.5/style.css"
+    />
+  </head>
+
+  <body>
+    <div id="editor"></div>
+
+    <script type="module">
+      import { Editor, i18n } from "https://esm.sh/@catmasks/free-editor@0.0.5";
+
+      const editor = new Editor(document.getElementById("editor"), {
+        content: "<p>Hello World</p>",
+        placeholder: "内容を入力してください...",
+      });
+    </script>
+  </body>
+</html>
 ```
 
-**jsdelivr / unpkg を使用（代替）**
+#### importmap を使用する
 
-jsdelivr または unpkg を使用する場合、peerDependencies も正しく読み込まれるようにする必要があります（自動解決をサポートする esm.sh の使用を推奨します）。
+コード内で標準のパッケージ名を使用したい場合：
+
+```js
+import { Editor } from "@catmasks/free-editor";
+```
+
+importmap を介して npm パッケージを esm.sh にマッピングすることができる。
 
 ```html
-<script type="importmap">
-  {
-    "imports": {
-      "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
-      "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
-      "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
-      "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
-      "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1"
-    }
-  }
-</script>
-<script type="module">
-  import {
-    Editor,
-    i18n,
-  } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/index.js";
-  import "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.4/dist/style.css";
-  // ... エディタを使用
-</script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Free Editor CDN</title>
+
+    <link
+      rel="stylesheet"
+      href="https://esm.sh/@catmasks/free-editor@0.0.5/style.css"
+    />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@catmasks/free-editor": "https://esm.sh/@catmasks/free-editor@0.0.5"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="editor"></div>
+
+    <script type="module">
+      import { Editor, i18n } from "@catmasks/free-editor";
+
+      const editor = new Editor(document.getElementById("editor"), {
+        content: "<p>Hello World</p>",
+        placeholder: "内容を入力してください...",
+      });
+    </script>
+  </body>
+</html>
 ```
 
-> **注意**:
+> **説明**
+> esm.sh を使用する場合、`@catmasks/free-editor` のみをマッピングすればよく、実行時依存関係は esm.sh が自動的に解決する。
+
+#### jsDelivr / unpkg を使用する
+
+jsDelivr または unpkg を使用して `dist/index.js` を直接読み込む場合、次のような裸のモジュールインポート：
+
+```js
+import { Editor } from "@tiptap/core";
+import { jsPDF } from "jspdf";
+```
+
+はブラウザのネイティブ ESM ローダーでは直接解決できない。  
+Free Editor のビルド成果物は実行時依存関係を external 化しているため、jsDelivr または unpkg を利用する際には、importmap を介して関連する依存関係を明示的にマッピングする必要がある。
+
+例：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Free Editor CDN</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.5/dist/style.css"
+    />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
+          "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
+          "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
+          "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
+          "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
+
+          "docx": "https://esm.sh/docx@9.7.1",
+          "file-saver": "https://esm.sh/file-saver@2.0.5",
+          "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+          "jspdf": "https://esm.sh/jspdf@4.2.1",
+          "mammoth": "https://esm.sh/mammoth@1.12.0",
+          "markdown-it": "https://esm.sh/markdown-it@14.1.0",
+          "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="editor"></div>
+
+    <script type="module">
+      import {
+        Editor,
+        i18n,
+      } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.5/dist/index.js";
+
+      const editor = new Editor(document.getElementById("editor"), {
+        content: "<p>Hello World</p>",
+        placeholder: "内容を入力してください...",
+      });
+    </script>
+  </body>
+</html>
+```
+
+> **ヒント**
 >
-> - `@0.0.4` は実際に使用するバージョンに置き換えてください。
-> - スタイルシート `style.css` は **必ず個別にインポート** する必要があります。インポートしないとエディタが正しく表示されません。
+> - `@0.0.5` は実際に使用する `@catmasks/free-editor` のバージョンに置き換えること。
+> - jsDelivr または unpkg を使用する場合、Tiptap および ProseMirror に加えて、`@catmasks/free-editor` が external 化したその他の実行時依存関係もマッピングする必要がある。
+> - 完全な importmap を手動で保守する手間を省くため、esm.sh を優先的に使用することを推奨する。
+> - `style.css` は個別にインポートしなければならない。インポートしない場合、エディタのスタイルが正しく適用されない。
+> - ブラウザ CDN 方式は迅速な評価や簡易なページ統合作業に適している。本番プロジェクトでは、npm/pnpm と Vite などのビルドツールを組み合わせて使用することを推奨する。
 
 ---
 

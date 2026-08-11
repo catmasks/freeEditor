@@ -129,7 +129,7 @@ export class Editor {
       uploader: options.uploader,
     });
 
-    this.core = new CoreEditor(this.content, {
+    this.core = new CoreEditor(this.content as HTMLDivElement, {
       content: options.content,
       extensions: this.pluginResult.extensions,
       editorProps: this.pluginResult.editorProps,
