@@ -549,6 +549,10 @@ The following plugin keys (`EditorPluginKey`) are available:
 | `redo`          | Redo            | Redo the last undone action                             |
 | `table`         | Table           | Insert or edit a table                                  |
 | `clearFormat`   | Clear Format    | Clear all text styles from the selected text            |
+| `markdown`      | Markdown        | Support Markdown format                                 |
+| `exportWord`    | Export as Word  | Export the content as a Word document                   |
+| `importWord`    | Import Word     | Import a Word document into the editor                  |
+| `exportPdf`     | Export as PDF   | Export the content as a PDF document                    |
 
 > **💡 Tip:** Use the `include` or `exclude` options to flexibly control which plugins are enabled.
 

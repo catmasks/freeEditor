@@ -515,40 +515,44 @@ destroy(): void
 
 以下是所有可用的插件键名（`EditorPluginKey`）：
 
-| 插件键名        | 名称     | 说明                         |
-| --------------- | -------- | ---------------------------- |
-| `heading`       | 标题     | 支持 H1-H6 标题              |
-| `fontBold`      | 粗体     | 文字加粗/取消加粗            |
-| `fontItalic`    | 斜体     | 文字倾斜/取消倾斜            |
-| `fontColor`     | 字体颜色 | 设置文字颜色                 |
-| `fontHighlight` | 高亮     | 设置文字背景高亮             |
-| `fontFamily`    | 字体     | 设置字体                     |
-| `fontSize`      | 字号     | 设置文字大小                 |
-| `alignment`     | 对齐     | 文字左对齐/居中/右对齐       |
-| `link`          | 链接     | 插入/编辑/移除链接           |
-| `codeBlock`     | 代码块   | 插入代码块                   |
-| `image`         | 图片     | 插入图片，支持拖拽/粘贴上传  |
-| `video`         | 视频     | 插入视频，支持拖拽/粘贴上传  |
-| `attachment`    | 附件     | 插入附件，支持拖拽/粘贴上传  |
-| `underline`     | 下划线   | 文字添加下划线               |
-| `strike`        | 删除线   | 文字添加删除线               |
-| `superscript`   | 上标     | 文字添加上标                 |
-| `subscript`     | 下标     | 文字添加下标                 |
-| `orderedList`   | 有序列表 | 插入有序列表                 |
-| `bulletList`    | 无序列表 | 插入无序列表                 |
-| `taskList`      | 任务列表 | 插入带复选框的任务列表       |
-| `indent`        | 缩进     | 增加缩进                     |
-| `outdent`       | 减少缩进 | 减少缩进                     |
-| `lineBreak`     | 换行     | 插入换行                     |
-| `lineHeight`    | 行高     | 设置段落行高                 |
-| `blockquote`    | 引用     | 插入引用块                   |
-| `divider`       | 分割线   | 插入水平分割线               |
-| `inlineCode`    | 行内代码 | 插入行内代码（如 `code`）    |
-| `formatPainter` | 格式刷   | 格式刷插件，用于设置文字格式 |
-| `undo`          | 撤销     | 撤销上一步操作               |
-| `redo`          | 重做     | 重做上一步操作               |
-| `table`         | 表格     | 插入/编辑表格                |
-| `clearFormat`   | 清除格式 | 清除选中文本的所有格式       |
+| 插件键名        | 名称      | 说明                         |
+| --------------- | --------- | ---------------------------- |
+| `heading`       | 标题      | 支持 H1-H6 标题              |
+| `fontBold`      | 粗体      | 文字加粗/取消加粗            |
+| `fontItalic`    | 斜体      | 文字倾斜/取消倾斜            |
+| `fontColor`     | 字体颜色  | 设置文字颜色                 |
+| `fontHighlight` | 高亮      | 设置文字背景高亮             |
+| `fontFamily`    | 字体      | 设置字体                     |
+| `fontSize`      | 字号      | 设置文字大小                 |
+| `alignment`     | 对齐      | 文字左对齐/居中/右对齐       |
+| `link`          | 链接      | 插入/编辑/移除链接           |
+| `codeBlock`     | 代码块    | 插入代码块                   |
+| `image`         | 图片      | 插入图片，支持拖拽/粘贴上传  |
+| `video`         | 视频      | 插入视频，支持拖拽/粘贴上传  |
+| `attachment`    | 附件      | 插入附件，支持拖拽/粘贴上传  |
+| `underline`     | 下划线    | 文字添加下划线               |
+| `strike`        | 删除线    | 文字添加删除线               |
+| `superscript`   | 上标      | 文字添加上标                 |
+| `subscript`     | 下标      | 文字添加下标                 |
+| `orderedList`   | 有序列表  | 插入有序列表                 |
+| `bulletList`    | 无序列表  | 插入无序列表                 |
+| `taskList`      | 任务列表  | 插入带复选框的任务列表       |
+| `indent`        | 缩进      | 增加缩进                     |
+| `outdent`       | 减少缩进  | 减少缩进                     |
+| `lineBreak`     | 换行      | 插入换行                     |
+| `lineHeight`    | 行高      | 设置段落行高                 |
+| `blockquote`    | 引用      | 插入引用块                   |
+| `divider`       | 分割线    | 插入水平分割线               |
+| `inlineCode`    | 行内代码  | 插入行内代码（如 `code`）    |
+| `formatPainter` | 格式刷    | 格式刷插件，用于设置文字格式 |
+| `undo`          | 撤销      | 撤销上一步操作               |
+| `redo`          | 重做      | 重做上一步操作               |
+| `table`         | 表格      | 插入/编辑表格                |
+| `clearFormat`   | 清除格式  | 清除选中文本的所有格式       |
+| `markdown`      | Markdown  | 支持 Markdown 格式           |
+| `exportWord`    | 导出 Word | 导出为 Word 文档             |
+| `importWord`    | 导入 Word | 导入 Word 文档               |
+| `exportPdf`     | 导出 PDF  | 导出为 PDF 文档              |
 
 > **💡 提示：** 使用 `include` 或 `exclude` 配置项可灵活控制启用哪些插件。
 
