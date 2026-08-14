@@ -30,5 +30,8 @@ export { i18n } from "./i18n";
 export { ensureEditorFocus } from "./utils/editor";
 export { Style } from "./utils/style";
 export { MediaNodeViewRenderer } from "./utils/MediaNodeViewRenderer/MediaNodeViewRenderer";
+export {
+  UploadPlaceholder,
+  UploadPlaceholderSchema,
+} from "./utils/uploadNode/UploadPlaceholder";
 export { handleUploadFiles, useMediaUploader } from "./utils/useMediaUploader";
-

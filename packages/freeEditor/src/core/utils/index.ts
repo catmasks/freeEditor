@@ -6,3 +6,4 @@ export * from "./style";
 export * from "./useMediaUploader";
 export * from "./editor";
 export * from "./MediaNodeViewRenderer/MediaNodeViewRenderer";
+export * from "./uploadNode/UploadPlaceholder";

@@ -1,6 +1,11 @@
 import { i18n } from "../../i18n/index";
 import type { MediaNodeAttrs } from "./types";
 import { editorRuntimeState } from "../../editorRuntimeState";
+import {
+  createActionButton,
+  subscribeI18n,
+  updateProgressText,
+} from "../uploadNode/mediaNodeViewShared";
 
 /**
  * 调整大小手柄方向 / Resize handle direction
@@ -134,7 +139,7 @@ export class MediaNodeView {
     this.render();
 
     // [I18N] 订阅语言变化
-    this.unsubscribeLocale = i18n.subscribe(() => {
+    this.unsubscribeLocale = subscribeI18n(() => {
       this.refreshLocale();
     });
   }
@@ -250,23 +255,17 @@ export class MediaNodeView {
 
     progress.textContent = `${attrs.progress || 0}%`;
 
-    const cancel = document.createElement("span");
-
-    cancel.className = "free-editor__media-node__action danger";
-    if (attrs.type != "attachment") {
-      cancel.style.marginTop = "8px";
-    }
-    cancel.textContent = i18n.t("media.cancelUpload");
-
-    cancel.onclick = (e) => {
-      e.stopPropagation();
-
+    const cancel = createActionButton("cancel", () => {
       if (attrs.id) {
         uploader?.cancel(attrs.id);
       }
 
       this.options.deleteNode();
-    };
+    });
+
+    if (attrs.type != "attachment") {
+      cancel.style.marginTop = "8px";
+    }
 
     box.appendChild(spinner);
 
@@ -299,31 +298,15 @@ export class MediaNodeView {
 
     toolbar.style.marginTop = "8px";
 
-    const retry = document.createElement("span");
-
-    retry.className = "free-editor__media-node__action primary";
-
-    retry.textContent = i18n.t("media.retry");
-
-    retry.onclick = (e) => {
-      e.stopPropagation();
-
+    const retry = createActionButton("retry", () => {
       if (attrs.id) {
         uploader?.retry(attrs.id);
       }
-    };
+    });
 
-    const remove = document.createElement("span");
-
-    remove.className = "free-editor__media-node__action danger";
-
-    remove.textContent = i18n.t("common.remove");
-
-    remove.onclick = (e) => {
-      e.stopPropagation();
-
+    const remove = createActionButton("remove", () => {
       this.options.deleteNode();
-    };
+    });
 
     toolbar.appendChild(retry);
 
@@ -752,13 +735,11 @@ export class MediaNodeView {
       : nextAttrs.width || "100%";
 
     if (nextAttrs.loading && prevAttrs.loading) {
-      const progressEl = this.wrapper.querySelector(
+      updateProgressText(
+        this.wrapper,
         ".free-editor__progress",
-      ) as HTMLElement | null;
-
-      if (progressEl) {
-        progressEl.textContent = `${nextAttrs.progress || 0}%`;
-      }
+        nextAttrs.progress || 0,
+      );
 
       return;
     }

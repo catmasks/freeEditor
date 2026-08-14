@@ -1,8 +1,5 @@
-/**
- * ImportWord 插件入口
- */
-
 import type { EditorPlugin } from "../../core";
+import { UploadPlaceholder, UploadPlaceholderSchema } from "../../core/index";
 import { ImportWord } from "./extension";
 import { createImportWordToolbar } from "./toolbar";
 
@@ -11,6 +8,7 @@ import { createImportWordToolbar } from "./toolbar";
  */
 export const ImportWordPlugin: EditorPlugin = {
   key: "importWord",
-  extensions: [ImportWord],
+  schema: [UploadPlaceholderSchema],
+  extensions: [UploadPlaceholder, ImportWord],
   toolbar: createImportWordToolbar,
 };

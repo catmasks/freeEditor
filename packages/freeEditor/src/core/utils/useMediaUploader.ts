@@ -15,7 +15,8 @@ import type {
 import { i18n } from "../i18n";
 
 /**
- * 媒体上传错误码 / Media upload error codes
+ * 媒体上传错误码。
+ * Media upload error codes.
  */
 const MEDIA_UPLOAD_ERROR_CODE = {
   MISSING_ACTION: "MISSING_ACTION",
@@ -26,42 +27,85 @@ const MEDIA_UPLOAD_ERROR_CODE = {
   FILE_SIZE_EXCEEDED: "FILE_SIZE_EXCEEDED",
   FILE_VALIDATE_FAILED: "FILE_VALIDATE_FAILED",
   UPLOAD_ABORTED: "UPLOAD_ABORTED",
-};
+} as const;
 
 /**
- * 解析媒体类型 / Resolve media type
- * @param file 文件对象 / File object
- * @returns 媒体类型 / Media type
+ * 媒体上传错误类。
+ * Media upload error class.
+ */
+class MediaUploadError extends Error {
+  /**
+   * 错误码。
+   * Error code.
+   */
+  code: string;
+
+  /**
+   * 构造函数。
+   * Constructor.
+   *
+   * @param code 错误码 / Error code.
+   * @param message 错误信息 / Error message.
+   */
+  constructor(code: string, message: string) {
+    super(message);
+
+    this.name = "MediaUploadError";
+
+    this.code = code;
+  }
+}
+
+/**
+ * 解析媒体类型。
+ * Resolve media type.
+ *
+ * @param file 文件对象 / The file object.
  */
 const resolveMediaType = (file: File): MediaType => {
-  if (file.type.startsWith("image/")) return "image";
-  if (file.type.startsWith("video/")) return "video";
+  if (file.type.startsWith("image/")) {
+    return "image";
+  }
+
+  if (file.type.startsWith("video/")) {
+    return "video";
+  }
+
   return "attachment";
 };
 
 /**
- * 判断文件是否允许上传 / Check if file is allowed to upload
- * @param file 文件对象 / File object
- * @param type 允许的媒体类型（可选） / Allowed media type (optional)
- * @returns 是否允许 / Whether allowed
+ * 判断文件是否允许上传。
+ * Determine if the file is allowed to upload.
+ *
+ * @param file 文件对象 / The file object.
+ * @param type 媒体类型（可选） / Media type (optional).
  */
 const isAllowedFile = (file: File, type?: MediaType): boolean => {
-  if (!type) return true;
+  if (!type) {
+    return true;
+  }
 
   const fileType = resolveMediaType(file);
 
-  if (type === "image") return fileType === "image";
-  if (type === "video") return fileType === "video";
+  if (type === "image") {
+    return fileType === "image";
+  }
+
+  if (type === "video") {
+    return fileType === "video";
+  }
 
   return true;
 };
 
 /**
- * 处理多文件上传 / Handle multiple file upload
- * @param editor 编辑器实例 / Editor instance
- * @param input 文件输入（单文件/文件数组/FileList） / File input (single file/file array/FileList)
- * @param type 媒体类型（可选，指定后强制使用该类型，不自动判断） / Media type (optional, if specified, force use this type without auto-detection)
- * @returns 上传任务 Promise / Upload task promise
+ * 处理多文件上传。
+ * Handle multi-file upload.
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param input 文件或文件列表 / File or file list.
+ * @param type 媒体类型（可选） / Media type (optional).
  */
 export const handleUploadFiles = async (
   editor: Editor,
@@ -78,17 +122,30 @@ export const handleUploadFiles = async (
   }
 
   const files: File[] = (() => {
-    if (input instanceof File) return [input];
-    if (input instanceof FileList) return Array.from(input);
-    if (Array.isArray(input)) return input;
+    if (input instanceof File) {
+      return [input];
+    }
+
+    if (input instanceof FileList) {
+      return Array.from(input);
+    }
+
+    if (Array.isArray(input)) {
+      return input;
+    }
+
     return [];
   })();
 
-  if (!files.length) return;
+  if (!files.length) {
+    return;
+  }
 
   const validFiles = files.filter((file) => isAllowedFile(file, type));
 
-  if (!validFiles.length) return;
+  if (!validFiles.length) {
+    return;
+  }
 
   const getUploadType = (file: File): MediaType => {
     return type || resolveMediaType(file);
@@ -106,33 +163,15 @@ export const handleUploadFiles = async (
 };
 
 /**
- * 媒体上传错误类 / Media upload error class
+ * 归一化上传进度。
+ * Normalize upload progress.
+ *
+ * @param progress 进度对象 / Progress object.
  */
-class MediaUploadError extends Error {
-  /**
-   * 错误码 / Error code
-   */
-  code: string;
-
-  /**
-   * 构造函数 / Constructor
-   * @param code 错误码 / Error code
-   * @param message 错误信息 / Error message
-   */
-  constructor(code: string, message: string) {
-    super(message);
-    this.name = "MediaUploadError";
-    this.code = code;
+function normalizeProgress(progress: Partial<UploadProgress>): number | null {
+  if (typeof progress.percent === "number") {
+    return progress.percent;
   }
-}
-
-/**
- * 归一化上传进度 / Normalize upload progress
- * @param progress 进度信息 / Progress information
- * @returns 进度百分比或 null / Progress percentage or null
- */
-function normalizeProgress(progress: Partial<UploadProgress>) {
-  if (typeof progress.percent === "number") return progress.percent;
 
   if (
     typeof progress.loaded === "number" &&
@@ -146,28 +185,31 @@ function normalizeProgress(progress: Partial<UploadProgress>) {
 }
 
 /**
- * 获取文件名（不含扩展名） / Get file name (without extension)
- * @param file 文件对象 / File object
- * @returns 文件名 / File name
+ * 获取文件名，不包含扩展名。
+ * Get file name without extension.
+ *
+ * @param file 文件对象 / The file object.
  */
-function getFileName(file: File) {
+function getFileName(file: File): string {
   return file.name.replace(/\.[^/.]+$/, "");
 }
 
 /**
- * 获取完整文件名（含扩展名） / Get full file name (with extension)
- * @param file 文件对象 / File object
- * @returns 完整文件名 / Full file name
+ * 获取完整文件名（包含扩展名）。
+ * Get full file name (including extension).
+ *
+ * @param file 文件对象 / The file object.
  */
-function getFullFileName(file: File) {
+function getFullFileName(file: File): string {
   return file.name;
 }
 
 /**
- * 默认上传处理函数 / Default upload handler
- * @param file 文件对象 / File object
- * @param context 上传上下文 / Upload context
- * @returns 上传结果 / Upload result
+ * 默认上传处理函数。
+ * Default upload handler function.
+ *
+ * @param file 文件对象 / The file object.
+ * @param context 上传上下文 / Upload context.
  */
 async function defaultUploadHandler(
   file: File,
@@ -190,17 +232,30 @@ async function defaultUploadHandler(
     );
   }
 
+  /**
+   * 创建 FormData。
+   * Create FormData.
+   */
   const formData = new FormData();
+
   formData.append(fieldName || "file", file);
 
+  /**
+   * 额外数据。
+   * Extra data.
+   */
   const extraData = typeof data === "function" ? data() : data;
 
   if (extraData) {
-    Object.entries(extraData).forEach(([k, v]) => {
-      formData.append(k, v as any);
+    Object.entries(extraData).forEach(([key, value]) => {
+      formData.append(key, value as any);
     });
   }
 
+  /**
+   * 发起请求。
+   * Send request.
+   */
   const response = await fetch(action, {
     method,
     headers,
@@ -216,10 +271,18 @@ async function defaultUploadHandler(
     );
   }
 
+  /**
+   * 读取服务端响应。
+   * Read server response.
+   */
   const result = await response.json();
 
   let parsed: UploadResult = result;
 
+  /**
+   * 自定义响应格式化。
+   * Custom response formatting.
+   */
   if (typeof format === "function") {
     parsed = await format(result);
   }
@@ -233,14 +296,20 @@ async function defaultUploadHandler(
     );
   }
 
+  /**
+   * URL 格式校验。
+   * Validate URL format.
+   */
   const isValidUrl =
     /^data:[^;]+;base64,/.test(url) ||
     url.startsWith("blob:") ||
     (() => {
       try {
-        const u = new URL(url);
+        const parsedUrl = new URL(url);
 
-        return u.protocol === "http:" || u.protocol === "https:";
+        return (
+          parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:"
+        );
       } catch {
         return false;
       }
@@ -253,7 +322,13 @@ async function defaultUploadHandler(
     );
   }
 
-  context.onProgress?.({ percent: 100 } as UploadProgress);
+  /**
+   * 上传完成。
+   * Upload complete.
+   */
+  context.onProgress?.({
+    percent: 100,
+  } as UploadProgress);
 
   return {
     url,
@@ -262,7 +337,8 @@ async function defaultUploadHandler(
 }
 
 /**
- * 默认上传配置 / Default upload configuration
+ * 默认上传配置。
+ * Default upload configuration.
  */
 const defaultConfig: MediaUploaderConfig = {
   method: "POST",
@@ -271,16 +347,18 @@ const defaultConfig: MediaUploaderConfig = {
   upload: defaultUploadHandler,
   maxSize: Infinity,
   accept: [],
+
   beforeUpload(file) {
     return file;
   },
 };
 
 /**
- * 获取媒体上传配置 / Get media upload configuration
- * @param options 上传选项 / Upload options
- * @param type 媒体类型 / Media type
- * @returns 上传配置 / Upload configuration
+ * 获取媒体上传配置。
+ * Get media upload configuration.
+ *
+ * @param options 媒体上传器选项 / Media uploader options.
+ * @param type 媒体类型 / Media type.
  */
 function getMediaConfig(
   options: MediaUploaderOptions,
@@ -293,13 +371,18 @@ function getMediaConfig(
 }
 
 /**
- * 插入媒体节点 / Insert media node
- * @param editor 编辑器实例 / Editor instance
- * @param options 插入选项 / Insert options
+ * 插入媒体节点。
+ * Insert media node.
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param options 插入选项 / Insert options.
  */
 function insertMediaNode(editor: Editor, options: InsertOptions) {
   const nodeType = editor.schema.nodes[options.type];
-  if (!nodeType) return;
+
+  if (!nodeType) {
+    return;
+  }
 
   const node = nodeType.create({
     id: options.id,
@@ -322,10 +405,12 @@ function insertMediaNode(editor: Editor, options: InsertOptions) {
 }
 
 /**
- * 更新媒体节点 / Update media node
- * @param editor 编辑器实例 / Editor instance
- * @param id 节点 ID / Node ID
- * @param attrs 节点属性 / Node attributes
+ * 更新媒体节点。
+ * Update media node.
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param id 节点 ID / Node ID.
+ * @param attrs 要更新的属性 / Attributes to update.
  */
 function updateMediaNode(
   editor: Editor,
@@ -333,7 +418,9 @@ function updateMediaNode(
   attrs: Record<string, any>,
 ) {
   editor.state.doc.descendants((node, pos) => {
-    if (node.attrs.id !== id) return;
+    if (node.attrs.id !== id) {
+      return;
+    }
 
     const tr = editor.state.tr.setNodeMarkup(pos, undefined, {
       ...node.attrs,
@@ -341,20 +428,19 @@ function updateMediaNode(
     });
 
     editor.view.dispatch(tr);
+
     return false;
   });
 }
 
 /**
- * 将媒体节点替换为链接文本 / Replace media node with link text
+ * 将附件节点替换成链接文本。
+ * Replace attachment node with link text.
  *
- * 用于附件上传成功后，将临时的 attachment 节点转换为链接 /
- * Used to convert temporary attachment node to link after successful upload
- *
- * @param editor 编辑器实例 / Editor instance
- * @param id 节点 ID / Node ID
- * @param url 链接地址 / Link URL
- * @param text 链接文本 / Link text
+ * @param editor 编辑器实例 / Editor instance.
+ * @param id 节点 ID / Node ID.
+ * @param url 链接地址 / URL.
+ * @param text 链接文本 / Link text.
  */
 function replaceMediaNodeWithLink(
   editor: Editor,
@@ -363,9 +449,17 @@ function replaceMediaNodeWithLink(
   text: string,
 ) {
   editor.state.doc.descendants((node, pos) => {
-    if (node.attrs.id !== id) return;
+    if (node.attrs.id !== id) {
+      return;
+    }
 
-    const linkMark = editor.schema.marks.link.create({
+    const linkType = editor.schema.marks.link;
+
+    if (!linkType) {
+      return;
+    }
+
+    const linkMark = linkType.create({
       href: url,
       target: "_blank",
       rel: "noopener noreferrer nofollow",
@@ -382,14 +476,17 @@ function replaceMediaNodeWithLink(
 }
 
 /**
- * 删除媒体节点 / Remove media node
+ * 删除媒体节点。
+ * Remove media node.
  *
- * @param editor 编辑器实例 / Editor instance
- * @param id 节点 ID / Node ID
+ * @param editor 编辑器实例 / Editor instance.
+ * @param id 节点 ID / Node ID.
  */
 function removeMediaNode(editor: Editor, id: string) {
   editor.state.doc.descendants((node, pos) => {
-    if (node.attrs.id !== id) return;
+    if (node.attrs.id !== id) {
+      return;
+    }
 
     const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
 
@@ -400,159 +497,575 @@ function removeMediaNode(editor: Editor, id: string) {
 }
 
 /**
- * 媒体上传器核心函数 / Media uploader core function
- * @param editor 编辑器实例 / Editor instance
- * @param options 上传选项 / Upload options
- * @returns 上传生成器 / Upload generator
+ * 插入通用上传占位节点。
+ * Insert generic upload placeholder node.
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param options 选项 / Options.
+ * @returns 是否插入成功 / Whether insertion succeeded.
+ */
+function insertUploadPlaceholder(
+  editor: Editor,
+  options: {
+    id: string;
+    name: string;
+    type: MediaType;
+    progress: number;
+    loading: boolean;
+  },
+): boolean {
+  const nodeType = editor.schema.nodes.uploadPlaceholder;
+
+  if (!nodeType) {
+    console.error("[MediaUploader] uploadPlaceholder 节点未注册。");
+    console.error("[MediaUploader] uploadPlaceholder node not registered.");
+
+    return false;
+  }
+
+  const node = nodeType.create({
+    id: options.id,
+    name: options.name,
+    type: options.type,
+    progress: options.progress,
+    loading: options.loading,
+  });
+
+  const { from, to } = editor.state.selection;
+
+  const tr =
+    from !== to
+      ? editor.state.tr.replaceSelectionWith(node)
+      : editor.state.tr.insert(from, node);
+
+  editor.view.dispatch(tr);
+
+  return true;
+}
+
+/**
+ * 更新通用上传占位节点。
+ * Update generic upload placeholder node.
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param id 节点 ID / Node ID.
+ * @param attrs 要更新的属性 / Attributes to update.
+ */
+function updateUploadPlaceholder(
+  editor: Editor,
+  id: string,
+  attrs: Record<string, any>,
+): void {
+  editor.state.doc.descendants((node, pos) => {
+    if (node.type.name !== "uploadPlaceholder") {
+      return;
+    }
+
+    if (node.attrs.id !== id) {
+      return;
+    }
+
+    const tr = editor.state.tr.setNodeMarkup(pos, undefined, {
+      ...node.attrs,
+      ...attrs,
+    });
+
+    editor.view.dispatch(tr);
+
+    return false;
+  });
+}
+
+/**
+ * 删除通用上传占位节点。
+ * Remove generic upload placeholder node.
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param id 节点 ID / Node ID.
+ */
+function removeUploadPlaceholder(editor: Editor, id: string): void {
+  editor.state.doc.descendants((node, pos) => {
+    if (node.type.name !== "uploadPlaceholder") {
+      return;
+    }
+
+    if (node.attrs.id !== id) {
+      return;
+    }
+
+    const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
+
+    editor.view.dispatch(tr);
+
+    return false;
+  });
+}
+
+/**
+ * 上传前统一校验和处理。
+ * Pre-upload validation and processing.
+ *
+ * @param file 文件对象 / The file object.
+ * @param type 媒体类型 / Media type.
+ * @param config 上传配置 / Upload configuration.
+ * @returns 处理后的文件 / Processed file.
+ */
+async function prepareUploadFile(
+  file: File,
+  type: MediaType,
+  config: MediaUploaderConfig,
+): Promise<File> {
+  /**
+   * 文件类型校验。
+   * File type validation.
+   */
+  if (config.accept?.length) {
+    const fileName = file.name.toLowerCase();
+
+    const allowed = config.accept.some((item) => {
+      const acceptItem = item.toLowerCase().trim();
+
+      if (acceptItem.endsWith("/*")) {
+        const prefix = acceptItem.replace("/*", "/");
+
+        return file.type.startsWith(prefix);
+      }
+
+      if (acceptItem.includes("/")) {
+        return file.type === acceptItem;
+      }
+
+      const ext = acceptItem.startsWith(".") ? acceptItem : `.${acceptItem}`;
+
+      return fileName.endsWith(ext);
+    });
+
+    if (!allowed) {
+      const error = new MediaUploadError(
+        MEDIA_UPLOAD_ERROR_CODE.FILE_TYPE_INVALID,
+        `${i18n.t("upload.fileTypeInvalid")}: ${file.type || file.name}`,
+      );
+
+      config.onTypeError?.(error, file);
+
+      throw error;
+    }
+  }
+
+  /**
+   * 文件大小校验。
+   * File size validation.
+   */
+  if (config.maxSize && file.size > config.maxSize) {
+    const error = new MediaUploadError(
+      MEDIA_UPLOAD_ERROR_CODE.FILE_SIZE_EXCEEDED,
+      i18n.t("upload.fileSizeExceeded"),
+    );
+
+    config.onSizeError?.(error, file);
+
+    throw error;
+  }
+
+  /**
+   * 自定义校验。
+   * Custom validation.
+   */
+  const validateMessage = config.validate?.(file);
+
+  if (typeof validateMessage === "string") {
+    const error = new MediaUploadError(
+      MEDIA_UPLOAD_ERROR_CODE.FILE_VALIDATE_FAILED,
+      validateMessage,
+    );
+
+    config.onValidateError?.(error, file);
+
+    throw error;
+  }
+
+  /**
+   * 上传前处理。
+   * Pre-upload processing.
+   */
+  const processed = await config.beforeUpload?.(file);
+
+  if (processed === false) {
+    throw new MediaUploadError(
+      MEDIA_UPLOAD_ERROR_CODE.FILE_VALIDATE_FAILED,
+      i18n.t("upload.uploadCanceled"),
+    );
+  }
+
+  return processed || file;
+}
+
+/**
+ * 创建媒体上传器。
+ * Create media uploader.
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param options 媒体上传器选项 / Media uploader options.
+ * @returns 上传生成器 / Upload generator.
  */
 export function useMediaUploader(
   editor: Editor,
   options: MediaUploaderOptions = {},
 ): UploadGenerator {
+  /**
+   * 普通媒体上传任务。
+   * Normal media upload tasks.
+   */
   const taskMap = new Map<string, UploadTask>();
 
   /**
-   * 上传文件 / Upload file
-   * @param file 文件对象 / File object
-   * @param type 媒体类型 / Media type
-   * @returns 上传任务或 undefined / Upload task or undefined
+   * 纯上传任务的 AbortController。
+   * AbortController for pure upload tasks.
    */
-  const upload = async (file: File, type: MediaType = "image") => {
-    if (!editor) return;
+  const uploadFileControllers = new Map<string, AbortController>();
+
+  /**
+   * 纯上传
+   * Pure upload
+   */
+  const uploadFile = async (
+    file: File,
+    type: MediaType = "image",
+  ): Promise<UploadResult> => {
+    if (!editor) {
+      throw new MediaUploadError(
+        MEDIA_UPLOAD_ERROR_CODE.REQUEST_FAILED,
+        i18n.t("upload.missingAction"),
+      );
+    }
 
     const config = getMediaConfig(options, type);
 
-    if (config.accept?.length) {
-      const fileName = file.name.toLowerCase();
+    /**
+     * 上传前校验。
+     * Pre-upload validation.
+     */
+    const finalFile = await prepareUploadFile(file, type, config);
 
-      const ok = config.accept.some((item) => {
-        const acceptItem = item.toLowerCase().trim();
+    /**
+     * 生成纯上传任务 ID。
+     * Generate pure upload task ID.
+     */
+    const taskId = crypto.randomUUID();
 
-        if (acceptItem.endsWith("/*")) {
-          const prefix = acceptItem.replace("/*", "/");
+    /**
+     * 创建 AbortController。
+     * Create AbortController.
+     */
+    const controller = new AbortController();
 
-          return file.type.startsWith(prefix);
-        }
+    /**
+     * 保存 controller，
+     * Save controller,
+     * 供 UploadGenerator.cancel() 使用。
+     * for use by UploadGenerator.cancel().
+     */
+    uploadFileControllers.set(taskId, controller);
 
-        if (acceptItem.includes("/")) {
-          return file.type === acceptItem;
-        }
+    /**
+     * 插入上传占位。
+     * Insert upload placeholder.
+     */
+    const inserted = insertUploadPlaceholder(editor, {
+      id: taskId,
+      name: finalFile.name,
+      type,
+      progress: 0,
+      loading: true,
+    });
 
-        const ext = acceptItem.startsWith(".") ? acceptItem : `.${acceptItem}`;
+    if (!inserted) {
+      uploadFileControllers.delete(taskId);
 
-        return fileName.endsWith(ext);
+      throw new MediaUploadError(
+        MEDIA_UPLOAD_ERROR_CODE.REQUEST_FAILED,
+        "uploadPlaceholder 节点未注册",
+      );
+    }
+
+    let fakeTimer: number | undefined;
+
+    let fakeProgress = 0;
+
+    let hasRealProgress = false;
+
+    fakeTimer = window.setInterval(() => {
+      if (hasRealProgress || controller.signal.aborted) {
+        return;
+      }
+
+      if (fakeProgress >= 90) {
+        return;
+      }
+
+      fakeProgress += (90 - fakeProgress) * 0.08;
+
+      updateUploadPlaceholder(editor, taskId, {
+        progress: Math.floor(fakeProgress),
+      });
+    }, 200);
+
+    try {
+      /**
+       * 执行纯上传。
+       * Execute pure upload.
+       */
+      const result = await config.upload!(finalFile, {
+        signal: controller.signal,
+
+        config,
+
+        onProgress(progress) {
+          const percent = normalizeProgress(progress);
+
+          if (percent === null) {
+            return;
+          }
+
+          hasRealProgress = true;
+
+          if (fakeTimer) {
+            clearInterval(fakeTimer);
+
+            fakeTimer = undefined;
+          }
+
+          /**
+           * 更新上传占位进度。
+           * Update upload placeholder progress.
+           */
+          updateUploadPlaceholder(editor, taskId, {
+            progress: percent,
+          });
+
+          /**
+           * 保留外部上传进度回调。
+           * Keep external upload progress callback.
+           */
+          config.onProgress?.(
+            {
+              ...progress,
+              percent,
+            },
+            finalFile,
+          );
+        },
       });
 
-      if (!ok) {
-        const err = new MediaUploadError(
-          MEDIA_UPLOAD_ERROR_CODE.FILE_TYPE_INVALID,
-          `${i18n.t("upload.fileTypeInvalid")}: ${file.type || file.name}`,
+      if (fakeTimer) {
+        clearInterval(fakeTimer);
+
+        fakeTimer = undefined;
+      }
+
+      updateUploadPlaceholder(editor, taskId, {
+        progress: 100,
+      });
+
+      /**
+       * 上传成功。
+       * Upload success.
+       */
+      config.onSuccess?.(result, finalFile);
+
+      return result;
+    } catch (error: any) {
+      /**
+       * 取消。
+       * Cancellation.
+       */
+      if (error?.name === "AbortError") {
+        const uploadError = new MediaUploadError(
+          MEDIA_UPLOAD_ERROR_CODE.UPLOAD_ABORTED,
+          i18n.t("upload.uploadAborted"),
         );
 
-        config.onTypeError?.(err, file);
+        config.onUploadError?.(uploadError, finalFile);
 
-        throw err;
+        throw uploadError;
       }
+
+      /**
+       * 普通上传失败。
+       * Normal upload failure.
+       */
+      config.onUploadError?.(error, finalFile);
+
+      throw error;
+    } finally {
+      uploadFileControllers.delete(taskId);
+
+      if (fakeTimer) {
+        clearInterval(fakeTimer);
+
+        fakeTimer = undefined;
+      }
+
+      /**
+       * 最终删除上传占位。
+       * Finally remove upload placeholder.
+       */
+      removeUploadPlaceholder(editor, taskId);
+    }
+  };
+
+  /**
+   * 普通编辑器上传
+   * Normal editor upload
+   */
+  const upload = async (file: File, type: MediaType = "image") => {
+    if (!editor) {
+      return;
     }
 
-    if (config.maxSize && file.size > config.maxSize) {
-      const err = new MediaUploadError(
-        MEDIA_UPLOAD_ERROR_CODE.FILE_SIZE_EXCEEDED,
-        i18n.t("upload.fileSizeExceeded"),
-      );
+    const config = getMediaConfig(options, type);
 
-      config.onSizeError?.(err, file);
-      throw err;
-    }
+    /**
+     * 上传前统一校验。
+     * Pre-upload validation.
+     */
+    const finalFile = await prepareUploadFile(file, type, config);
 
-    const validateMessage = config.validate?.(file);
-
-    if (typeof validateMessage === "string") {
-      const err = new MediaUploadError(
-        MEDIA_UPLOAD_ERROR_CODE.FILE_VALIDATE_FAILED,
-        validateMessage,
-      );
-
-      config.onValidateError?.(err, file);
-      throw err;
-    }
-
-    const processed = await config.beforeUpload?.(file);
-    if (processed === false) return;
-
-    const finalFile = processed || file;
-
+    /**
+     * 创建任务 ID。
+     * Create task ID.
+     */
     const nodeId = crypto.randomUUID();
 
     let controller = new AbortController();
+
     let fakeTimer: number | undefined;
+
     let fakeProgress = 0;
+
     let hasRealProgress = false;
+
     let aborted = false;
 
     const task: UploadTask = {
       id: nodeId,
+
       file: finalFile,
+
       type,
+
       progress: 0,
+
       status: "idle",
 
       async start() {
         aborted = false;
+
         controller = new AbortController();
+
         fakeProgress = 0;
+
         hasRealProgress = false;
 
         const run = async () => {
           task.status = "uploading";
 
+          /**
+           * 更新媒体节点。
+           * Update media node.
+           */
           updateMediaNode(editor, nodeId, {
             loading: true,
             error: false,
           });
 
+          /**
+           * 模拟进度。
+           * Simulate progress.
+           */
           fakeTimer = window.setInterval(() => {
-            if (aborted || hasRealProgress) return;
+            if (aborted || hasRealProgress) {
+              return;
+            }
 
-            if (fakeProgress >= 90) return;
+            if (fakeProgress >= 90) {
+              return;
+            }
 
             fakeProgress += (90 - fakeProgress) * 0.08;
 
-            const p = Math.floor(fakeProgress);
+            const progress = Math.floor(fakeProgress);
 
-            task.progress = p;
+            task.progress = progress;
 
-            updateMediaNode(editor, nodeId, { progress: p });
+            updateMediaNode(editor, nodeId, {
+              progress,
+            });
           }, 200);
 
           try {
+            /**
+             * 真正上传。
+             * Actual upload.
+             */
             const result = await config.upload!(finalFile, {
               signal: controller.signal,
+
               config,
 
               onProgress(progress) {
-                if (aborted) return;
+                if (aborted) {
+                  return;
+                }
 
-                const p = normalizeProgress(progress);
-                if (p === null) return;
+                const value = normalizeProgress(progress);
+
+                if (value === null) {
+                  return;
+                }
 
                 hasRealProgress = true;
-                if (fakeTimer) clearInterval(fakeTimer);
 
-                task.progress = p;
+                if (fakeTimer) {
+                  clearInterval(fakeTimer);
 
-                updateMediaNode(editor, nodeId, { progress: p });
+                  fakeTimer = undefined;
+                }
 
-                config.onProgress?.({ ...progress, percent: p }, finalFile);
+                task.progress = value;
+
+                updateMediaNode(editor, nodeId, {
+                  progress: value,
+                });
+
+                config.onProgress?.(
+                  {
+                    ...progress,
+                    percent: value,
+                  },
+                  finalFile,
+                );
               },
             });
 
-            if (aborted) return;
+            if (aborted) {
+              return;
+            }
 
-            if (fakeTimer) clearInterval(fakeTimer);
+            if (fakeTimer) {
+              clearInterval(fakeTimer);
 
+              fakeTimer = undefined;
+            }
+
+            /**
+             * 上传成功。
+             * Upload success.
+             */
             task.status = "success";
+
             task.progress = 100;
+
             task.response = result;
 
             const displayName =
@@ -561,14 +1074,21 @@ export function useMediaUploader(
                 ? getFullFileName(finalFile)
                 : getFileName(finalFile));
 
+            /**
+             * 附件：
+             * Attachment:
+             * 替换为链接文本。
+             * Replace with link text.
+             */
             if (type === "attachment") {
-              replaceMediaNodeWithLink(
-                editor,
-                nodeId,
-                result.url,
-                `${displayName}`,
-              );
+              replaceMediaNodeWithLink(editor, nodeId, result.url, displayName);
             } else {
+              /**
+               * 图片 / 视频：
+               * Image / Video:
+               * 更新节点。
+               * Update node.
+               */
               updateMediaNode(editor, nodeId, {
                 src: result.url,
                 name: displayName,
@@ -579,14 +1099,26 @@ export function useMediaUploader(
             }
 
             taskMap.delete(nodeId);
+
             config.onSuccess?.(result, finalFile);
-          } catch (e: any) {
-            console.error(e);
-            if (aborted) return;
+          } catch (error: any) {
+            console.error(error);
 
-            if (fakeTimer) clearInterval(fakeTimer);
+            if (aborted) {
+              return;
+            }
 
-            if (e?.name === "AbortError") {
+            if (fakeTimer) {
+              clearInterval(fakeTimer);
+
+              fakeTimer = undefined;
+            }
+
+            /**
+             * 上传取消。
+             * Upload canceled.
+             */
+            if (error?.name === "AbortError") {
               task.status = "canceled";
 
               task.error = new MediaUploadError(
@@ -600,18 +1132,24 @@ export function useMediaUploader(
               });
 
               config.onUploadError?.(task.error, finalFile);
+
               return;
             }
 
+            /**
+             * 普通上传失败。
+             * Normal upload failure.
+             */
             task.status = "error";
-            task.error = e;
+
+            task.error = error;
 
             updateMediaNode(editor, nodeId, {
               loading: false,
               error: true,
             });
 
-            config.onUploadError?.(e, finalFile);
+            config.onUploadError?.(error, finalFile);
           }
         };
 
@@ -620,6 +1158,7 @@ export function useMediaUploader(
 
       async retry() {
         aborted = true;
+
         controller.abort();
 
         updateMediaNode(editor, nodeId, {
@@ -629,18 +1168,27 @@ export function useMediaUploader(
         });
 
         aborted = false;
+
         controller = new AbortController();
+
         fakeProgress = 0;
+
         hasRealProgress = false;
+
         task.error = undefined;
 
         await this.start();
       },
 
       cancel() {
-        if (fakeTimer) clearInterval(fakeTimer);
+        if (fakeTimer) {
+          clearInterval(fakeTimer);
+
+          fakeTimer = undefined;
+        }
 
         aborted = true;
+
         controller.abort();
 
         task.status = "canceled";
@@ -658,8 +1206,16 @@ export function useMediaUploader(
       },
     };
 
+    /**
+     * 保存普通媒体任务。
+     * Save normal media task.
+     */
     taskMap.set(nodeId, task);
 
+    /**
+     * 插入临时媒体节点。
+     * Insert temporary media node.
+     */
     insertMediaNode(editor, {
       id: nodeId,
       type,
@@ -673,19 +1229,71 @@ export function useMediaUploader(
       error: false,
     });
 
-    task.start();
+    /**
+     * 启动上传。
+     * Start upload.
+     */
+    void task.start();
 
     return task;
   };
 
   return {
+    /**
+     * 普通媒体上传。
+     * Normal media upload.
+     */
     upload,
+
+    /**
+     * 纯上传。
+     * Pure upload.
+     */
+    uploadFile,
+
+    /**
+     * 重试普通媒体上传。
+     * Retry normal media upload.
+     */
     retry(taskId: string) {
       taskMap.get(taskId)?.retry();
     },
+
+    /**
+     * 取消上传
+     * Cancel upload.
+     *
+     * @param taskId 任务 ID / Task ID.
+     */
     cancel(taskId: string) {
-      taskMap.get(taskId)?.cancel();
+      /**
+       * 优先处理普通媒体任务。
+       * Prioritize normal media tasks.
+       */
+      const task = taskMap.get(taskId);
+
+      if (task) {
+        task.cancel();
+
+        return;
+      }
+
+      /**
+       * 处理纯上传任务。
+       * Handle pure upload task.
+       */
+      const controller = uploadFileControllers.get(taskId);
+
+      if (controller) {
+        controller.abort();
+      }
     },
+
+    /**
+     * 获取普通媒体上传任务。
+     * Get normal media upload task.
+     * @param id 任务 ID / Task ID.
+     */
     getTask(id: string) {
       return taskMap.get(id);
     },

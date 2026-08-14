@@ -6,6 +6,11 @@ import type { MediaNodeAttrs } from "./types";
 
 import { MediaNodeView } from "./MediaNodeView";
 
+import {
+  createBaseNodeView,
+  createDeleteNode,
+} from "../uploadNode/mediaNodeViewShared";
+
 /**
  * 媒体节点视图渲染器 / Media node view renderer
  * @param props 节点视图渲染器属性 / Node view renderer props
@@ -41,25 +46,7 @@ export function MediaNodeViewRenderer(
     );
   };
 
-  /**
-   * 删除节点 / Delete node
-   */
-  const deleteNode = () => {
-    const pos = props.getPos();
-
-    if (typeof pos !== "number") {
-      return;
-    }
-
-    props.editor
-      .chain()
-      .focus()
-      .deleteRange({
-        from: pos,
-        to: pos + props.node.nodeSize,
-      })
-      .run();
-  };
+  const deleteNode = createDeleteNode(props);
 
   const view = new MediaNodeView({
     container,
@@ -76,25 +63,7 @@ export function MediaNodeViewRenderer(
   });
 
   return {
-    /**
-     * 根 DOM 元素 / Root DOM element
-     */
-    dom: view.getElement(),
-
-    /**
-     * 更新节点 / Update node
-     * @param updatedNode 更新后的节点 / Updated node
-     * @returns 是否更新成功 / Whether update succeeded
-     */
-    update(updatedNode) {
-      if (updatedNode.type.name !== props.node.type.name) {
-        return false;
-      }
-
-      view.update(updatedNode.attrs as MediaNodeAttrs);
-
-      return true;
-    },
+    ...createBaseNodeView<MediaNodeAttrs>(view, props),
 
     /**
      * 选中节点 / Select node
@@ -108,13 +77,6 @@ export function MediaNodeViewRenderer(
      */
     deselectNode() {
       view.setSelected(false);
-    },
-
-    /**
-     * 销毁视图 / Destroy view
-     */
-    destroy() {
-      view.destroy();
     },
   };
 }

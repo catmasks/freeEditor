@@ -609,6 +609,14 @@ export type UploadGenerator = {
   upload(file: File, type: MediaType): Promise<UploadTask | undefined>;
 
   /**
+   * 纯上传文件。
+   *
+   * @param file 文件对象 / File object
+   * @param type 媒体类型 / Media type
+   * @returns 上传结果 / Upload result
+   */
+  uploadFile: (file: File, type?: MediaType) => Promise<UploadResult>;
+  /**
    * 重试上传 / Retry upload
    * @param taskId 任务 ID / Task ID
    */
