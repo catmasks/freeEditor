@@ -267,116 +267,85 @@ function transformSemanticStyles(root: HTMLElement): void {
 
   for (const span of spans) {
     const element = span as HTMLElement;
-
     sanitizeElementStyle(element);
 
     const style = element.style;
 
-    /**
-     * underline
-     */
+    // 检测需要转换的样式 / Detect styles to convert
     const textDecoration = (
       style.getPropertyValue("text-decoration-line") ||
       style.getPropertyValue("text-decoration")
     ).toLowerCase();
-
-    if (textDecoration.includes("underline")) {
-      const u = element.ownerDocument.createElement("u");
-
-      while (element.firstChild) {
-        u.appendChild(element.firstChild);
-      }
-
-      element.replaceWith(u);
-
-      continue;
-    }
-
-    /**
-     * strike / line-through
-     */
-    if (textDecoration.includes("line-through")) {
-      const del = element.ownerDocument.createElement("del");
-
-      while (element.firstChild) {
-        del.appendChild(element.firstChild);
-      }
-
-      element.replaceWith(del);
-
-      continue;
-    }
-
-    /**
-     * superscript
-     */
     const verticalAlign = style
       .getPropertyValue("vertical-align")
       .toLowerCase();
-
-    if (verticalAlign === "super" || verticalAlign === "superscript") {
-      const sup = element.ownerDocument.createElement("sup");
-
-      while (element.firstChild) {
-        sup.appendChild(element.firstChild);
-      }
-
-      element.replaceWith(sup);
-
-      continue;
-    }
-
-    /**
-     * subscript
-     */
-    if (verticalAlign === "sub" || verticalAlign === "subscript") {
-      const sub = element.ownerDocument.createElement("sub");
-
-      while (element.firstChild) {
-        sub.appendChild(element.firstChild);
-      }
-
-      element.replaceWith(sub);
-
-      continue;
-    }
-
-    /**
-     * bold
-     */
     const fontWeight = style.getPropertyValue("font-weight").toLowerCase();
-
-    const isBold =
-      fontWeight === "bold" ||
-      fontWeight === "bolder" ||
-      Number(fontWeight) >= 600;
-
-    if (isBold) {
-      const strong = element.ownerDocument.createElement("strong");
-
-      while (element.firstChild) {
-        strong.appendChild(element.firstChild);
-      }
-
-      element.replaceWith(strong);
-
-      continue;
-    }
-
-    /**
-     * italic
-     */
     const fontStyle = style.getPropertyValue("font-style").toLowerCase();
 
-    if (fontStyle === "italic" || fontStyle === "oblique") {
-      const em = element.ownerDocument.createElement("em");
+    let targetTag: string | null = null;
 
-      while (element.firstChild) {
-        em.appendChild(element.firstChild);
-      }
-
-      element.replaceWith(em);
+    // 按优先级选择语义标签 / Select semantic tags by priority
+    if (textDecoration.includes("underline")) {
+      targetTag = "u";
+    } else if (textDecoration.includes("line-through")) {
+      targetTag = "del";
+    } else if (verticalAlign === "super" || verticalAlign === "superscript") {
+      targetTag = "sup";
+    } else if (verticalAlign === "sub" || verticalAlign === "subscript") {
+      targetTag = "sub";
+    } else if (
+      fontWeight === "bold" ||
+      fontWeight === "bolder" ||
+      Number(fontWeight) >= 600
+    ) {
+      targetTag = "strong";
+    } else if (fontStyle === "italic" || fontStyle === "oblique") {
+      targetTag = "em";
     }
+
+    if (!targetTag) continue;
+
+    // 创建新标签 / Create new element
+    const newElement = element.ownerDocument.createElement(targetTag);
+
+    // 复制原 span 的所有属性 / Copy all attributes from original span except style
+    for (const attr of Array.from(element.attributes)) {
+      if (attr.name === "style") continue; // 稍后单独处理
+      newElement.setAttribute(attr.name, attr.value);
+    }
+
+    // 复制样式：移除已经转换为语义标签的属性，保留其余属性
+    const newStyle = newElement.style;
+    const cssText = style.cssText;
+
+    // 将原样式完整复制，然后删除已转换的属性
+    newStyle.cssText = cssText;
+
+    if (targetTag === "u") {
+      newStyle.removeProperty("text-decoration-line");
+      newStyle.removeProperty("text-decoration");
+    } else if (targetTag === "del") {
+      newStyle.removeProperty("text-decoration-line");
+      newStyle.removeProperty("text-decoration");
+    } else if (targetTag === "sup" || targetTag === "sub") {
+      newStyle.removeProperty("vertical-align");
+    } else if (targetTag === "strong") {
+      newStyle.removeProperty("font-weight");
+    } else if (targetTag === "em") {
+      newStyle.removeProperty("font-style");
+    }
+
+    // 如果新标签没有 style 内容，移除 style 属性 / Remove style attribute if empty
+    if (!newStyle.length) {
+      newElement.removeAttribute("style");
+    }
+
+    // 移动子节点 / Move child nodes to new element
+    while (element.firstChild) {
+      newElement.appendChild(element.firstChild);
+    }
+
+    element.replaceWith(newElement);
   }
 }
 
@@ -621,10 +590,7 @@ async function processWordImages(
           }
         }
       } catch (error) {
-        console.warn(
-          "[ImportWord] Word 图片上传失败，继续使用 Data URL:",
-          error,
-        );
+        console.error("[ImportWord] Word 上传失败，使用 Data URL:", error);
       }
     }),
   );
@@ -661,32 +627,26 @@ async function importDocxToEditor(
 
     /**
      * 使用 Mammoth 将 DOCX 转为 HTML。
-     * Convert DOCX to HTML using Mammoth.
      *
-     * 不自定义图片转换，Mammoth 默认会将图片转为 Data URL。
-     * No custom image conversion; Mammoth defaults to Data URL.
+     * 不自定义图片转换，
+     * Mammoth 默认会将图片转换为 Data URL。
+     *
+     * Convert DOCX to HTML using Mammoth.
+     * Images are converted to Data URLs by Mammoth.
      */
     const result = await mammoth.convertToHtml(
+      { arrayBuffer },
       {
-        arrayBuffer,
-      },
-      {
-        /**
-         * 语义格式映射。
-         * Semantic style mapping.
-         */
         styleMap: [
-          "u => u",
-          "strike => del",
-          "superscript => sup",
-          "subscript => sub",
+          "u => u", // 下划线
+          "strike => del", // 删除线
         ],
+        includeDefaultStyleMap: true,
       },
     );
-
     /**
-     * 输出转换过程中的消息。
-     * Output conversion messages.
+     * 输出 Mammoth 转换过程中的警告和信息。
+     * Output Mammoth conversion warnings and messages.
      */
     if (result.messages?.length) {
       console.warn("[ImportWord] Mammoth messages:", result.messages);
@@ -707,14 +667,14 @@ async function importDocxToEditor(
     let html = transformMammothHtml(result.value);
 
     /**
-     * 图片上传（仅内存操作）。
-     * Image upload (in-memory only).
+     * 图片上传。
+     *
+     * 这里只修改内存中的 HTML，
+     * 不直接向 ProseMirror 插入图片节点。
      */
     html = await processWordImages(html, uploader);
-
     /**
      * 最终 HTML 为空则返回。
-     * Return if final HTML is empty.
      */
     if (!html) {
       return false;
@@ -722,7 +682,6 @@ async function importDocxToEditor(
 
     /**
      * 一次性插入编辑器。
-     * Insert into editor at once.
      */
     editor.commands.insertContent(html);
 
