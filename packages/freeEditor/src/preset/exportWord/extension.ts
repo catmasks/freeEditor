@@ -3,7 +3,7 @@ import type { Editor } from "@tiptap/core";
 import { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import type { Mark } from "@tiptap/pm/model";
 
-import { downloadFile } from "../../core/utils/export";
+import { downloadFile } from "../../core/index";
 
 /**
  * DOCX 类型仅用于 TypeScript 类型检查。

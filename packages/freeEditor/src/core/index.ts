@@ -34,4 +34,6 @@ export {
   UploadPlaceholder,
   UploadPlaceholderSchema,
 } from "./utils/uploadNode/UploadPlaceholder";
+export { isEmptyDocument, downloadFile } from "./utils/export";
+
 export { handleUploadFiles, useMediaUploader } from "./utils/useMediaUploader";

@@ -1,6 +1,6 @@
 import { Extension } from "@tiptap/core";
 import type { Editor } from "@tiptap/core";
-import { downloadFile } from "../../core/utils/export";
+import { downloadFile } from "../../core/index";
 
 export interface ExportPdfOptions {
   fileName?: string;

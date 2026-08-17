@@ -1,7 +1,7 @@
 import { createToolbar } from "./ui/toolbar/index";
 import { createEditorPlugins, CoreEditor } from "./core/editorPlugins";
 import { editorRuntimeState } from "./core/editorRuntimeState";
-import { i18n } from "./core/index";
+import { i18n, ensureEditorFocus } from "./core/index";
 import type { MediaEngine } from "./core/utils/index";
 
 import type {
@@ -116,7 +116,9 @@ export class Editor {
 
     this.content = document.createElement("div");
     this.content.className = "free-editor__content";
-
+    this.content.addEventListener("pointerdown", () => {
+      ensureEditorFocus(this.core.editor);
+    });
     this.root.appendChild(this.content);
     el.appendChild(this.root);
 
