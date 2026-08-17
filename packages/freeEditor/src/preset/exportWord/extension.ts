@@ -5,9 +5,14 @@ import type { Mark } from "@tiptap/pm/model";
 
 import { downloadFile } from "../../core/utils/export";
 
-import {
+/**
+ * DOCX 类型仅用于 TypeScript 类型检查。
+ * 使用 import type 不会在运行时加载 docx。
+ * DOCX types are only used for TypeScript type checking.
+ * Using import type does not load docx at runtime.
+ */
+import type {
   Document,
-  Packer,
   Paragraph,
   TextRun,
   HeadingLevel,
@@ -22,57 +27,64 @@ import {
 } from "docx";
 
 /**
+ * DOCX 运行时模块类型。
+ */
+type DocxRuntime = typeof import("docx");
+
+/**
  * 编号配置（用于列表）。
  * Numbering configuration for lists.
  */
-const numberingConfig = [
-  {
-    reference: "bullet-list",
-    levels: [
-      {
-        level: 0,
-        format: LevelFormat.BULLET,
-        text: "\u2022",
-        alignment: AlignmentType.LEFT,
-      },
-      {
-        level: 1,
-        format: LevelFormat.BULLET,
-        text: "\u25CB",
-        alignment: AlignmentType.LEFT,
-      },
-      {
-        level: 2,
-        format: LevelFormat.BULLET,
-        text: "\u25A0",
-        alignment: AlignmentType.LEFT,
-      },
-    ],
-  },
-  {
-    reference: "ordered-list",
-    levels: [
-      {
-        level: 0,
-        format: LevelFormat.DECIMAL,
-        text: "%1.",
-        alignment: AlignmentType.LEFT,
-      },
-      {
-        level: 1,
-        format: LevelFormat.LOWER_LETTER,
-        text: "%1.",
-        alignment: AlignmentType.LEFT,
-      },
-      {
-        level: 2,
-        format: LevelFormat.LOWER_ROMAN,
-        text: "%1.",
-        alignment: AlignmentType.LEFT,
-      },
-    ],
-  },
-] as const;
+function createNumberingConfig(runtime: DocxRuntime) {
+  return [
+    {
+      reference: "bullet-list",
+      levels: [
+        {
+          level: 0,
+          format: runtime.LevelFormat.BULLET,
+          text: "\u2022",
+          alignment: runtime.AlignmentType.LEFT,
+        },
+        {
+          level: 1,
+          format: runtime.LevelFormat.BULLET,
+          text: "\u25CB",
+          alignment: runtime.AlignmentType.LEFT,
+        },
+        {
+          level: 2,
+          format: runtime.LevelFormat.BULLET,
+          text: "\u25A0",
+          alignment: runtime.AlignmentType.LEFT,
+        },
+      ],
+    },
+    {
+      reference: "ordered-list",
+      levels: [
+        {
+          level: 0,
+          format: runtime.LevelFormat.DECIMAL,
+          text: "%1.",
+          alignment: runtime.AlignmentType.LEFT,
+        },
+        {
+          level: 1,
+          format: runtime.LevelFormat.LOWER_LETTER,
+          text: "%1.",
+          alignment: runtime.AlignmentType.LEFT,
+        },
+        {
+          level: 2,
+          format: runtime.LevelFormat.LOWER_ROMAN,
+          text: "%1.",
+          alignment: runtime.AlignmentType.LEFT,
+        },
+      ],
+    },
+  ] as const;
+}
 
 /**
  * 图片最大宽度（像素）。
@@ -111,6 +123,7 @@ type ListType = "bullet" | "ordered" | null;
 interface ConvertContext {
   /** 当前列表嵌套层级 / Current list nesting level */
   listLevel: number;
+
   /** 当前列表类型 / Current list type */
   listType: ListType;
 }
@@ -134,17 +147,18 @@ function createContext(overrides?: Partial<ConvertContext>): ConvertContext {
  * 标题级别到 DOCX HeadingLevel 的映射。
  * Mapping from heading level to DOCX HeadingLevel.
  */
-const headingLevelMap: Record<
-  number,
-  (typeof HeadingLevel)[keyof typeof HeadingLevel]
-> = {
-  1: HeadingLevel.HEADING_1,
-  2: HeadingLevel.HEADING_2,
-  3: HeadingLevel.HEADING_3,
-  4: HeadingLevel.HEADING_4,
-  5: HeadingLevel.HEADING_5,
-  6: HeadingLevel.HEADING_6,
-};
+function getHeadingLevelMap(
+  runtime: DocxRuntime,
+): Record<number, (typeof HeadingLevel)[keyof typeof HeadingLevel]> {
+  return {
+    1: runtime.HeadingLevel.HEADING_1,
+    2: runtime.HeadingLevel.HEADING_2,
+    3: runtime.HeadingLevel.HEADING_3,
+    4: runtime.HeadingLevel.HEADING_4,
+    5: runtime.HeadingLevel.HEADING_5,
+    6: runtime.HeadingLevel.HEADING_6,
+  };
+}
 
 /**
  * 根据图片 URL 推断图片类型。
@@ -256,10 +270,10 @@ function getImageSize(attrs: Record<string, unknown>): {
 
 /**
  * 将 CSS 颜色转换为 DOCX 支持的 6 位 HEX 格式（支持 #rgb, #rrggbb, rgb(), rgba()）。
- * Converts CSS color to DOCX-compatible 6‑digit HEX (supports #rgb, #rrggbb, rgb(), rgba()).
+ * Converts CSS color to DOCX-compatible 6-digit HEX (supports #rgb, #rrggbb, rgb(), rgba()).
  *
  * @param color - CSS 颜色值 / CSS color value
- * @returns 6 位 HEX 字符串或 undefined / 6‑digit HEX string or undefined
+ * @returns 6 位 HEX 字符串或 undefined / 6-digit HEX string or undefined
  */
 function normalizeColor(color: unknown): string | undefined {
   if (typeof color !== "string") {
@@ -311,11 +325,11 @@ function normalizeColor(color: unknown): string | undefined {
 }
 
 /**
- * 将 CSS 字体大小转换为 DOCX half‑point 单位（12pt = 24 half‑points）。
- * Converts CSS font size to DOCX half‑point units (12pt = 24 half‑points).
+ * 将 CSS 字体大小转换为 DOCX half-point 单位（12pt = 24 half-points）。
+ * Converts CSS font size to DOCX half-point units (12pt = 24 half-points).
  *
  * @param value - CSS 字体大小值 / CSS font size value
- * @returns half‑point 值或 undefined / half‑point value or undefined
+ * @returns half-point 值或 undefined / half-point value or undefined
  */
 function parseFontSizeToHalfPoint(value: unknown): number | undefined {
   if (typeof value !== "string") {
@@ -355,6 +369,7 @@ function parseFontSizeToHalfPoint(value: unknown): number | undefined {
  */
 function getDocxAlignment(
   alignment: unknown,
+  runtime: DocxRuntime,
 ): (typeof AlignmentType)[keyof typeof AlignmentType] | undefined {
   if (typeof alignment !== "string") {
     return undefined;
@@ -362,16 +377,16 @@ function getDocxAlignment(
 
   switch (alignment) {
     case "left":
-      return AlignmentType.LEFT;
+      return runtime.AlignmentType.LEFT;
 
     case "center":
-      return AlignmentType.CENTER;
+      return runtime.AlignmentType.CENTER;
 
     case "right":
-      return AlignmentType.RIGHT;
+      return runtime.AlignmentType.RIGHT;
 
     case "justify":
-      return AlignmentType.JUSTIFIED;
+      return runtime.AlignmentType.JUSTIFIED;
 
     default:
       return undefined;
@@ -405,9 +420,13 @@ interface TextRunOptions {
  * Extracts TextRun style options from ProseMirror marks.
  *
  * @param marks - ProseMirror marks 数组 / Array of ProseMirror marks
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns TextRun 样式选项 / TextRun style options
  */
-function getTextRunOptions(marks: readonly Mark[]): TextRunOptions {
+function getTextRunOptions(
+  marks: readonly Mark[],
+  runtime: DocxRuntime,
+): TextRunOptions {
   let bold: boolean | undefined;
 
   let italics: boolean | undefined;
@@ -451,7 +470,7 @@ function getTextRunOptions(marks: readonly Mark[]): TextRunOptions {
 
       case "underline":
         underline = {
-          type: UnderlineType.SINGLE,
+          type: runtime.UnderlineType.SINGLE,
         };
         break;
 
@@ -609,13 +628,15 @@ function getLinkInfo(marks: readonly Mark[]): { href: string } | null {
 
 /**
  * 转换 ProseMirror 文本节点为 TextRun 或 ExternalHyperlink。
- * Converts a ProseMirror text node to TextRun or ExternalHyperlink.
+ * Converts a ProseMirror text node to a TextRun or ExternalHyperlink.
  *
  * @param node - ProseMirror 文本节点 / ProseMirror text node
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns TextRun 或 ExternalHyperlink 数组 / Array of TextRun or ExternalHyperlink
  */
 function convertTextNode(
   node: ProseMirrorNode,
+  runtime: DocxRuntime,
 ): (TextRun | ExternalHyperlink)[] {
   const text = node.text ?? "";
 
@@ -625,9 +646,9 @@ function convertTextNode(
 
   const marks = node.marks;
 
-  const options = getTextRunOptions(marks);
+  const options = getTextRunOptions(marks, runtime);
 
-  const textRun = new TextRun({
+  const textRun = new runtime.TextRun({
     text,
     bold: options.bold,
     italics: options.italics,
@@ -647,7 +668,7 @@ function convertTextNode(
     return [textRun];
   }
 
-  const linkTextRun = new TextRun({
+  const linkTextRun = new runtime.TextRun({
     text,
     bold: options.bold,
     italics: options.italics,
@@ -663,7 +684,7 @@ function convertTextNode(
   });
 
   return [
-    new ExternalHyperlink({
+    new runtime.ExternalHyperlink({
       children: [linkTextRun],
       link: linkInfo.href,
     }),
@@ -768,18 +789,20 @@ async function loadImageData(src: string): Promise<Uint8Array | null> {
  *
  * @param node - ProseMirror 节点 / ProseMirror node
  * @param context - 转换上下文 / Conversion context
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns TextRun / ExternalHyperlink / ImageRun 数组 / Array of TextRun, ExternalHyperlink, or ImageRun
  */
 async function convertInlineNode(
   node: ProseMirrorNode,
   context: ConvertContext,
+  runtime: DocxRuntime,
 ): Promise<(TextRun | ExternalHyperlink | ImageRun)[]> {
   void context;
 
   const results: (TextRun | ExternalHyperlink | ImageRun)[] = [];
 
   if (node.isText) {
-    results.push(...convertTextNode(node));
+    results.push(...convertTextNode(node, runtime));
 
     return results;
   }
@@ -788,7 +811,7 @@ async function convertInlineNode(
     case "hardBreak":
     case "lineBreak":
       results.push(
-        new TextRun({
+        new runtime.TextRun({
           text: "",
           break: 1,
         }),
@@ -809,7 +832,7 @@ async function convertInlineNode(
 
       if (!imageData) {
         results.push(
-          new TextRun({
+          new runtime.TextRun({
             text: "[图片加载失败]",
           }),
         );
@@ -820,7 +843,7 @@ async function convertInlineNode(
       const size = getImageSize(attrs);
 
       results.push(
-        new ImageRun({
+        new runtime.ImageRun({
           type: inferImageType(src),
           data: imageData,
           transformation: {
@@ -838,7 +861,7 @@ async function convertInlineNode(
         for (let i = 0; i < node.content.childCount; i++) {
           const child = node.content.child(i);
 
-          results.push(...(await convertInlineNode(child, context)));
+          results.push(...(await convertInlineNode(child, context, runtime)));
         }
       }
 
@@ -854,11 +877,13 @@ async function convertInlineNode(
  *
  * @param node - ProseMirror block 节点 / ProseMirror block node
  * @param context - 转换上下文 / Conversion context
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns 行内元素数组 / Array of inline elements
  */
 async function convertInlineContent(
   node: ProseMirrorNode,
   context: ConvertContext,
+  runtime: DocxRuntime,
 ): Promise<(TextRun | ExternalHyperlink | ImageRun)[]> {
   const results: (TextRun | ExternalHyperlink | ImageRun)[] = [];
 
@@ -869,7 +894,7 @@ async function convertInlineContent(
   for (let i = 0; i < node.content.childCount; i++) {
     const child = node.content.child(i);
 
-    results.push(...(await convertInlineNode(child, context)));
+    results.push(...(await convertInlineNode(child, context, runtime)));
   }
 
   return results;
@@ -881,19 +906,24 @@ async function convertInlineContent(
  *
  * @param node - Paragraph 节点 / Paragraph node
  * @param context - 转换上下文 / Conversion context
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns DOCX Paragraph
  */
 async function convertParagraph(
   node: ProseMirrorNode,
   context: ConvertContext,
+  runtime: DocxRuntime,
 ): Promise<Paragraph> {
   const attrs = node.attrs as Record<string, unknown>;
 
-  const alignment = getDocxAlignment(attrs.textAlign ?? attrs.alignment);
+  const alignment = getDocxAlignment(
+    attrs.textAlign ?? attrs.alignment,
+    runtime,
+  );
 
-  const children = await convertInlineContent(node, context);
+  const children = await convertInlineContent(node, context, runtime);
 
-  return new Paragraph({
+  return new runtime.Paragraph({
     ...(alignment
       ? {
           alignment,
@@ -914,7 +944,7 @@ async function convertParagraph(
       children.length > 0
         ? children
         : [
-            new TextRun({
+            new runtime.TextRun({
               text: "",
             }),
           ],
@@ -926,20 +956,29 @@ async function convertParagraph(
  * Converts a heading.
  *
  * @param node - Heading 节点 / Heading node
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns DOCX Paragraph
  */
-async function convertHeading(node: ProseMirrorNode): Promise<Paragraph> {
+async function convertHeading(
+  node: ProseMirrorNode,
+  runtime: DocxRuntime,
+): Promise<Paragraph> {
   const attrs = node.attrs as Record<string, unknown>;
 
   const level = typeof attrs.level === "number" ? attrs.level : 1;
 
-  const heading = headingLevelMap[level] ?? HeadingLevel.HEADING_1;
+  const headingMap = getHeadingLevelMap(runtime);
 
-  const alignment = getDocxAlignment(attrs.textAlign ?? attrs.alignment);
+  const heading = headingMap[level] ?? runtime.HeadingLevel.HEADING_1;
 
-  const children = await convertInlineContent(node, createContext());
+  const alignment = getDocxAlignment(
+    attrs.textAlign ?? attrs.alignment,
+    runtime,
+  );
 
-  return new Paragraph({
+  const children = await convertInlineContent(node, createContext(), runtime);
+
+  return new runtime.Paragraph({
     heading,
     ...(alignment
       ? {
@@ -954,7 +993,7 @@ async function convertHeading(node: ProseMirrorNode): Promise<Paragraph> {
       children.length > 0
         ? children
         : [
-            new TextRun({
+            new runtime.TextRun({
               text: "",
             }),
           ],
@@ -966,9 +1005,13 @@ async function convertHeading(node: ProseMirrorNode): Promise<Paragraph> {
  * Converts a blockquote (simulated with left border).
  *
  * @param node - blockquote 节点 / blockquote node
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns DOCX Paragraph 数组 / Array of Paragraphs
  */
-async function convertBlockquote(node: ProseMirrorNode): Promise<Paragraph[]> {
+async function convertBlockquote(
+  node: ProseMirrorNode,
+  runtime: DocxRuntime,
+): Promise<Paragraph[]> {
   const results: Paragraph[] = [];
 
   for (let i = 0; i < node.content.childCount; i++) {
@@ -977,12 +1020,19 @@ async function convertBlockquote(node: ProseMirrorNode): Promise<Paragraph[]> {
     if (child.type.name === "paragraph") {
       const attrs = child.attrs as Record<string, unknown>;
 
-      const alignment = getDocxAlignment(attrs.textAlign ?? attrs.alignment);
+      const alignment = getDocxAlignment(
+        attrs.textAlign ?? attrs.alignment,
+        runtime,
+      );
 
-      const children = await convertInlineContent(child, createContext());
+      const children = await convertInlineContent(
+        child,
+        createContext(),
+        runtime,
+      );
 
       results.push(
-        new Paragraph({
+        new runtime.Paragraph({
           ...(alignment
             ? {
                 alignment,
@@ -1004,18 +1054,18 @@ async function convertBlockquote(node: ProseMirrorNode): Promise<Paragraph[]> {
             children.length > 0
               ? children
               : [
-                  new TextRun({
+                  new runtime.TextRun({
                     text: "",
                   }),
                 ],
         }),
       );
     } else {
-      const converted = await convertBlockNode(child, createContext());
+      const converted = await convertBlockNode(child, createContext(), runtime);
 
       results.push(
         ...converted.filter(
-          (item): item is Paragraph => item instanceof Paragraph,
+          (item): item is Paragraph => item instanceof runtime.Paragraph,
         ),
       );
     }
@@ -1023,7 +1073,7 @@ async function convertBlockquote(node: ProseMirrorNode): Promise<Paragraph[]> {
 
   if (results.length === 0) {
     results.push(
-      new Paragraph({
+      new runtime.Paragraph({
         border: {
           left: {
             color: "A6A6A6",
@@ -1033,7 +1083,7 @@ async function convertBlockquote(node: ProseMirrorNode): Promise<Paragraph[]> {
           },
         },
         children: [
-          new TextRun({
+          new runtime.TextRun({
             text: "",
           }),
         ],
@@ -1049,9 +1099,13 @@ async function convertBlockquote(node: ProseMirrorNode): Promise<Paragraph[]> {
  * Converts a code block (preserves line breaks, uses Consolas font and light gray background).
  *
  * @param node - codeBlock 节点 / codeBlock node
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns DOCX Paragraph 数组 / Array of Paragraphs
  */
-async function convertCodeBlock(node: ProseMirrorNode): Promise<Paragraph[]> {
+async function convertCodeBlock(
+  node: ProseMirrorNode,
+  runtime: DocxRuntime,
+): Promise<Paragraph[]> {
   const text = node.textContent ?? "";
 
   const lines = text.split("\n");
@@ -1061,7 +1115,7 @@ async function convertCodeBlock(node: ProseMirrorNode): Promise<Paragraph[]> {
   lines.forEach((line, index) => {
     if (index > 0) {
       runs.push(
-        new TextRun({
+        new runtime.TextRun({
           text: "",
           break: 1,
         }),
@@ -1069,7 +1123,7 @@ async function convertCodeBlock(node: ProseMirrorNode): Promise<Paragraph[]> {
     }
 
     runs.push(
-      new TextRun({
+      new runtime.TextRun({
         text: line,
         font: "Consolas",
         size: 20,
@@ -1078,7 +1132,7 @@ async function convertCodeBlock(node: ProseMirrorNode): Promise<Paragraph[]> {
   });
 
   return [
-    new Paragraph({
+    new runtime.Paragraph({
       spacing: {
         before: 120,
         after: 120,
@@ -1091,7 +1145,7 @@ async function convertCodeBlock(node: ProseMirrorNode): Promise<Paragraph[]> {
         runs.length > 0
           ? runs
           : [
-              new TextRun({
+              new runtime.TextRun({
                 text: "",
                 font: "Consolas",
                 size: 20,
@@ -1114,7 +1168,7 @@ function getListType(node: ProseMirrorNode): "bullet" | "ordered" {
 
 /**
  * 判断节点是否为任务列表项。
- * Checks if node is a task list item.
+ * Checks if node is a task item.
  *
  * @param node - ProseMirror 节点 / ProseMirror node
  * @returns 是否为任务项 / Whether it is a task item
@@ -1142,11 +1196,13 @@ function isTaskChecked(node: ProseMirrorNode): boolean {
  *
  * @param node - taskList 节点 / taskList node
  * @param context - 转换上下文 / Conversion context
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns DOCX Paragraph 数组 / Array of Paragraphs
  */
 async function convertTaskList(
   node: ProseMirrorNode,
   context: ConvertContext,
+  runtime: DocxRuntime,
 ): Promise<Paragraph[]> {
   const results: Paragraph[] = [];
 
@@ -1168,17 +1224,17 @@ async function convertTaskList(
       const child = item.content.child(j);
 
       if (child.type.name === "paragraph") {
-        const content = await convertInlineContent(child, itemContext);
+        const content = await convertInlineContent(child, itemContext, runtime);
 
         const prefix = checked ? "☑ " : "☐ ";
 
         results.push(
-          new Paragraph({
+          new runtime.Paragraph({
             spacing: {
               after: 60,
             },
             children: [
-              new TextRun({
+              new runtime.TextRun({
                 text: prefix,
               }),
               ...content,
@@ -1192,11 +1248,13 @@ async function convertTaskList(
             listLevel: context.listLevel + 1,
             listType: null,
           }),
+          runtime,
         );
 
         results.push(
           ...nested.filter(
-            (element): element is Paragraph => element instanceof Paragraph,
+            (element): element is Paragraph =>
+              element instanceof runtime.Paragraph,
           ),
         );
       }
@@ -1208,15 +1266,17 @@ async function convertTaskList(
 
 /**
  * 转换普通列表（有序或无序）。
- * Converts a normal list (ordered or bullet).
+ * Converts a normal list (ordered or unordered).
  *
  * @param node - bulletList 或 orderedList 节点 / bulletList or orderedList node
  * @param context - 转换上下文 / Conversion context
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns DOCX Paragraph 数组 / Array of Paragraphs
  */
 async function convertList(
   node: ProseMirrorNode,
   context: ConvertContext,
+  runtime: DocxRuntime,
 ): Promise<Paragraph[]> {
   const results: Paragraph[] = [];
 
@@ -1238,7 +1298,7 @@ async function convertList(
       const child = item.content.child(j);
 
       if (child.type.name === "paragraph") {
-        results.push(await convertParagraph(child, itemContext));
+        results.push(await convertParagraph(child, itemContext, runtime));
       } else if (
         child.type.name === "bulletList" ||
         child.type.name === "orderedList"
@@ -1249,6 +1309,7 @@ async function convertList(
             listLevel: context.listLevel + 1,
             listType: getListType(child),
           }),
+          runtime,
         );
 
         results.push(...nested);
@@ -1259,11 +1320,13 @@ async function convertList(
             listLevel: context.listLevel + 1,
             listType,
           }),
+          runtime,
         );
 
         results.push(
           ...nested.filter(
-            (element): element is Paragraph => element instanceof Paragraph,
+            (element): element is Paragraph =>
+              element instanceof runtime.Paragraph,
           ),
         );
       }
@@ -1278,26 +1341,28 @@ async function convertList(
  * Converts table cell content.
  *
  * @param cell - 表格单元格节点 / Table cell node
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns Paragraph 或 Table 数组 / Array of Paragraph or Table
  */
 async function convertTableCellContent(
   cell: ProseMirrorNode,
+  runtime: DocxRuntime,
 ): Promise<(Paragraph | Table)[]> {
   const children: (Paragraph | Table)[] = [];
 
   for (let i = 0; i < cell.content.childCount; i++) {
     const child = cell.content.child(i);
 
-    const converted = await convertBlockNode(child, createContext());
+    const converted = await convertBlockNode(child, createContext(), runtime);
 
     children.push(...converted);
   }
 
   if (children.length === 0) {
     children.push(
-      new Paragraph({
+      new runtime.Paragraph({
         children: [
-          new TextRun({
+          new runtime.TextRun({
             text: "",
           }),
         ],
@@ -1313,10 +1378,12 @@ async function convertTableCellContent(
  * Converts a table.
  *
  * @param node - table 节点 / table node
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns Table 和 Paragraph 数组 / Array of Table and Paragraph
  */
 async function convertTable(
   node: ProseMirrorNode,
+  runtime: DocxRuntime,
 ): Promise<(Table | Paragraph)[]> {
   const rows: TableRow[] = [];
 
@@ -1340,9 +1407,9 @@ async function convertTable(
 
       const isHeader = cell.type.name === "tableHeader";
 
-      const cellChildren = await convertTableCellContent(cell);
+      const cellChildren = await convertTableCellContent(cell, runtime);
 
-      const tableCell = new TableCell({
+      const tableCell = new runtime.TableCell({
         children: cellChildren,
         ...(isHeader
           ? {
@@ -1369,7 +1436,7 @@ async function convertTable(
 
     if (cells.length > 0) {
       rows.push(
-        new TableRow({
+        new runtime.TableRow({
           children: cells,
         }),
       );
@@ -1381,15 +1448,15 @@ async function convertTable(
   }
 
   return [
-    new Table({
+    new runtime.Table({
       rows,
     }),
-    new Paragraph({
+    new runtime.Paragraph({
       spacing: {
         after: 120,
       },
       children: [
-        new TextRun({
+        new runtime.TextRun({
           text: "",
         }),
       ],
@@ -1403,24 +1470,26 @@ async function convertTable(
  *
  * @param node - ProseMirror 节点 / ProseMirror node
  * @param context - 转换上下文 / Conversion context
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns Paragraph 或 Table 数组 / Array of Paragraph or Table
  */
 async function convertBlockNode(
   node: ProseMirrorNode,
   context: ConvertContext,
+  runtime: DocxRuntime,
 ): Promise<(Paragraph | Table)[]> {
   switch (node.type.name) {
     case "paragraph":
-      return [await convertParagraph(node, context)];
+      return [await convertParagraph(node, context, runtime)];
 
     case "heading":
-      return [await convertHeading(node)];
+      return [await convertHeading(node, runtime)];
 
     case "blockquote":
-      return await convertBlockquote(node);
+      return await convertBlockquote(node, runtime);
 
     case "codeBlock":
-      return await convertCodeBlock(node);
+      return await convertCodeBlock(node, runtime);
 
     case "bulletList":
       return await convertList(
@@ -1429,6 +1498,7 @@ async function convertBlockNode(
           listLevel: context.listLevel,
           listType: "bullet",
         }),
+        runtime,
       );
 
     case "orderedList":
@@ -1438,6 +1508,7 @@ async function convertBlockNode(
           listLevel: context.listLevel,
           listType: "ordered",
         }),
+        runtime,
       );
 
     case "taskList":
@@ -1447,11 +1518,12 @@ async function convertBlockNode(
           listLevel: context.listLevel,
           listType: null,
         }),
+        runtime,
       );
 
     case "divider":
       return [
-        new Paragraph({
+        new runtime.Paragraph({
           spacing: {
             before: 120,
             after: 120,
@@ -1465,7 +1537,7 @@ async function convertBlockNode(
             },
           },
           children: [
-            new TextRun({
+            new runtime.TextRun({
               text: "",
             }),
           ],
@@ -1473,7 +1545,7 @@ async function convertBlockNode(
       ];
 
     case "table":
-      return await convertTable(node);
+      return await convertTable(node, runtime);
 
     case "listItem": {
       const parentContext = createContext({
@@ -1487,7 +1559,7 @@ async function convertBlockNode(
         const child = node.content.child(i);
 
         if (child.type.name === "paragraph") {
-          result.push(await convertParagraph(child, parentContext));
+          result.push(await convertParagraph(child, parentContext, runtime));
         } else {
           const nested = await convertBlockNode(
             child,
@@ -1495,11 +1567,13 @@ async function convertBlockNode(
               listLevel: context.listLevel + 1,
               listType: context.listType,
             }),
+            runtime,
           );
 
           result.push(
             ...nested.filter(
-              (element): element is Paragraph => element instanceof Paragraph,
+              (element): element is Paragraph =>
+                element instanceof runtime.Paragraph,
             ),
           );
         }
@@ -1517,12 +1591,16 @@ async function convertBlockNode(
         const child = node.content.child(i);
 
         if (child.type.name === "paragraph") {
-          const content = await convertInlineContent(child, createContext());
+          const content = await convertInlineContent(
+            child,
+            createContext(),
+            runtime,
+          );
 
           result.push(
-            new Paragraph({
+            new runtime.Paragraph({
               children: [
-                new TextRun({
+                new runtime.TextRun({
                   text: checked ? "☑ " : "☐ ",
                 }),
                 ...content,
@@ -1542,18 +1620,18 @@ async function convertBlockNode(
         for (let i = 0; i < node.content.childCount; i++) {
           const child = node.content.child(i);
 
-          const converted = await convertBlockNode(child, context);
+          const converted = await convertBlockNode(child, context, runtime);
 
           results.push(...converted);
         }
       }
 
       if (results.length === 0 && node.textContent) {
-        const children = await convertInlineContent(node, context);
+        const children = await convertInlineContent(node, context, runtime);
 
         if (children.length > 0) {
           results.push(
-            new Paragraph({
+            new runtime.Paragraph({
               children,
             }),
           );
@@ -1570,9 +1648,13 @@ async function convertBlockNode(
  * Converts a ProseMirror Document to a DOCX Document.
  *
  * @param doc - ProseMirror Document 根节点 / ProseMirror Document root node
+ * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns DOCX Document 对象 / DOCX Document object
  */
-async function convertDocument(doc: ProseMirrorNode): Promise<Document> {
+async function convertDocument(
+  doc: ProseMirrorNode,
+  runtime: DocxRuntime,
+): Promise<Document> {
   const children: (Paragraph | Table)[] = [];
 
   const context = createContext();
@@ -1580,16 +1662,16 @@ async function convertDocument(doc: ProseMirrorNode): Promise<Document> {
   for (let i = 0; i < doc.content.childCount; i++) {
     const node = doc.content.child(i);
 
-    const converted = await convertBlockNode(node, context);
+    const converted = await convertBlockNode(node, context, runtime);
 
     children.push(...converted);
   }
 
   if (children.length === 0) {
     children.push(
-      new Paragraph({
+      new runtime.Paragraph({
         children: [
-          new TextRun({
+          new runtime.TextRun({
             text: "",
           }),
         ],
@@ -1597,9 +1679,9 @@ async function convertDocument(doc: ProseMirrorNode): Promise<Document> {
     );
   }
 
-  return new Document({
+  return new runtime.Document({
     numbering: {
-      config: numberingConfig,
+      config: createNumberingConfig(runtime),
     },
 
     styles: {
@@ -1622,8 +1704,29 @@ async function convertDocument(doc: ProseMirrorNode): Promise<Document> {
 }
 
 /**
+ * 动态加载 DOCX 运行时。
+ *
+ * 这里必须捕获动态 import 失败，
+ * 避免 docx 未安装、模块损坏或构建产物缺失时继续执行导出流程。
+ */
+async function loadDocxRuntime(): Promise<DocxRuntime> {
+  try {
+    return await import("docx");
+  } catch (error) {
+    console.error("[ExportWord] DOCX 模块加载失败:", error);
+
+    throw new Error(
+      "无法加载 DOCX 导出模块，请确认 docx 依赖已正确安装并打包。",
+      {
+        cause: error,
+      },
+    );
+  }
+}
+
+/**
  * 导出 ProseMirror Document 为 DOCX 文件。
- * Exports a ProseMirror Document as a DOCX file.
+ * Exports a ProseMirror Document as DOCX file.
  *
  * @param doc - ProseMirror Document 根节点 / ProseMirror Document root node
  * @param fileName - 导出文件名 / Export file name
@@ -1634,11 +1737,25 @@ async function exportDocx(
 ): Promise<void> {
   imageCache.clear();
 
-  const document = await convertDocument(doc);
+  try {
+    /**
+     * DOCX 运行时采用动态加载，
+     * 如果加载失败会立即抛出异常，不再继续执行后续转换。
+     */
+    const runtime = await loadDocxRuntime();
 
-  const blob = await Packer.toBlob(document);
+    const document = await convertDocument(doc, runtime);
 
-  downloadFile(blob, fileName);
+    const blob = await runtime.Packer.toBlob(document);
+
+    await downloadFile(blob, fileName);
+  } catch (error) {
+    console.error("[ExportWord] Word 导出失败:", error);
+
+    throw error;
+  } finally {
+    imageCache.clear();
+  }
 }
 
 /**
@@ -1652,12 +1769,6 @@ export interface ExportWordOptions {
 
 /**
  * Tiptap ExportWord 扩展。
- *
- * 提供 `exportWord` 命令，将当前编辑器内容导出为 Word (.docx) 文件。
- *
- * Tiptap ExportWord extension.
- *
- * Provides the `exportWord` command to export the current editor content as a Word (.docx) file.
  */
 export const ExportWord = Extension.create<ExportWordOptions>({
   name: "exportWord",
@@ -1677,7 +1788,10 @@ export const ExportWord = Extension.create<ExportWordOptions>({
 
           const fileName = this.options.fileName ?? "freeEditor.docx";
 
-          exportDocx(doc, fileName).catch((error) => {
+          /**
+           * 异步导出统一在这里处理异常。
+           */
+          void exportDocx(doc, fileName).catch((error) => {
             console.error("[ExportWord] 导出失败:", error);
           });
 

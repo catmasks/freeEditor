@@ -1,7 +1,5 @@
 import { Extension } from "@tiptap/core";
 import type { Editor } from "@tiptap/core";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import { downloadFile } from "../../core/utils/export";
 
 export interface ExportPdfOptions {
@@ -44,6 +42,7 @@ async function waitForImages(container: HTMLElement): Promise<void> {
   if (images.length === 0) {
     return;
   }
+
   await Promise.all(
     images.map(
       (image) =>
@@ -52,18 +51,22 @@ async function waitForImages(container: HTMLElement): Promise<void> {
             resolve();
             return;
           }
+
           const handleLoad = () => {
             cleanup();
             resolve();
           };
+
           const handleError = () => {
             cleanup();
             resolve();
           };
+
           const cleanup = () => {
             image.removeEventListener("load", handleLoad);
             image.removeEventListener("error", handleError);
           };
+
           image.addEventListener("load", handleLoad, { once: true });
           image.addEventListener("error", handleError, { once: true });
         }),
@@ -75,12 +78,13 @@ async function waitForImages(container: HTMLElement): Promise<void> {
  * 等待所有 Web 字体加载完成。
  * Wait for all web fonts to be loaded.
  *
- * @returns 字体加载完成后 resolve / Resolves when fonts are ready
+ * @returns 字体加载完成后 resolve / Resolves after fonts are ready
  */
 async function waitForFonts(): Promise<void> {
   if (!("fonts" in document)) {
     return;
   }
+
   try {
     await document.fonts.ready;
   } catch {}
@@ -112,19 +116,24 @@ async function waitForLayout(): Promise<void> {
  */
 function getProseMirrorElement(editor: Editor): HTMLElement {
   const root = editor.options.element;
+
   if (!(root instanceof HTMLElement)) {
     throw new Error("[ExportPdf] 无法获取编辑器根元素");
   }
+
   const proseMirror = root.querySelector(".ProseMirror");
+
   if (!(proseMirror instanceof HTMLElement)) {
     throw new Error("[ExportPdf] 未找到 ProseMirror 编辑区域");
   }
+
   return proseMirror;
 }
 
 /**
  * 创建用于 PDF 渲染的临时 DOM 容器。
  * Create a temporary DOM container for PDF rendering.
+ *
  * @param editor - Tiptap 编辑器实例 / Tiptap editor instance
  * @returns 包含容器和 ProseMirror 克隆的对象 / Object containing container and cloned ProseMirror
  */
@@ -133,15 +142,21 @@ function createPdfContainer(editor: Editor): {
   proseMirror: HTMLElement;
 } {
   const source = getProseMirrorElement(editor);
+
   const container = document.createElement("div");
   container.className = "free-editor__content";
+
   const proseMirror = source.cloneNode(true) as HTMLElement;
+
   proseMirror.classList.add("ProseMirror");
   proseMirror.removeAttribute("contenteditable");
+
   proseMirror.querySelectorAll(".ProseMirror-gapcursor").forEach((element) => {
     element.remove();
   });
+
   container.appendChild(proseMirror);
+
   Object.assign(container.style, {
     position: "absolute",
     left: "-100000px",
@@ -157,6 +172,7 @@ function createPdfContainer(editor: Editor): {
     margin: "0",
     zIndex: "-1",
   });
+
   Object.assign(proseMirror.style, {
     width: "100%",
     minHeight: "0",
@@ -165,7 +181,9 @@ function createPdfContainer(editor: Editor): {
     overflow: "visible",
     boxSizing: "border-box",
   });
+
   document.body.appendChild(container);
+
   return {
     container,
     proseMirror,
@@ -181,6 +199,7 @@ function createPdfContainer(editor: Editor): {
  */
 function applyPdfPaginationRules(proseMirror: HTMLElement): HTMLStyleElement {
   const style = document.createElement("style");
+
   style.textContent = `
     .free-editor__content .ProseMirror p,
     .free-editor__content .ProseMirror h1,
@@ -196,30 +215,38 @@ function applyPdfPaginationRules(proseMirror: HTMLElement): HTMLStyleElement {
       break-inside: avoid;
       page-break-inside: avoid;
     }
+
     .free-editor__content .ProseMirror table {
       break-inside: auto;
       page-break-inside: auto;
     }
+
     .free-editor__content .ProseMirror tr {
       break-inside: avoid;
       page-break-inside: avoid;
     }
+
     .free-editor__content .ProseMirror thead {
       display: table-header-group;
     }
+
     .free-editor__content .ProseMirror tfoot {
       display: table-footer-group;
     }
+
     .free-editor__content .ProseMirror img {
       break-inside: avoid;
       page-break-inside: avoid;
     }
+
     .free-editor__content .ProseMirror hr {
       break-inside: avoid;
       page-break-inside: avoid;
     }
   `;
+
   proseMirror.appendChild(style);
+
   return style;
 }
 
@@ -237,9 +264,11 @@ function cleanupPdfOnlyElements(container: HTMLElement): void {
       element.removeAttribute("data-placeholder");
       element.classList.remove("is-empty");
     });
+
   container.querySelectorAll(".ProseMirror-selectednode").forEach((element) => {
     element.classList.remove("ProseMirror-selectednode");
   });
+
   container.querySelectorAll(".ProseMirror-gapcursor").forEach((element) => {
     element.remove();
   });
@@ -254,32 +283,46 @@ function cleanupPdfOnlyElements(container: HTMLElement): void {
  * Cuts the Canvas page by page according to A4 page height, avoiding scaling or overflow.
  *
  * @param canvas - html2canvas 生成的完整 Canvas / Full Canvas generated by html2canvas
+ * @param jsPDF - jsPDF 构造函数 / jsPDF constructor
  * @returns jsPDF 实例 / jsPDF instance
  * @throws 如果无法创建 Canvas 2D 上下文 / If Canvas 2D context cannot be created
  */
-function createPdfFromCanvas(canvas: HTMLCanvasElement): jsPDF {
+function createPdfFromCanvas(
+  canvas: HTMLCanvasElement,
+  jsPDF: typeof import("jspdf").jsPDF,
+): InstanceType<typeof jsPDF> {
   const pdf = new jsPDF({
     orientation: "portrait",
     unit: "mm",
     format: "a4",
     compress: true,
   });
+
   const ratio = PDF_CONTENT_WIDTH_MM / canvas.width;
   const pageCanvasHeight = Math.floor(PDF_CONTENT_HEIGHT_MM / ratio);
+
   let sourceY = 0;
   let pageIndex = 0;
+
   while (sourceY < canvas.height) {
     const remainingHeight = canvas.height - sourceY;
     const currentCanvasHeight = Math.min(pageCanvasHeight, remainingHeight);
+
     const pageCanvas = document.createElement("canvas");
+
     pageCanvas.width = canvas.width;
     pageCanvas.height = currentCanvasHeight;
+
     const pageContext = pageCanvas.getContext("2d");
+
     if (!pageContext) {
       throw new Error("[ExportPdf] 无法创建 Canvas 2D 上下文");
     }
+
     pageContext.fillStyle = "#ffffff";
+
     pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+
     pageContext.drawImage(
       canvas,
       0,
@@ -291,11 +334,14 @@ function createPdfFromCanvas(canvas: HTMLCanvasElement): jsPDF {
       canvas.width,
       currentCanvasHeight,
     );
+
     const imageData = pageCanvas.toDataURL("image/png");
     const imageHeight = currentCanvasHeight * ratio;
+
     if (pageIndex > 0) {
       pdf.addPage();
     }
+
     pdf.addImage(
       imageData,
       "PNG",
@@ -306,9 +352,11 @@ function createPdfFromCanvas(canvas: HTMLCanvasElement): jsPDF {
       undefined,
       "FAST",
     );
+
     sourceY += currentCanvasHeight;
     pageIndex++;
   }
+
   return pdf;
 }
 
@@ -327,19 +375,31 @@ async function exportEditorToPdf(
 ): Promise<void> {
   let container: HTMLElement | null = null;
   let paginationStyle: HTMLStyleElement | null = null;
+
   try {
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
     const result = createPdfContainer(editor);
+
     container = result.container;
     const proseMirror = result.proseMirror;
+
     paginationStyle = applyPdfPaginationRules(proseMirror);
+
     cleanupPdfOnlyElements(container);
+
     await waitForFonts();
     await waitForImages(container);
+
     void container.offsetHeight;
     void proseMirror.offsetHeight;
     void proseMirror.scrollHeight;
+
     await waitForLayout();
     await wait(50);
+
     const width = Math.ceil(
       Math.max(
         proseMirror.scrollWidth,
@@ -347,13 +407,17 @@ async function exportEditorToPdf(
         PDF_CONTENT_WIDTH_PX,
       ),
     );
+
     const contentHeight = Math.ceil(
       Math.max(proseMirror.scrollHeight, proseMirror.offsetHeight),
     );
+
     const height = contentHeight + PDF_BOTTOM_SAFE_SPACE_PX;
+
     if (width <= 0 || contentHeight <= 0) {
       throw new Error("[ExportPdf] 编辑器内容为空");
     }
+
     const canvas = await html2canvas(container, {
       scale: CANVAS_SCALE,
       width,
@@ -366,16 +430,22 @@ async function exportEditorToPdf(
       logging: false,
       removeContainer: false,
     });
+
     if (canvas.width <= 0 || canvas.height <= 0) {
       throw new Error("[ExportPdf] PDF 渲染结果为空");
     }
-    const pdf = createPdfFromCanvas(canvas);
+
+    const pdf = createPdfFromCanvas(canvas, jsPDF);
     const blob = pdf.output("blob");
-    downloadFile(blob, fileName);
+
+    await downloadFile(blob, fileName);
+  } catch (error) {
+    console.error("[ExportPdf] 导出失败:", error);
   } finally {
     if (paginationStyle) {
       paginationStyle.remove();
     }
+
     if (container) {
       container.remove();
     }
@@ -402,9 +472,11 @@ export const ExportPdf = Extension.create<ExportPdfOptions>({
         () =>
         ({ editor }: { editor: Editor }) => {
           const fileName = this.options.fileName || "freeEditor.pdf";
+
           exportEditorToPdf(editor, fileName).catch((error: unknown) => {
             console.error("[ExportPdf] 导出失败:", error);
           });
+
           return true;
         },
     };

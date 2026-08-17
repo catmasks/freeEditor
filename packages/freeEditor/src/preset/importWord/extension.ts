@@ -1,8 +1,5 @@
 import { Extension } from "@tiptap/core";
 import type { Editor, CommandProps } from "@tiptap/core";
-
-import mammoth from "mammoth";
-
 import type { UploadGenerator } from "../../core/types";
 
 /**
@@ -624,6 +621,8 @@ async function importDocxToEditor(
     const uploader = editor.storage.mediaUploader as
       | UploadGenerator
       | undefined;
+
+    const [{ default: mammoth }] = await Promise.all([import("mammoth")]);
 
     /**
      * 使用 Mammoth 将 DOCX 转为 HTML。
