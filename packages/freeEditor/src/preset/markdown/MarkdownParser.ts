@@ -1,9 +1,10 @@
 import type { Schema } from "@tiptap/pm/model";
-import {
+import type {
   MarkdownParser as PMMarkdownParser,
-  type ParseSpec,
+  ParseSpec,
 } from "prosemirror-markdown";
-import { defaultTokenizer } from "./tokenizer";
+
+import { createTokenizer } from "./tokenizer";
 
 /**
  * 检查节点类型是否存在于 schema 中。
@@ -20,14 +21,42 @@ function hasMark(schema: Schema, name: string): boolean {
 }
 
 /**
+ * 动态加载 prosemirror-markdown。
+ * @returns prosemirror-markdown 运行时模块
+ * @throws 当 prosemirror-markdown 加载失败时抛出错误
+ */
+async function loadMarkdownParser(): Promise<
+  typeof import("prosemirror-markdown")
+> {
+  try {
+    return await import("prosemirror-markdown");
+  } catch (error) {
+    console.error("[Markdown] 加载 prosemirror-markdown 失败:", error);
+
+    throw new Error(
+      "Markdown 功能加载失败，请检查 prosemirror-markdown 是否正确安装。",
+      {
+        cause: error,
+      },
+    );
+  }
+}
+
+/**
  * 创建 Markdown 解析器。
  * 将 Markdown-it Token 转换为当前 Tiptap Schema
  * 对应的 ProseMirror Node / Mark。
+ *
+ * @param schema - 当前 Tiptap Schema
+ * @param extraTokens - 自定义 Token 映射
+ * @returns Markdown Parser
  */
-export function createMarkdownParser(
+export async function createMarkdownParser(
   schema: Schema,
   extraTokens: Record<string, ParseSpec> = {},
-): PMMarkdownParser {
+): Promise<PMMarkdownParser> {
+  const { MarkdownParser } = await loadMarkdownParser();
+
   const tokens: Record<string, ParseSpec> = {
     /**
      * 标题
@@ -246,7 +275,7 @@ export function createMarkdownParser(
   /**
    * 允许外部覆盖默认 Token 映射。
    */
-  return new PMMarkdownParser(schema, defaultTokenizer, {
+  return new MarkdownParser(schema, await createTokenizer(), {
     ...tokens,
     ...extraTokens,
   });

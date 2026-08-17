@@ -107,12 +107,14 @@ function hasHtml(text: string): boolean {
 
 /**
  * 判断是否为 fenced code block 开始行。
+ *
  * 支持：
  *
  * ```
  * ```ts
  * ~~~
  * ~~~html
+ *
  * 最多允许 3 个空格缩进。
  */
 function parseFenceStart(line: string): {
@@ -402,7 +404,7 @@ function normalizeMarkdown(text: string): string {
     }
 
     /**
-     * 当前不在代码块
+     * 当前不在代码块。
      */
 
     const fence = parseFenceStart(line);
@@ -441,6 +443,7 @@ function normalizeMarkdown(text: string): string {
    * 处理剩余的普通 Markdown。
    */
   flushNormalBuffer();
+
   return result
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")
@@ -448,19 +451,57 @@ function normalizeMarkdown(text: string): string {
 }
 
 /**
+ * Markdown Parser 获取函数类型。
+ */
+type MarkdownParserGetter = () =>
+  | MarkdownParser
+  | Promise<MarkdownParser | null>
+  | null;
+
+/**
  * 创建 Markdown 粘贴插件。
  */
 export function createMarkdownPastePlugin(
   editor: Editor,
-  getParser: () => MarkdownParser | null,
+  getParser: MarkdownParserGetter,
 ): Plugin {
+  /**
+   * 防止用户连续粘贴 Markdown 时重复加载 Parser。
+   *
+   * 第一次加载后，后续直接复用同一个 Promise。
+   */
+  let parserPromise: Promise<MarkdownParser | null> | null = null;
+
+  /**
+   * 获取 Markdown Parser。
+   */
+  const resolveParser = async (): Promise<MarkdownParser | null> => {
+    if (!parserPromise) {
+      parserPromise = Promise.resolve()
+        .then(() => getParser())
+        .catch((error) => {
+          /**
+           * Parser 加载失败后清空缓存，
+           * 下次粘贴时允许重新尝试加载。
+           */
+          parserPromise = null;
+
+          console.warn("[MarkdownPaste] Markdown parser 加载失败:", error);
+
+          return null;
+        });
+    }
+
+    return parserPromise;
+  };
+
   return new Plugin({
     key: new PluginKey("markdown-paste"),
 
     props: {
       handlePaste: (view, event: ClipboardEvent) => {
         /**
-         * 获取纯文本
+         * 获取纯文本。
          */
         const text = event.clipboardData?.getData("text/plain") ?? "";
 
@@ -469,57 +510,58 @@ export function createMarkdownPastePlugin(
         }
 
         /**
-         * 判断 Markdown
+         * 判断 Markdown。
          */
         if (!isMarkdown(text)) {
           return false;
         }
 
         /**
-         * 获取 Parser
+         * Markdown 粘贴异步加载依赖。
          */
-        const parser = getParser();
+        event.preventDefault();
 
-        if (!parser) {
-          console.warn("[MarkdownPaste] Markdown parser is not initialized.");
+        /**
+         * Markdown 预处理。
+         */
+        const markdown = normalizeMarkdown(text);
 
-          return false;
-        }
+        /**
+         * 异步加载 Parser 并插入文档。
+         */
+        void resolveParser().then((parser) => {
+          if (!parser) {
+            console.warn("[MarkdownPaste] Markdown parser is not initialized.");
 
-        try {
-          /**
-           * Markdown 预处理
-           */
-          const markdown = normalizeMarkdown(text);
+            return;
+          }
 
-          /**
-           * Markdown → ProseMirror
-           */
-          const doc = parser.parse(markdown);
+          try {
+            /**
+             * Markdown → ProseMirror。
+             */
+            const doc = parser.parse(markdown);
 
-          /**
-           * 插入当前选区
-           */
-          const slice = doc.slice(0, doc.content.size);
+            /**
+             * 插入当前选区。
+             */
+            const slice = doc.slice(0, doc.content.size);
 
-          const transaction = view.state.tr.replaceSelection(slice);
+            const transaction = view.state.tr.replaceSelection(slice);
 
-          view.dispatch(transaction);
+            view.dispatch(transaction);
+          } catch (error) {
+            /**
+             * Markdown 解析失败。
+             */
+            console.warn("[MarkdownPaste] Failed to parse markdown:", error);
+          }
+        });
 
-          /**
-           * 阻止默认粘贴。
-           */
-          event.preventDefault();
-
-          return true;
-        } catch (error) {
-          /**
-           * Markdown 解析失败：
-           */
-          console.warn("[MarkdownPaste] Failed to parse markdown:", error);
-
-          return false;
-        }
+        /**
+         * 已经阻止浏览器默认粘贴。
+         */
+        return true;
       },
     },
   });

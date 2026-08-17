@@ -43,7 +43,11 @@ export const BulletList = Node.create({
   parseHTML() {
     return [
       {
-        tag: "ul",
+        /**
+         * 排除带有 data-type 属性的 ul（如 taskList 的 ul[data-type="taskList"]）
+         * Exclude ul elements with data-type attribute (e.g. taskList's ul[data-type="taskList"])
+         */
+        tag: "ul:not([data-type])",
       },
     ];
   },

@@ -26,7 +26,11 @@ export const ListItem = Node.create({
   parseHTML() {
     return [
       {
-        tag: "li",
+        /**
+         * 排除带有 data-type 属性的 li（如 taskItem 的 li[data-type="taskItem"]）
+         * Exclude li elements with data-type attribute (e.g. taskItem's li[data-type="taskItem"])
+         */
+        tag: "li:not([data-type])",
       },
     ];
   },

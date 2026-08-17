@@ -1,4 +1,4 @@
-import MarkdownIt from "markdown-it";
+import type MarkdownIt from "markdown-it";
 
 /**
  * 判断一个 token 是不是表格单元格（th/td）的开始标签。
@@ -115,8 +115,10 @@ function normalizeTableTokens(tokens: any[]): any[] {
  * - 排版优化（如智能引号）
  * - CommonMark 标准
  */
-export function createTokenizer(): MarkdownIt {
-  const markdown = new MarkdownIt({
+function createTokenizerInstance(
+  MarkdownItClass: typeof MarkdownIt,
+): MarkdownIt {
+  const markdown = new MarkdownItClass({
     html: true,
     linkify: true,
     typographer: true,
@@ -130,10 +132,36 @@ export function createTokenizer(): MarkdownIt {
    */
   markdown.parse = (...args) => {
     const tokens = originalParse(...args);
+
     return normalizeTableTokens(tokens);
   };
 
   return markdown;
 }
 
-export const defaultTokenizer = createTokenizer();
+/**
+ * 动态加载 Markdown-it。
+ * 避免编辑器初始化时直接加载 markdown-it。
+ */
+export async function createTokenizer(): Promise<MarkdownIt> {
+  try {
+    const module = await import("markdown-it");
+
+    /**
+     * 兼容 ESM / CommonJS 两种模块导出形式。
+     */
+    const MarkdownItClass = module.default;
+
+    if (!MarkdownItClass) {
+      throw new Error("markdown-it 模块加载成功，但未找到默认导出。");
+    }
+
+    return createTokenizerInstance(MarkdownItClass);
+  } catch (error) {
+    console.error("[Markdown] markdown-it 加载失败:", error);
+
+    throw new Error("Markdown 功能初始化失败：无法加载 markdown-it。", {
+      cause: error,
+    });
+  }
+}
