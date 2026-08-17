@@ -30,22 +30,25 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
       parser: null as unknown as MarkdownParser,
       serializer: null as unknown as MarkdownSerializer,
       getMarkdown: () => "",
-      registerNodeSerializer: (
+      registerNodeSerializer: async (
         _name: string,
         _serializer: MarkdownNodeSerializer,
       ) => {},
-      registerMarkSerializer: (
+      registerMarkSerializer: async (
         _name: string,
         _serializer: MarkdownMarkSerializer,
       ) => {},
     };
   },
 
-  onCreate() {
+  async onCreate() {
     const { editor } = this;
     const schema = editor.schema;
-    const parser = createMarkdownParser(schema, this.options.parser?.tokens);
-    const serializer = createMarkdownSerializer(
+    const parser = await createMarkdownParser(
+      schema,
+      this.options.parser?.tokens,
+    );
+    const serializer = await createMarkdownSerializer(
       schema,
       this.options.serializer?.nodes,
       this.options.serializer?.marks,
@@ -61,7 +64,7 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
       });
     };
 
-    storage.registerNodeSerializer = (
+    storage.registerNodeSerializer = async (
       name: string,
       nodeSerializer: MarkdownNodeSerializer,
     ) => {
@@ -69,10 +72,10 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
         ...this.options.serializer?.nodes,
         [name]: nodeSerializer,
       };
-      storage.serializer = createMarkdownSerializer(schema, nodes, {});
+      storage.serializer = await createMarkdownSerializer(schema, nodes, {});
     };
 
-    storage.registerMarkSerializer = (
+    storage.registerMarkSerializer = async (
       name: string,
       markSerializer: MarkdownMarkSerializer,
     ) => {
@@ -80,7 +83,7 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
         ...this.options.serializer?.marks,
         [name]: markSerializer,
       };
-      storage.serializer = createMarkdownSerializer(schema, {}, marks);
+      storage.serializer = await createMarkdownSerializer(schema, {}, marks);
     };
   },
 

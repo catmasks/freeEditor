@@ -41,9 +41,9 @@ export interface MarkdownStorage {
   /** 获取当前编辑器内容的 Markdown 字符串 */
   getMarkdown: () => string;
   /** 注册自定义节点序列化器 */
-  registerNodeSerializer: (name: string, serializer: MarkdownNodeSerializer) => void;
+  registerNodeSerializer: (name: string, serializer: MarkdownNodeSerializer) => Promise<void>;
   /** 注册自定义标记序列化器 */
-  registerMarkSerializer: (name: string, serializer: MarkdownMarkSerializer) => void;
+  registerMarkSerializer: (name: string, serializer: MarkdownMarkSerializer) => Promise<void>;
 }
 
 /** Markdown 解析结果 */
