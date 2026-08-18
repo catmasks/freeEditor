@@ -32,7 +32,7 @@ export default [
       sourceType: "module", // 使用 ES Module 模块系统
       globals: {
         ...globals.browser, // 提供浏览器环境的全局变量（如 window, document）
-        ...NodeJS.Globals, // 提供 Node.js 全局变量（如 process, __dirname）
+        ...globals.node, // 提供 Node.js 全局变量（如 process, __dirname）
       },
       parserOptions: {
         projectService: true, // 启用 TypeScript 类型检查（自动查找 tsconfig.json）
