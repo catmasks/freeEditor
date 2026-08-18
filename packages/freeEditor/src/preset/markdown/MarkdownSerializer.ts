@@ -11,7 +11,6 @@ import type { MarkdownNodeSerializer, MarkdownMarkSerializer } from "./types";
 async function loadMarkdownSerializer(): Promise<
   typeof import("prosemirror-markdown")
 > {
-  /* eslint-enable @typescript-eslint/consistent-type-imports */
   try {
     return await import("prosemirror-markdown");
   } catch (error) {

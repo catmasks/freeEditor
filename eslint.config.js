@@ -32,6 +32,7 @@ export default [
       sourceType: "module", // 使用 ES Module 模块系统
       globals: {
         ...globals.browser, // 提供浏览器环境的全局变量（如 window, document）
+        ...NodeJS.Globals, // 提供 Node.js 全局变量（如 process, __dirname）
       },
       parserOptions: {
         projectService: true, // 启用 TypeScript 类型检查（自动查找 tsconfig.json）
@@ -40,14 +41,14 @@ export default [
     },
 
     rules: {
-      "@typescript-eslint/explicit-function-return-type": "error",
       // 强制所有函数显式声明返回类型，提高代码可读性
+      "@typescript-eslint/explicit-function-return-type": "error",
 
-      "@typescript-eslint/consistent-type-imports": "error",
       // 强制使用 `import type` 导入类型，避免运行时额外加载
+      "@typescript-eslint/consistent-type-imports": "error",
 
-      "@typescript-eslint/no-explicit-any": "off",
       // 允许使用 any 类型，避免类型检查错误
+      "@typescript-eslint/no-explicit-any": "off",
 
       "@typescript-eslint/no-unused-vars": [
         "error",
@@ -81,11 +82,10 @@ export default [
     },
 
     rules: {
-      "@typescript-eslint/no-var-requires": "off",
       // Vite 配置中可能使用 require()，关闭该规则避免误报
-
-      "no-console": "off",
+      "@typescript-eslint/no-var-requires": "off",
       // Vite 配置中允许使用 console 进行调试
+      "no-console": "off",
     },
   },
 
@@ -104,10 +104,10 @@ export default [
     },
 
     rules: {
-      "@typescript-eslint/no-explicit-any": "warn",
       // Playground 中允许使用 any，但给出警告以提示潜在类型问题
-      "no-console": "off",
+      "@typescript-eslint/no-explicit-any": "warn",
       // Playground 中允许使用 console 方便调试演示
+      "no-console": "off",
     },
   },
 ];

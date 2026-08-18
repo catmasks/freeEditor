@@ -1,19 +1,39 @@
 import type { Node } from "@tiptap/pm/model";
 
 /**
- * 下载文件
- * @param blob 文件内容
- * @param fileName 文件名
+ * 下载文件 / Download file
+ *
+ * 仅适用于浏览器环境。
+ *
+ * @param data 文件内容 / File content
+ * @param fileName 文件名 / File name
  */
-export async function downloadFile(
-  blob: Blob,
+export function downloadFile(
+  data: Blob | ArrayBuffer | Uint8Array,
   fileName: string,
-): Promise<void> {
+): void {
   try {
-    const [{ default: saveAs }] = await Promise.all([import("file-saver")]);
-    saveAs(blob, fileName);
+    const blob = data instanceof Blob ? data : new Blob([data as BlobPart]);
+
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement("a");
+
+    anchor.href = url;
+    anchor.download = fileName;
+
+    document.body.appendChild(anchor);
+
+    anchor.click();
+
+    anchor.remove();
+
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 0);
   } catch (error) {
     console.error("[downloadFile] 下载文件失败:", error);
+
     throw error;
   }
 }

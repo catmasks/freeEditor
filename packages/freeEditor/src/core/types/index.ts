@@ -200,6 +200,10 @@ export interface FloatingToolbarAPI {
  * 语言类型 / Locale type
  */
 export type BuiltinLocale = "zh-CN" | "en" | "ja-JP";
+/**
+ * 语言类型 / Locale type
+ * @default "zh-CN"
+ */
 export type Locale = BuiltinLocale | (string & {});
 
 /**

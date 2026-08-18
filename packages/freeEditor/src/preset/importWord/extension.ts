@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
 import type { Editor, CommandProps } from "@tiptap/core";
 import type { UploadGenerator } from "../../core/types";
-
+import type mammoth from "mammoth";
 /**
  * Data URL 图片数据结构。
  * Data URL image data structure.
@@ -666,6 +666,28 @@ async function processWordImages(
 }
 
 /**
+ * 动态加载 Mammoth 运行时。
+ */
+async function loadMammothRuntime(): Promise<typeof mammoth> {
+  try {
+    const module = await import("mammoth");
+    const mammothRuntime = module.default;
+    if (!mammothRuntime) {
+      throw new Error("Mammoth 模块没有 default 导出。");
+    }
+    return mammothRuntime;
+  } catch (error) {
+    console.error("[ImportWord] Mammoth 模块加载失败:", error);
+    throw new Error(
+      "无法加载 Word 导入模块，请确认 mammoth 依赖已正确安装并打包。",
+      {
+        cause: error,
+      },
+    );
+  }
+}
+
+/**
  * 导入 Word 文档并插入到编辑器。
  * Import a Word document and insert into the editor.
  *
@@ -692,7 +714,7 @@ async function importDocxToEditor(
       | UploadGenerator
       | undefined;
 
-    const [{ default: mammoth }] = await Promise.all([import("mammoth")]);
+    const mammoth = await loadMammothRuntime();
 
     /**
      * 使用 Mammoth 将 DOCX 转为 HTML。

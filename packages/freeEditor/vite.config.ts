@@ -3,21 +3,21 @@ import { bundleDts } from "vite-plugin-bundle-dts";
 import path from "node:path";
 
 /**
- * Free Editor 运行时依赖
- * 这些依赖全部声明在 package.json 的 dependencies 中。
- * 构建时将它们标记为 external，不将第三方依赖代码重复打包进
- * 用户安装 @catmasks/free-editor 时，pnpm/npm 会自动安装这些 dependencies。
+ * Free Editor 运行时依赖。
+ *
+ * 其中：
+ * - Tiptap 相关依赖作为 external 处理，由使用项目提供。
+ * - 部分第三方依赖作为 external 处理，运行时从使用项目加载。
+ * - 需要浏览器 ESM 转换的动态依赖不放入 external，
+ *   由 Vite 构建为独立的动态 chunk。
  */
 const externalPackages = [
   "@tiptap/core",
   "@tiptap/pm",
   "@tiptap/extension-gapcursor",
 
-  "docx",
-  "file-saver",
-  "html2canvas",
   "jspdf",
-  "mammoth",
+  "docx",
   "markdown-it",
   "prosemirror-markdown",
 ];
@@ -66,6 +66,11 @@ export default defineConfig({
          */
         exports: "named",
 
+        /**
+         * 将动态加载产生的 JS chunk 统一放入 chunks 目录。
+
+         */
+        chunkFileNames: "chunks/[name]-[hash].js",
         /**
          * 统一 CSS 文件名称。
          */

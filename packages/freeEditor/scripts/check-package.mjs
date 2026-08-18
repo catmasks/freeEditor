@@ -13,6 +13,7 @@ const requiredFiles = [
   "dist/index.js",
   "dist/index.d.ts",
   "dist/style.css",
+  "dist/chunks",
 ];
 
 let failed = false;

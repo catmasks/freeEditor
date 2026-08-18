@@ -362,7 +362,48 @@ function createPdfFromCanvas(
 
   return pdf;
 }
+/**
+ * 动态加载 html2canvas。
+ */
+/* eslint-disable @typescript-eslint/consistent-type-imports */
+async function loadHtml2CanvasRuntime(): Promise<
+  (typeof import("html2canvas"))["default"]
+> {
+  try {
+    const module = await import("html2canvas");
 
+    return module.default;
+  } catch (error) {
+    console.error("[ExportPdf] html2canvas 模块加载失败:", error);
+
+    throw new Error(
+      "无法加载 PDF 导出模块，请确认 html2canvas 依赖已正确安装并打包。",
+      {
+        cause: error,
+      },
+    );
+  }
+}
+
+/**
+ * 动态加载 jsPDF。
+ */
+async function loadJsPdfRuntime(): Promise<typeof JsPDFConstructor> {
+  try {
+    const { jsPDF } = await import("jspdf");
+
+    return jsPDF;
+  } catch (error) {
+    console.error("[ExportPdf] jsPDF 模块加载失败:", error);
+
+    throw new Error(
+      "无法加载 PDF 导出模块，请确认 jspdf 依赖已正确安装并打包。",
+      {
+        cause: error,
+      },
+    );
+  }
+}
 /**
  * 将当前编辑器内容导出为 PDF 文件。
  *
@@ -380,9 +421,9 @@ async function exportEditorToPdf(
   let paginationStyle: HTMLStyleElement | null = null;
 
   try {
-    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-      import("html2canvas"),
-      import("jspdf"),
+    const [html2canvas, jsPDF] = await Promise.all([
+      loadHtml2CanvasRuntime(),
+      loadJsPdfRuntime(),
     ]);
     const result = createPdfContainer(editor);
 
@@ -441,7 +482,7 @@ async function exportEditorToPdf(
     const pdf = createPdfFromCanvas(canvas, jsPDF);
     const blob = pdf.output("blob");
 
-    await downloadFile(blob, fileName);
+    downloadFile(blob, fileName);
   } catch (error) {
     console.error("[ExportPdf] 导出失败:", error);
   } finally {

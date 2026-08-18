@@ -58,20 +58,17 @@ pnpm add @catmasks/free-editor
 
 ### CDN 引入
 
-如果你的项目不使用 Vite、Webpack 等构建工具，可以通过 ESM CDN 直接在浏览器中使用。
+如果项目不使用 Vite、Webpack 等构建工具，可以通过 ESM CDN 使用 Free Editor。
 
 > **⚠️ 注意**
 >
-> - 本包提供 ESM 和 CommonJS 两种构建格式，浏览器 CDN 场景请使用 ESM。
-> - 本包的运行时依赖通过 `dependencies` 声明，并由 npm/pnpm 在包管理器环境中自动安装。
-> - 为了避免将第三方依赖重复打包进 Free Editor，本包构建时会将运行时依赖标记为 external。因此，在浏览器原生 ESM 环境中，需要 CDN 将这些 npm 依赖解析为浏览器可加载的 URL。
-> - 推荐使用 **esm.sh**，它可以自动解析 npm 依赖，无需手动配置 Tiptap、ProseMirror、PDF、Word、Markdown 等依赖。
+> - 浏览器 CDN 场景请使用 ESM。
+> - 推荐使用 **esm.sh**，它可以自动解析 Free Editor 的 npm 依赖，无需手动配置依赖。
+> - Free Editor 部分功能使用动态 `import()` 加载，构建后会生成 `chunks/` 目录，部署时需要与 `index.js` 一起保留。
 > - `style.css` 需要单独引入。
 
 #### 使用 esm.sh（推荐）
 
-esm.sh 可以自动解析 `@catmasks/free-editor` 及其 `dependencies`，因此无需手动配置 Tiptap、ProseMirror 等依赖。
-
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -91,7 +88,7 @@ esm.sh 可以自动解析 `@catmasks/free-editor` 及其 `dependencies`，因此
     <div id="editor"></div>
 
     <script type="module">
-      import { Editor, i18n } from "https://esm.sh/@catmasks/free-editor@0.0.5";
+      import { Editor } from "https://esm.sh/@catmasks/free-editor@0.0.5";
 
       const editor = new Editor(document.getElementById("editor"), {
         content: "<p>Hello World</p>",
@@ -102,131 +99,41 @@ esm.sh 可以自动解析 `@catmasks/free-editor` 及其 `dependencies`，因此
 </html>
 ```
 
-#### 使用 importmap
-
-如果希望在代码中使用标准的包名：
-
-```js
-import { Editor } from "@catmasks/free-editor";
-```
-
-可以通过 importmap 将 npm 包映射到 esm.sh。
-
-```html
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Free Editor CDN</title>
-
-    <link
-      rel="stylesheet"
-      href="https://esm.sh/@catmasks/free-editor@0.0.5/style.css"
-    />
-
-    <script type="importmap">
-      {
-        "imports": {
-          "@catmasks/free-editor": "https://esm.sh/@catmasks/free-editor@0.0.5"
-        }
-      }
-    </script>
-  </head>
-
-  <body>
-    <div id="editor"></div>
-
-    <script type="module">
-      import { Editor, i18n } from "@catmasks/free-editor";
-
-      const editor = new Editor(document.getElementById("editor"), {
-        content: "<p>Hello World</p>",
-        placeholder: "请输入内容...",
-      });
-    </script>
-  </body>
-</html>
-```
-
-> **说明**
-> 使用 esm.sh 时，只需要映射 `@catmasks/free-editor`，其运行时依赖会由 esm.sh 自动解析。
+> 使用 esm.sh 时，只需要引入 `@catmasks/free-editor`，其 npm 依赖会自动解析。
 
 #### 使用 jsDelivr / unpkg
 
-如果使用 jsDelivr 或 unpkg 直接加载 `dist/index.js`，需要注意：
+如果直接加载 Free Editor 的 `dist/index.js`，由于部分依赖被 external 化，浏览器无法直接解析 npm 裸模块：
 
 ```js
 import { Editor } from "@tiptap/core";
-import { jsPDF } from "jspdf";
 ```
 
-这类裸模块导入无法被浏览器原生 ESM 直接解析。
-由于 Free Editor 的构建产物将运行时依赖 external 化，因此使用 jsDelivr / unpkg 时，需要通过 importmap 显式映射相关依赖。
-
-例如：
+此时需要使用 `importmap` 映射 external 依赖：
 
 ```html
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Free Editor CDN</title>
-
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.5/dist/style.css"
-    />
-
-    <script type="importmap">
-      {
-        "imports": {
-          "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
-          "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
-          "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
-          "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
-          "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
-
-          "docx": "https://esm.sh/docx@9.7.1",
-          "file-saver": "https://esm.sh/file-saver@2.0.5",
-          "html2canvas": "https://esm.sh/html2canvas@1.4.1",
-          "jspdf": "https://esm.sh/jspdf@4.2.1",
-          "mammoth": "https://esm.sh/mammoth@1.12.0",
-          "markdown-it": "https://esm.sh/markdown-it@14.1.0",
-          "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
-        }
-      }
-    </script>
-  </head>
-
-  <body>
-    <div id="editor"></div>
-
-    <script type="module">
-      import {
-        Editor,
-        i18n,
-      } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@0.0.5/dist/index.js";
-
-      const editor = new Editor(document.getElementById("editor"), {
-        content: "<p>Hello World</p>",
-        placeholder: "请输入内容...",
-      });
-    </script>
-  </body>
-</html>
+<script type="importmap">
+  {
+    "imports": {
+      "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
+      "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
+      "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
+      "docx": "https://esm.sh/docx@9.7.1",
+      "jspdf": "https://esm.sh/jspdf@4.2.1",
+      "markdown-it": "https://esm.sh/markdown-it@14.1.0",
+      "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
+    }
+  }
+</script>
 ```
 
 > **提示**
 >
-> - 请将 `@0.0.5` 替换为实际使用的 @catmasks/free-editor 版本。
-> - 如果使用 jsDelivr / unpkg，除了 Tiptap 和 ProseMirror，还需要映射 @catmasks/free-editor 实际 external 化的其他运行时依赖。
-> - 推荐优先使用 esm.sh，可以避免手动维护完整的 importmap。
-> - `style.css` 必须单独引入，否则编辑器样式无法正常加载。
-> - 浏览器 CDN 方式适合快速体验和简单页面集成；生产项目更推荐使用 npm/pnpm + Vite 等构建工具。
+> - 推荐优先使用 esm.sh。
+> - 如果使用 jsDelivr / unpkg，需要根据当前版本的 external 依赖配置 `importmap`。
+> - 构建后的 `chunks/` 目录必须与 `index.js` 一起部署。
+> - `style.css` 必须单独引入。
+> - 生产项目推荐使用 npm/pnpm + Vite 等构建工具。
 
 ---
 

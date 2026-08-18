@@ -312,7 +312,9 @@ class I18nStore {
     });
   }
 }
-
+/**
+ * 国际化实例 / Internationalization instance
+ */
 export const i18n = new I18nStore();
 
 export { zhCN, en, jaJP };

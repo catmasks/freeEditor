@@ -1815,9 +1815,6 @@ async function convertDocument(
 
 /**
  * 动态加载 DOCX 运行时。
- *
- * 这里必须捕获动态 import 失败，
- * 避免 docx 未安装、模块损坏或构建产物缺失时继续执行导出流程。
  */
 async function loadDocxRuntime(): Promise<DocxRuntime> {
   try {
@@ -1858,7 +1855,7 @@ async function exportDocx(
 
     const blob = await runtime.Packer.toBlob(document);
 
-    await downloadFile(blob, fileName);
+    downloadFile(blob, fileName);
   } catch (error) {
     console.error("[ExportWord] Word 导出失败:", error);
 
