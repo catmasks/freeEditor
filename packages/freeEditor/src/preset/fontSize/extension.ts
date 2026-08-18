@@ -28,7 +28,7 @@ export const CustomFontSize = Extension.create({
              * @param element HTML 元素 / HTML element
              * @returns 字号值或 null / Font size value or null
              */
-            parseHTML: (element) => {
+            parseHTML: (element: HTMLElement): string | null => {
               return element.style.fontSize || null;
             },
           },
@@ -52,7 +52,7 @@ export const CustomFontSize = Extension.create({
        */
       setFontSize:
         (fontSize?: string | null) =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           if (!fontSize) {
             const attrs = editor.getAttributes("style");
 
@@ -78,7 +78,7 @@ export const CustomFontSize = Extension.create({
        */
       unsetFontSize:
         () =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const attrs = editor.getAttributes("style");
 
           return chain()

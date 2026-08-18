@@ -38,7 +38,7 @@ function getHeadingLevel(editor: Editor): number | null {
  * @param editor 编辑器实例 / Editor instance
  * @returns Select 工具栏元素 / Select toolbar element
  */
-export function createHeadingToolbar(editor: Editor) {
+export function createHeadingToolbar(editor: Editor): HTMLElement {
   return createSelectToolbar({
     editor,
     options: getHeadingOptions(),

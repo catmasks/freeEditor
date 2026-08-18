@@ -12,11 +12,13 @@ export const Alignment = Extension.create({
           alignment: {
             default: null,
 
-            parseHTML: (element) => {
+            parseHTML: (element: HTMLElement): string | null => {
               return element.style.textAlign || null;
             },
 
-            renderHTML: (attributes) => {
+            renderHTML: (
+              attributes: Record<string, unknown>,
+            ): Record<string, string> => {
               if (!attributes.alignment) {
                 return {};
               }
@@ -35,7 +37,7 @@ export const Alignment = Extension.create({
     return {
       setAlignment:
         (alignment: string | null) =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const { selection } = state;
           const { $from, $to } = selection;
           const { doc } = state;
@@ -75,7 +77,7 @@ export const Alignment = Extension.create({
 
       unsetAlignment:
         () =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const { selection } = state;
           const { $from, $to } = selection;
           const { doc } = state;

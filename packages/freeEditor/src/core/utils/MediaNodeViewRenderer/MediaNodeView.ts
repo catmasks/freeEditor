@@ -147,7 +147,7 @@ export class MediaNodeView {
   /**
    * 刷新语言（语言切换时重新渲染内容） / Refresh locale (re-render content on locale change)
    */
-  private refreshLocale() {
+  private refreshLocale(): void {
     const { attrs } = this.options;
 
     this.wrapper.innerHTML = "";
@@ -173,7 +173,7 @@ export class MediaNodeView {
   /**
    * 渲染节点视图 / Render node view
    */
-  private render() {
+  private render(): void {
     const { attrs } = this.options;
 
     this.el = document.createElement("span");
@@ -213,7 +213,7 @@ export class MediaNodeView {
   /**
    * 应用包装器样式 / Apply wrapper style
    */
-  private applyWrapperStyle() {
+  private applyWrapperStyle(): void {
     const { attrs } = this.options;
 
     const isAttachment = attrs.type === "attachment";
@@ -238,7 +238,7 @@ export class MediaNodeView {
   /**
    * 渲染加载状态 / Render loading state
    */
-  private renderLoading() {
+  private renderLoading(): void {
     const { attrs, uploader } = this.options;
 
     const box = document.createElement("span");
@@ -279,7 +279,7 @@ export class MediaNodeView {
   /**
    * 渲染错误状态 / Render error state
    */
-  private renderError() {
+  private renderError(): void {
     const { attrs, uploader } = this.options;
 
     const box = document.createElement("span");
@@ -320,7 +320,7 @@ export class MediaNodeView {
   /**
    * 渲染媒体内容 / Render media content
    */
-  private renderMedia() {
+  private renderMedia(): void {
     const { attrs } = this.options;
 
     const isVideo = attrs.type === "video";
@@ -485,7 +485,7 @@ export class MediaNodeView {
    * 渲染附件文件卡片 / Render attachment file card
    * @param mediaWrap 媒体包装器元素 / Media wrapper element
    */
-  private renderAttachment(mediaWrap: HTMLSpanElement) {
+  private renderAttachment(mediaWrap: HTMLSpanElement): void {
     const { attrs } = this.options;
 
     const link = document.createElement("a");
@@ -534,7 +534,7 @@ export class MediaNodeView {
   /**
    * 渲染调整大小手柄 / Render resize handles
    */
-  private renderResizeHandles() {
+  private renderResizeHandles(): void {
     const dirs: HandleDirection[] = [
       "free-editor__top-left",
       "free-editor__top",
@@ -551,7 +551,7 @@ export class MediaNodeView {
 
       el.className = `free-editor__resize-handle ${dir}`;
 
-      el.onmousedown = (e) => this.startResize(e, dir);
+      el.onmousedown = (e: MouseEvent): void => this.startResize(e, dir);
 
       this.wrapper.appendChild(el);
     });
@@ -566,7 +566,7 @@ export class MediaNodeView {
     e: MouseEvent,
 
     dir: HandleDirection,
-  ) {
+  ): void {
     if (!this.isResizable) {
       return;
     }
@@ -598,7 +598,7 @@ export class MediaNodeView {
    * 处理调整大小 / Handle resize
    * @param e 鼠标事件 / Mouse event
    */
-  private onResize = (e: MouseEvent) => {
+  private onResize = (e: MouseEvent): void => {
     const dx = e.clientX - this.startX;
 
     let width = this.startWidth;
@@ -627,7 +627,7 @@ export class MediaNodeView {
   /**
    * 停止调整大小 / Stop resize
    */
-  private stopResize = () => {
+  private stopResize = (): void => {
     document.removeEventListener(
       "mousemove",
 
@@ -662,7 +662,7 @@ export class MediaNodeView {
    * 设置选中状态 / Set selected state
    * @param selected 是否选中 / Whether selected
    */
-  setSelected(selected: boolean) {
+  setSelected(selected: boolean): void {
     this.options.selected = selected;
 
     const video = this.wrapper.querySelector(
@@ -695,7 +695,7 @@ export class MediaNodeView {
    * 根据 isResizable 和选中状态，添加或移除调整大小手柄。
    * 禁用/只读时自动隐藏，恢复正常时自动显示。
    */
-  private syncResizeHandles() {
+  private syncResizeHandles(): void {
     /** 先移除所有现有手柄 */
     this.removeResizeHandles();
 
@@ -708,7 +708,7 @@ export class MediaNodeView {
   /**
    * 移除所有调整大小手柄 / Remove all resize handles
    */
-  private removeResizeHandles() {
+  private removeResizeHandles(): void {
     this.wrapper
       .querySelectorAll(".free-editor__resize-handle")
       .forEach((el) => el.remove());
@@ -718,7 +718,7 @@ export class MediaNodeView {
    * 更新节点属性 / Update node attributes
    * @param attrs 新属性 / New attributes
    */
-  update(attrs: MediaNodeAttrs) {
+  update(attrs: MediaNodeAttrs): void {
     const prevAttrs = this.options.attrs;
 
     this.options.attrs = {
@@ -779,7 +779,7 @@ export class MediaNodeView {
    * 设置预设宽度 / Set preset width
    * @param p 比例值 / Ratio value
    */
-  setPresetWidth(p: number) {
+  setPresetWidth(p: number): void {
     const width = `${p * 100}%`;
 
     this.wrapper.style.width = width;
@@ -793,7 +793,7 @@ export class MediaNodeView {
   /**
    * 重置尺寸 / Reset size
    */
-  resetSize() {
+  resetSize(): void {
     this.wrapper.style.width = "auto";
 
     this.options.updateAttributes({
@@ -805,7 +805,7 @@ export class MediaNodeView {
   /**
    * 打开附件（新标签页） / Open attachment (new tab)
    */
-  openAttachment() {
+  openAttachment(): void {
     const { attrs } = this.options;
 
     if (!attrs.src) return;
@@ -816,7 +816,7 @@ export class MediaNodeView {
   /**
    * 删除节点 / Delete node
    */
-  deleteNode() {
+  deleteNode(): void {
     this.options.deleteNode();
   }
 
@@ -831,7 +831,7 @@ export class MediaNodeView {
   /**
    * 销毁节点视图 / Destroy node view
    */
-  destroy() {
+  destroy(): void {
     this.unsubscribeLocale?.();
     this.unsubscribeLocale = null;
 

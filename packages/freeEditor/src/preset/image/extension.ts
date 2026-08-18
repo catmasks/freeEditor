@@ -203,8 +203,8 @@ export const CustomImage = Node.create({
        * @returns 命令函数 / Command function
        */
       setImage:
-        (options: Record<string, any>) =>
-        ({ commands }: { commands: any }) => {
+        (options: Record<string, unknown>) =>
+        ({ commands }: { commands: any }): boolean => {
           return commands.insertContent({
             type: this.name,
 

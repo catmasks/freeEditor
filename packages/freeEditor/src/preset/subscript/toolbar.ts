@@ -16,7 +16,7 @@ const SUBSCRIPT_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createSubscriptToolbar(editor: Editor) {
+export function createSubscriptToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: SUBSCRIPT_ICON,

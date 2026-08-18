@@ -25,19 +25,19 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
     };
   },
 
-  addStorage() {
+  addStorage(): MarkdownStorage {
     return {
       parser: null as unknown as MarkdownParser,
       serializer: null as unknown as MarkdownSerializer,
-      getMarkdown: () => "",
+      getMarkdown: (): string => "",
       registerNodeSerializer: async (
         _name: string,
         _serializer: MarkdownNodeSerializer,
-      ) => {},
+      ): Promise<void> => {},
       registerMarkSerializer: async (
         _name: string,
         _serializer: MarkdownMarkSerializer,
-      ) => {},
+      ): Promise<void> => {},
     };
   },
 
@@ -53,12 +53,13 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
       this.options.serializer?.nodes,
       this.options.serializer?.marks,
     );
-    const storage = (editor.storage as any).markdown as MarkdownStorage;
+    const storage = (editor.storage as Record<string, any>)
+      .markdown as MarkdownStorage;
 
     storage.parser = parser;
     storage.serializer = serializer;
 
-    storage.getMarkdown = () => {
+    storage.getMarkdown = (): string => {
       return serializer.serialize(editor.state.doc, {
         tightLists: this.options.serializer?.tightLists ?? false,
       });
@@ -67,7 +68,7 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
     storage.registerNodeSerializer = async (
       name: string,
       nodeSerializer: MarkdownNodeSerializer,
-    ) => {
+    ): Promise<void> => {
       const nodes = {
         ...this.options.serializer?.nodes,
         [name]: nodeSerializer,
@@ -78,7 +79,7 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
     storage.registerMarkSerializer = async (
       name: string,
       markSerializer: MarkdownMarkSerializer,
-    ) => {
+    ): Promise<void> => {
       const marks = {
         ...this.options.serializer?.marks,
         [name]: markSerializer,
@@ -91,10 +92,12 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
     return {
       setMarkdown:
         (markdown: string) =>
-        ({ editor }: { editor: Editor }) => {
+        ({ editor }: { editor: Editor }): boolean => {
           try {
-            const parser = ((editor.storage as any).markdown as MarkdownStorage)
-              .parser;
+            const parser = (
+              (editor.storage as Record<string, any>)
+                .markdown as MarkdownStorage
+            ).parser;
             if (!parser) {
               console.warn("[Markdown] Parser not initialized yet");
               return false;
@@ -111,8 +114,9 @@ export const Markdown = Extension.create<MarkdownOptions, MarkdownStorage>({
 
   addProseMirrorPlugins() {
     const { editor } = this;
-    const getParser = () =>
-      ((editor.storage as any).markdown as MarkdownStorage).parser || null;
+    const getParser = (): MarkdownParser | null =>
+      ((editor.storage as Record<string, any>).markdown as MarkdownStorage)
+        .parser || null;
     return [createMarkdownPastePlugin(editor, getParser)];
   },
 

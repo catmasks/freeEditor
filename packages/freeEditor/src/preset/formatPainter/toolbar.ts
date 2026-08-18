@@ -17,14 +17,14 @@ interface CapturedMark {
   /** 标记名称 / Mark name */
   name: string;
   /** 标记属性 / Mark attributes */
-  attrs: Record<string, any>;
+  attrs: Record<string, unknown>;
 }
 
 interface CapturedNodeAttr {
   /** 属性名称 / Attribute name */
   name: string;
   /** 属性值 / Attribute value */
-  value: any;
+  value: unknown;
 }
 
 interface FormatData {
@@ -72,7 +72,9 @@ const STORAGE_KEY = "formatPainter";
  * @returns 格式刷状态 / Format painter state
  */
 function getState(editor: Editor): FormatPainterState {
-  return (editor.storage as any)[STORAGE_KEY] as FormatPainterState;
+  return (editor.storage as Record<string, unknown>)[
+    STORAGE_KEY
+  ] as FormatPainterState;
 }
 
 /**
@@ -82,7 +84,10 @@ function getState(editor: Editor): FormatPainterState {
  * @param state 格式刷状态 / Format painter state
  */
 function setState(editor: Editor, state: Partial<FormatPainterState>): void {
-  Object.assign((editor.storage as any)[STORAGE_KEY], state);
+  Object.assign(
+    (editor.storage as Record<string, unknown>)[STORAGE_KEY],
+    state,
+  );
 }
 
 /**
@@ -97,7 +102,7 @@ function captureFormat(editor: Editor): FormatData {
 
   // 捕获 style mark 的非空属性 / Capture non-empty style mark attributes
   const styleAttrs = editor.getAttributes("style");
-  const filteredStyleAttrs: Record<string, any> = {};
+  const filteredStyleAttrs: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(styleAttrs)) {
     if (value !== null && value !== undefined && value !== "") {
@@ -118,7 +123,7 @@ function captureFormat(editor: Editor): FormatData {
 
     if (editor.isActive(markType.name)) {
       const attrs = editor.getAttributes(markType.name);
-      const filteredAttrs: Record<string, any> = {};
+      const filteredAttrs: Record<string, unknown> = {};
 
       for (const [key, value] of Object.entries(attrs)) {
         if (value !== null && value !== undefined && value !== "") {
@@ -222,8 +227,8 @@ function applyFormat(editor: Editor, formatData: FormatData): void {
  */
 export function createFormatPainterToolbar(editor: Editor): HTMLElement {
   // 初始化状态存储 / Initialize state storage
-  if (!(editor.storage as any)[STORAGE_KEY]) {
-    (editor.storage as any)[STORAGE_KEY] = {
+  if (!(editor.storage as Record<string, unknown>)[STORAGE_KEY]) {
+    (editor.storage as Record<string, unknown>)[STORAGE_KEY] = {
       active: false,
       formatData: null,
       cleanup: null,
@@ -373,14 +378,15 @@ export function createFormatPainterToolbar(editor: Editor): HTMLElement {
     onClick: () => toggle(),
   });
 
-  const render = () => {
+  const render = (): void => {
     wrapper.classList.toggle("is-active", getState(editor)?.active || false);
   };
 
   // 销毁时清理 / Clean up on destroy
-  const originalDestroy = (wrapper as any).destroy;
+  const wrapperWithDestroy = wrapper as HTMLElement & { destroy?: () => void };
+  const originalDestroy = wrapperWithDestroy.destroy;
 
-  (wrapper as any).destroy = () => {
+  wrapperWithDestroy.destroy = (): void => {
     deactivate();
     originalDestroy?.();
   };

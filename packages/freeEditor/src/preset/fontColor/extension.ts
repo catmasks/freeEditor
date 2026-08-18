@@ -28,7 +28,7 @@ export const CustomFontColor = Extension.create({
              * @param element HTML 元素 / HTML element
              * @returns 颜色值或 null / Color value or null
              */
-            parseHTML: (element) => {
+            parseHTML: (element: HTMLElement): string | null => {
               return element.style.color || null;
             },
           },
@@ -52,7 +52,7 @@ export const CustomFontColor = Extension.create({
        */
       setColor:
         (color?: string | null) =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           if (!color) {
             const attrs = editor.getAttributes("style");
 
@@ -78,7 +78,7 @@ export const CustomFontColor = Extension.create({
        */
       unsetColor:
         () =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const attrs = editor.getAttributes("style");
 
           return chain()

@@ -12,11 +12,13 @@ export const LineHeight = Extension.create({
           lineHeight: {
             default: null,
 
-            parseHTML: (element) => {
+            parseHTML: (element): string | null => {
               return element.style.lineHeight || null;
             },
 
-            renderHTML: (attributes) => {
+            renderHTML: (
+              attributes,
+            ): Record<string, string> | Record<string, never> => {
               if (!attributes.lineHeight) {
                 return {};
               }
@@ -35,7 +37,7 @@ export const LineHeight = Extension.create({
     return {
       setLineHeight:
         (lineHeight: string | null) =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const { selection } = state;
           const { $from, $to } = selection;
           const { doc } = state;
@@ -75,7 +77,7 @@ export const LineHeight = Extension.create({
 
       unsetLineHeight:
         () =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const { selection } = state;
           const { $from, $to } = selection;
           const { doc } = state;

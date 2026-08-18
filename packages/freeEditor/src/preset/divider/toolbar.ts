@@ -19,7 +19,7 @@ const DIVIDER_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createDividerToolbar(editor: Editor) {
+export function createDividerToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: DIVIDER_ICON,

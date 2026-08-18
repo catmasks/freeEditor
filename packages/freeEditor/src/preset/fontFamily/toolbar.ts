@@ -67,7 +67,7 @@ const getFontFamilyOptions = (): SelectOption[] => [
  * @param editor 编辑器实例 / Editor instance
  * @returns Select 工具栏元素 / Select toolbar element
  */
-export function createFontFamilyToolbar(editor: Editor) {
+export function createFontFamilyToolbar(editor: Editor): HTMLElement {
   return createSelectToolbar({
     editor,
     options: getFontFamilyOptions(),

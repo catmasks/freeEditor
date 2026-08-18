@@ -13,9 +13,9 @@ export const UndoShortcut = Extension.create({
   addKeyboardShortcuts() {
     return {
       /** Ctrl+Z 撤销 */
-      "Mod-z": () => this.editor.commands.undo(),
+      "Mod-z": (): boolean => this.editor.commands.undo(),
       /** Ctrl+Y 重做 */
-      "Mod-y": () => this.editor.commands.redo(),
+      "Mod-y": (): boolean => this.editor.commands.redo(),
     };
   },
 });

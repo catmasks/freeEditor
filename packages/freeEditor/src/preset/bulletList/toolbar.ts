@@ -16,7 +16,7 @@ const BULLET_LIST_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createBulletListToolbar(editor: Editor) {
+export function createBulletListToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: BULLET_LIST_ICON,

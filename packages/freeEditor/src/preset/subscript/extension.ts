@@ -26,7 +26,7 @@ export const Subscript = Mark.create({
          * @param value 样式值 / Style value
          * @returns 属性对象或 false / Attribute object or false
          */
-        getAttrs: (value) => {
+        getAttrs: (value): Record<string, never> | false => {
           if (value === "sub") {
             return {};
           }
@@ -58,7 +58,7 @@ export const Subscript = Mark.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-Shift-,": () => {
+      "Mod-Shift-,": (): boolean => {
         return this.editor.commands.setSubscript();
       },
     };
@@ -81,7 +81,7 @@ export const Subscript = Mark.create({
        */
       setSubscript:
         () =>
-        ({ commands, editor }) => {
+        ({ commands, editor }): boolean => {
           const isActive = editor.isActive(this.name);
 
           if (isActive) {
@@ -103,7 +103,7 @@ export const Subscript = Mark.create({
        */
       unsetSubscript:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.unsetMark(this.name);
         },
     };

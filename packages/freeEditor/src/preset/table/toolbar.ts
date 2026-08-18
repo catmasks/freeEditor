@@ -37,7 +37,7 @@ const TABLE_ICON = `
  * @param editor 编辑器实例
  * @returns 工具栏按钮元素
  */
-export function createTableToolbar(editor: Editor) {
+export function createTableToolbar(editor: Editor): HTMLElement {
   const icon = createIcon(TABLE_ICON);
   const wrapper = createToolbarButton(icon, {
     text: i18n.t("toolbar.table"),
@@ -45,7 +45,7 @@ export function createTableToolbar(editor: Editor) {
 
   let floating: FloatingToolbar | null = null;
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (): void => {
     if (floating && floating.isVisible()) {
       floating.hide();
       return;
@@ -88,7 +88,7 @@ export function createTableToolbar(editor: Editor) {
     toggleDropdown();
   });
 
-  const render = () => {
+  const render = (): void => {
     const isActive = editor.isActive("table");
     wrapper.classList.toggle("is-active", isActive);
   };
@@ -98,7 +98,7 @@ export function createTableToolbar(editor: Editor) {
 
   render();
 
-  const destroy = () => {
+  const destroy = (): void => {
     editor.off("selectionUpdate", render);
     editor.off("transaction", render);
     floating?.destroy();

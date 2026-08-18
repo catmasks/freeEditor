@@ -1,4 +1,4 @@
-import { Extension } from "@tiptap/core";
+﻿import { Extension } from "@tiptap/core";
 
 import { FloatingToolbar } from "../../../ui/components/FloatingToolbar/index";
 import { FloatingManager } from "../../../ui/components/FloatingToolbar/FloatingManager";
@@ -41,7 +41,7 @@ export const FloatingToolbarPlugin = Extension.create({
 
     let lastVisibleKeys: string = "";
 
-    let lastTargetKey: string = "";
+    let _lastTargetKey: string = "";
 
     let handleSelectionUpdate: (() => void) | null = null;
 
@@ -53,7 +53,7 @@ export const FloatingToolbarPlugin = Extension.create({
 
     let managerUnsubscribe: (() => void) | null = null;
 
-    const setupManagerListener = () => {
+    const setupManagerListener = (): void => {
       if (managerUnsubscribe) return;
 
       const manager = FloatingManager.getInstance();
@@ -81,7 +81,7 @@ export const FloatingToolbarPlugin = Extension.create({
       });
     };
 
-    const cleanupManagerListener = () => {
+    const cleanupManagerListener = (): void => {
       if (managerUnsubscribe) {
         managerUnsubscribe();
         managerUnsubscribe = null;
@@ -114,7 +114,7 @@ export const FloatingToolbarPlugin = Extension.create({
           }
 
           if (!shouldShow) {
-            const nodeSel = selection as any;
+            const nodeSel = selection as { node?: { type: { name: string } } };
 
             if (
               nodeSel.node &&
@@ -209,14 +209,14 @@ export const FloatingToolbarPlugin = Extension.create({
       return container;
     };
 
-    const refresh = () => {
+    const refresh = (): void => {
       if (!currentEditor || currentEditor.isDestroyed) return;
 
       /** 禁用或只读模式下，悬浮工具栏立即隐藏且不再刷新内容 */
       if (editorRuntimeState.disabled || editorRuntimeState.readonly) {
         hide();
         lastVisibleKeys = "";
-        lastTargetKey = "";
+        _lastTargetKey = "";
         return;
       }
 
@@ -231,7 +231,7 @@ export const FloatingToolbarPlugin = Extension.create({
 
         lastVisibleKeys = "";
 
-        lastTargetKey = "";
+        _lastTargetKey = "";
 
         return;
       }
@@ -245,7 +245,7 @@ export const FloatingToolbarPlugin = Extension.create({
 
         lastVisibleKeys = "";
 
-        lastTargetKey = "";
+        _lastTargetKey = "";
 
         return;
       }
@@ -284,10 +284,10 @@ export const FloatingToolbarPlugin = Extension.create({
 
       lastVisibleKeys = visibleKeys;
 
-      lastTargetKey = firstKey;
+      _lastTargetKey = firstKey;
     };
 
-    const scheduleRefresh = () => {
+    const scheduleRefresh = (): void => {
       if (!autoRefresh || suppressedByOtherFloating) {
         return;
       }
@@ -303,7 +303,7 @@ export const FloatingToolbarPlugin = Extension.create({
       });
     };
 
-    const show = (target: HTMLElement | DOMRect) => {
+    const show = (target: HTMLElement | DOMRect): void => {
       if (!currentEditor || currentEditor.isDestroyed) return;
 
       /** 禁用或只读模式下，禁止通过 show() 手动显示悬浮工具栏 */
@@ -347,7 +347,7 @@ export const FloatingToolbarPlugin = Extension.create({
       toolbar.show();
     };
 
-    const hide = () => {
+    const hide = (): void => {
       toolbar?.hide();
     };
 
@@ -377,7 +377,7 @@ export const FloatingToolbarPlugin = Extension.create({
       };
     };
 
-    const destroy = () => {
+    const destroy = (): void => {
       if (refreshRaf !== null) {
         cancelAnimationFrame(refreshRaf);
 
@@ -433,7 +433,7 @@ export const FloatingToolbarPlugin = Extension.create({
 
     toolbarAPI._setEditor(editor);
 
-    const localHandleSelectionUpdate = () => {
+    const localHandleSelectionUpdate = (): void => {
       toolbarAPI.refresh();
     };
 

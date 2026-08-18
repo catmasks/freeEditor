@@ -69,10 +69,10 @@ export class FloatingManager {
    * @param fn - 回调函数 / Callback function
    * @returns 取消订阅函数 / Unsubscribe function
    */
-  onActiveChange(fn: (id: string | null) => void) {
+  onActiveChange(fn: (id: string | null) => void): () => void {
     this.activeListeners.add(fn);
 
-    return () => {
+    return (): void => {
       this.activeListeners.delete(fn);
     };
   }
@@ -80,7 +80,7 @@ export class FloatingManager {
   /**
    * 通知激活状态变化 / Notify active state changes
    */
-  private notifyActiveChange() {
+  private notifyActiveChange(): void {
     this.activeListeners.forEach((fn) => fn(this.activeId));
   }
 
@@ -153,7 +153,7 @@ export class FloatingManager {
    * 获取当前激活的 ID / Get currently active ID
    * @returns 当前激活的 ID / Currently active ID
    */
-  getActiveId() {
+  getActiveId(): string | null {
     return this.activeId;
   }
 

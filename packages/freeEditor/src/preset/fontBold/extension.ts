@@ -29,7 +29,7 @@ export const Bold = Mark.create({
          * @param value 样式值 / Style value
          * @returns 属性对象或 false / Attribute object or false
          */
-        getAttrs: (value) => {
+        getAttrs: (value: string | number): Record<string, unknown> | false => {
           if (value === "bold" || Number(value) >= 600) {
             return {};
           }
@@ -61,7 +61,7 @@ export const Bold = Mark.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-b": () => {
+      "Mod-b": (): boolean => {
         return this.editor.commands.setBold();
       },
     };
@@ -83,7 +83,7 @@ export const Bold = Mark.create({
        */
       setBold:
         () =>
-        ({ commands, editor }) => {
+        ({ commands, editor }): boolean => {
           const isActive = editor.isActive(this.name);
 
           if (isActive) {
@@ -100,7 +100,7 @@ export const Bold = Mark.create({
        */
       unsetBold:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.unsetMark(this.name);
         },
     };

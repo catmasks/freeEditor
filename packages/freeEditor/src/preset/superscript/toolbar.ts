@@ -16,7 +16,7 @@ const SUPERSCRIPT_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createSuperscriptToolbar(editor: Editor) {
+export function createSuperscriptToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: SUPERSCRIPT_ICON,

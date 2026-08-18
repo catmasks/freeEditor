@@ -14,7 +14,7 @@ export function createToolbar(
   editor: Editor,
 
   plugins: EditorPlugin[],
-) {
+): HTMLElement {
   const toolbar = document.createElement("div");
 
   toolbar.className = "free-editor__toolbar";

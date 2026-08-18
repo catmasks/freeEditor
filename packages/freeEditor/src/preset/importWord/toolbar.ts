@@ -41,7 +41,7 @@ export function createImportWordToolbar(editor: Editor): HTMLElement {
   input.accept = ".docx";
   input.hidden = true;
 
-  input.onchange = async (e) => {
+  input.onchange = async (e: Event): Promise<void> => {
     const files = (e.target as HTMLInputElement).files;
     if (!files?.length) {
       return;

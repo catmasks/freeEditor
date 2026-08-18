@@ -3,7 +3,7 @@ import { Extension } from "@tiptap/core";
 /**
  * 获取当前 tableRow
  */
-function getCurrentRow($from: any) {
+function getCurrentRow($from: any): { node: unknown; depth: number } | null {
   for (let depth = $from.depth; depth > 0; depth--) {
     const node = $from.node(depth);
 
@@ -22,7 +22,7 @@ function getCurrentRow($from: any) {
 /**
  * 获取当前 table
  */
-function getCurrentTable($from: any) {
+function getCurrentTable($from: any): { node: unknown; depth: number } | null {
   for (let depth = $from.depth; depth > 0; depth--) {
     const node = $from.node(depth);
 
@@ -41,7 +41,7 @@ function getCurrentTable($from: any) {
 /**
  * 获取当前 cell
  */
-function getCurrentCell($from: any) {
+function getCurrentCell($from: any): { node: unknown; depth: number } | null {
   for (let depth = $from.depth; depth > 0; depth--) {
     const node = $from.node(depth);
 
@@ -60,8 +60,8 @@ function getCurrentCell($from: any) {
 /**
  * 获取当前列索引
  */
-function getColumnIndex($from: any) {
-  const row = getCurrentRow($from);
+function getColumnIndex($from: any): number {
+  const row = getCurrentRow($from) as any;
 
   if (!row) {
     return -1;
@@ -87,7 +87,7 @@ function getColumnIndex($from: any) {
 /**
  * 创建空单元格
  */
-function createEmptyCell(schema: any, type?: any) {
+function createEmptyCell(schema: any, type?: any): any {
   const cellType = type || schema.nodes.tableCell;
 
   return cellType.create(
@@ -110,7 +110,7 @@ export const TableCommands = Extension.create({
        */
       insertTable:
         (rows = 3, cols = 3) =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           const table = {
             type: "table",
 
@@ -146,7 +146,7 @@ export const TableCommands = Extension.create({
        */
       deleteTable:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { $from } = state.selection;
 
           const table = getCurrentTable($from);
@@ -169,10 +169,10 @@ export const TableCommands = Extension.create({
        */
       addTableRowAfter:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { $from } = state.selection;
 
-          const row = getCurrentRow($from);
+          const row = getCurrentRow($from) as any;
 
           if (!row) {
             return false;
@@ -205,10 +205,10 @@ export const TableCommands = Extension.create({
        */
       addTableRowBefore:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { $from } = state.selection;
 
-          const row = getCurrentRow($from);
+          const row = getCurrentRow($from) as any;
 
           if (!row) {
             return false;
@@ -238,7 +238,7 @@ export const TableCommands = Extension.create({
        */
       deleteTableRow:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { $from } = state.selection;
 
           const row = getCurrentRow($from);
@@ -261,12 +261,12 @@ export const TableCommands = Extension.create({
        */
       addTableColumnAfter:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { schema, tr } = state;
           const { $from } = state.selection;
-          const table = getCurrentTable($from);
-          const cell = getCurrentCell($from);
-          const row = getCurrentRow($from);
+          const table = getCurrentTable($from) as any;
+          const cell = getCurrentCell($from) as any;
+          const row = getCurrentRow($from) as any;
 
           if (!table || !cell || !row) {
             return false;
@@ -305,12 +305,12 @@ export const TableCommands = Extension.create({
        */
       addTableColumnBefore:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { schema, tr } = state;
           const { $from } = state.selection;
-          const table = getCurrentTable($from);
-          const cell = getCurrentCell($from);
-          const row = getCurrentRow($from);
+          const table = getCurrentTable($from) as any;
+          const cell = getCurrentCell($from) as any;
+          const row = getCurrentRow($from) as any;
 
           if (!table || !cell || !row) {
             return false;
@@ -348,12 +348,12 @@ export const TableCommands = Extension.create({
        */
       deleteTableColumn:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { tr } = state;
           const { $from } = state.selection;
-          const table = getCurrentTable($from);
-          const cell = getCurrentCell($from);
-          const row = getCurrentRow($from);
+          const table = getCurrentTable($from) as any;
+          const cell = getCurrentCell($from) as any;
+          const row = getCurrentRow($from) as any;
 
           if (!table || !cell || !row) {
             return false;
@@ -393,11 +393,11 @@ export const TableCommands = Extension.create({
        */
       toggleHeaderRow:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { tr } = state;
           const { $from } = state.selection;
-          const table = getCurrentTable($from);
-          const row = getCurrentRow($from);
+          const table = getCurrentTable($from) as any;
+          const row = getCurrentRow($from) as any;
 
           if (!table || !row) {
             return false;
@@ -409,7 +409,7 @@ export const TableCommands = Extension.create({
             ? state.schema.nodes.tableCell
             : state.schema.nodes.tableHeader;
 
-          let offset = $from.before(row.depth);
+          const offset = $from.before(row.depth);
 
           row.node.forEach((cell: any, cellOffset: number) => {
             const pos = offset + cellOffset + 1;
@@ -425,12 +425,12 @@ export const TableCommands = Extension.create({
        */
       toggleHeaderColumn:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           const { tr } = state;
           const { $from } = state.selection;
-          const table = getCurrentTable($from);
-          const cell = getCurrentCell($from);
-          const row = getCurrentRow($from);
+          const table = getCurrentTable($from) as any;
+          const cell = getCurrentCell($from) as any;
+          const row = getCurrentRow($from) as any;
 
           if (!table || !cell || !row) {
             return false;
@@ -453,13 +453,11 @@ export const TableCommands = Extension.create({
 
           let tableOffset = $from.start(table.depth);
           table.node.forEach((rowNode: any) => {
-            let cellOffset = 0;
             rowNode.forEach((cellNode: any, offset: number, index: number) => {
               if (index === columnIndex) {
                 const pos = tableOffset + offset + 1;
                 tr.setNodeMarkup(pos, targetType, cellNode.attrs);
               }
-              cellOffset += cellNode.nodeSize;
             });
             tableOffset += rowNode.nodeSize;
           });

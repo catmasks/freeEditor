@@ -72,7 +72,7 @@ export const TaskList = Node.create({
        */
       setTaskList:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.wrapInList(this.name);
         },
 
@@ -83,7 +83,7 @@ export const TaskList = Node.create({
        */
       unsetTaskList:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.liftListItem("taskItem");
         },
 
@@ -96,7 +96,7 @@ export const TaskList = Node.create({
        */
       toggleTaskList:
         () =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const isActive = editor.isActive(this.name);
           if (isActive) {
             // 任务列表 → 段落 / Task list → paragraph
@@ -136,7 +136,7 @@ export const TaskList = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-Shift-9": () => {
+      "Mod-Shift-9": (): boolean => {
         return this.editor.commands.toggleTaskList();
       },
     };

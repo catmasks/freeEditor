@@ -36,7 +36,7 @@ const VIDEO_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createVideoToolbar(editor: Editor) {
+export function createVideoToolbar(editor: Editor): HTMLElement {
   const input = document.createElement("input");
 
   input.type = "file";
@@ -45,7 +45,7 @@ export function createVideoToolbar(editor: Editor) {
 
   input.hidden = true;
 
-  input.onchange = async (e) => {
+  input.onchange = async (e: Event): Promise<void> => {
     const files = (e.target as HTMLInputElement).files;
 
     if (!files?.length) {

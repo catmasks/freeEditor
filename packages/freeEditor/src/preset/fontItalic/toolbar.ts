@@ -28,7 +28,7 @@ const ITALIC_ICON = `<svg
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createItalicToolbar(editor: Editor) {
+export function createItalicToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: ITALIC_ICON,

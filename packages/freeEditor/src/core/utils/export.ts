@@ -1,4 +1,4 @@
-import { Node } from "@tiptap/pm/model";
+import type { Node } from "@tiptap/pm/model";
 
 /**
  * 下载文件

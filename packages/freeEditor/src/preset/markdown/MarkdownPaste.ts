@@ -357,7 +357,7 @@ function normalizeMarkdown(text: string): string {
   /**
    * 刷新普通 Markdown。
    */
-  const flushNormalBuffer = () => {
+  const flushNormalBuffer = (): void => {
     if (!normalBuffer.length) {
       return;
     }
@@ -499,7 +499,7 @@ export function createMarkdownPastePlugin(
     key: new PluginKey("markdown-paste"),
 
     props: {
-      handlePaste: (view, event: ClipboardEvent) => {
+      handlePaste: (view, event: ClipboardEvent): boolean => {
         /**
          * 获取纯文本。
          */
@@ -554,6 +554,7 @@ export function createMarkdownPastePlugin(
             /**
              * Markdown 解析失败。
              */
+
             console.warn("[MarkdownPaste] Failed to parse markdown:", error);
           }
         });

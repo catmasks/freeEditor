@@ -17,7 +17,7 @@ function isTableCellCloseToken(token: any): boolean {
 /**
  * 创建一个表示段落开始的 token。
  */
-function createParagraphOpenToken(sourceToken: any): any {
+function createParagraphOpenToken(sourceToken: any): Record<string, any> {
   return {
     ...sourceToken,
 
@@ -40,7 +40,7 @@ function createParagraphOpenToken(sourceToken: any): any {
 /**
  * 创建一个表示段落结束的 token，与上面的开始标签配对。
  */
-function createParagraphCloseToken(sourceToken: any): any {
+function createParagraphCloseToken(sourceToken: any): Record<string, any> {
   return {
     ...sourceToken,
 
@@ -130,10 +130,10 @@ function createTokenizerInstance(
   /**
    * 覆写 parse 方法
    */
-  markdown.parse = (...args) => {
+  markdown.parse = (...args: [string, any[]]): any[] => {
     const tokens = originalParse(...args);
 
-    return normalizeTableTokens(tokens);
+    return normalizeTableTokens(tokens as any[]);
   };
 
   return markdown;

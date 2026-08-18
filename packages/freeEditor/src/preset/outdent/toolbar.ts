@@ -16,7 +16,7 @@ const OUTDENT_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createOutdentToolbar(editor: Editor) {
+export function createOutdentToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: OUTDENT_ICON,

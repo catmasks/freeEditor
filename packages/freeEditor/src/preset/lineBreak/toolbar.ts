@@ -19,7 +19,7 @@ const LINE_BREAK_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createLineBreakToolbar(editor: Editor) {
+export function createLineBreakToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: LINE_BREAK_ICON,

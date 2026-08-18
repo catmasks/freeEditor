@@ -25,9 +25,12 @@ function hasMark(schema: Schema, name: string): boolean {
  * @returns prosemirror-markdown 运行时模块
  * @throws 当 prosemirror-markdown 加载失败时抛出错误
  */
+
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 async function loadMarkdownParser(): Promise<
   typeof import("prosemirror-markdown")
 > {
+  /* eslint-enable @typescript-eslint/consistent-type-imports */
   try {
     return await import("prosemirror-markdown");
   } catch (error) {

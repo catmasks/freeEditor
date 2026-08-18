@@ -14,7 +14,7 @@ const STRIKE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createStrikeToolbar(editor: Editor) {
+export function createStrikeToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: STRIKE_ICON,

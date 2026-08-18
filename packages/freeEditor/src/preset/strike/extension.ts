@@ -29,7 +29,7 @@ export const Strike = Mark.create({
          * @param value 样式值 / Style value
          * @returns 属性对象或 false / Attribute object or false
          */
-        getAttrs: (value) => {
+        getAttrs: (value): Record<string, never> | false => {
           if (value === "strike") {
             return {};
           }
@@ -61,7 +61,7 @@ export const Strike = Mark.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-s": () => {
+      "Mod-s": (): boolean => {
         return this.editor.commands.setStrike();
       },
     };
@@ -83,7 +83,7 @@ export const Strike = Mark.create({
        */
       setStrike:
         () =>
-        ({ commands, editor }) => {
+        ({ commands, editor }): boolean => {
           const isActive = editor.isActive(this.name);
 
           if (isActive) {
@@ -100,7 +100,7 @@ export const Strike = Mark.create({
        */
       unsetStrike:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.unsetMark(this.name);
         },
     };

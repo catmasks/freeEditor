@@ -28,7 +28,7 @@ export const CustomFontFamily = Extension.create({
              * @param element HTML 元素 / HTML element
              * @returns 字体名称或 null / Font family name or null
              */
-            parseHTML: (element) => {
+            parseHTML: (element: HTMLElement): string | null => {
               return element.style.fontFamily || null;
             },
           },
@@ -52,7 +52,7 @@ export const CustomFontFamily = Extension.create({
        */
       setFontFamily:
         (fontFamily?: string | null) =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           if (!fontFamily) {
             const attrs = editor.getAttributes("style");
 
@@ -78,7 +78,7 @@ export const CustomFontFamily = Extension.create({
        */
       unsetFontFamily:
         () =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const attrs = editor.getAttributes("style");
 
           return chain()

@@ -1,6 +1,6 @@
-// @ts-ignore
+// @ts-expect-error 忽略类型检查
 import { i18n } from "@catmasks/free-editor";
-// @ts-ignore
+// @ts-expect-error 忽略类型检查错误
 import type { Locale } from "@catmasks/free-editor";
 
 import { editor, toggleDisabled, toggleReadonly } from "./editor";

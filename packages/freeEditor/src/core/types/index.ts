@@ -452,14 +452,14 @@ export interface MediaUploaderConfig {
   /**
    * 额外的表单数据 / Extra form data
    */
-  data?: Record<string, any> | (() => Record<string, any>);
+  data?: Record<string, unknown> | (() => Record<string, unknown>);
 
   /**
    * 格式化响应结果 / Format response result
    * @param result 响应结果 / Response result
    * @returns 格式化后的上传结果 / Formatted upload result
    */
-  format?: (result: any) => UploadResult | Promise<UploadResult>;
+  format?: (result: unknown) => UploadResult | Promise<UploadResult>;
 
   /**
    * 自定义上传函数 / Custom upload function
@@ -749,7 +749,7 @@ export interface CreateEditorPluginsOptions {
   /**
    * 上传配置 / Upload configuration
    */
-  uploader?: any;
+  uploader?: MediaUploaderOptions;
 
   /**
    * 占位符文本 / Placeholder text

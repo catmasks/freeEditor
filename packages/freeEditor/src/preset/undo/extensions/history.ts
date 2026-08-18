@@ -30,7 +30,7 @@ export const History = Extension.create({
        */
       undo:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           return undo(state, dispatch);
         },
 
@@ -40,7 +40,7 @@ export const History = Extension.create({
        */
       redo:
         () =>
-        ({ state, dispatch }) => {
+        ({ state, dispatch }): boolean => {
           return redo(state, dispatch);
         },
     };

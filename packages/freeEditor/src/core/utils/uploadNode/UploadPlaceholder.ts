@@ -1,12 +1,10 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import type { NodeView as ProseMirrorNodeView } from "@tiptap/pm/view";
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import type { NodeViewRendererProps } from "@tiptap/core";
 
 import type { MediaNodeAttrs } from "../MediaNodeViewRenderer/types";
-import {
-  createActionButton,
-  updateProgressText,
-} from "./mediaNodeViewShared";
+import { createActionButton, updateProgressText } from "./mediaNodeViewShared";
 
 function renderPlaceholder(
   attrs: MediaNodeAttrs,
@@ -81,18 +79,14 @@ function UploadPlaceholderNodeView(
   return {
     dom,
 
-    update(updatedNode) {
+    update(updatedNode: ProseMirrorNode): boolean {
       if (updatedNode.type.name !== props.node.type.name) {
         return false;
       }
 
       attrs = updatedNode.attrs as MediaNodeAttrs;
 
-      updateProgressText(
-        dom,
-        ".free-editor__progress",
-        attrs.progress || 0,
-      );
+      updateProgressText(dom, ".free-editor__progress", attrs.progress || 0);
 
       return true;
     },
@@ -160,6 +154,6 @@ export const UploadPlaceholder = Node.create({
 
 export const UploadPlaceholderSchema = UploadPlaceholder.extend({
   addNodeView() {
-    return undefined as any;
+    return undefined as never;
   },
 });

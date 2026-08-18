@@ -1,10 +1,10 @@
+import type { Node } from "@tiptap/pm/model";
+
 import { Extension } from "@tiptap/core";
 
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-
-import { Node } from "@tiptap/pm/model";
 
 import { i18n, isEmptyDocument } from "../../../core/index";
 
@@ -132,7 +132,7 @@ export const PlaceholderPlugin = Extension.create({
            * @param doc 文档节点 / Document node
            * @returns 装饰器集合 / Decoration set
            */
-          decorations: ({ doc }) => {
+          decorations: ({ doc }): DecorationSet => {
             /**
              * 获取 Placeholder 目标节点。
              */

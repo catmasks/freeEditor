@@ -12,7 +12,7 @@ import { i18n } from "../../core/index";
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素（带 destroy 方法）/ Toolbar button element (with destroy method)
  */
-export function createLinkToolbar(editor: Editor) {
+export function createLinkToolbar(editor: Editor): HTMLElement {
   const button = createToolbarButton(
     createIcon(`<svg
       xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@ export function createLinkToolbar(editor: Editor) {
     target: button,
   });
 
-  const render = () => {
+  const render = (): void => {
     if (editor.isActive("link")) {
       button.classList.add("is-active");
     } else {
@@ -55,7 +55,7 @@ export function createLinkToolbar(editor: Editor) {
 
   render();
 
-  const destroy = () => {
+  const destroy = (): void => {
     editor.off("selectionUpdate", render);
 
     editor.off("transaction", render);

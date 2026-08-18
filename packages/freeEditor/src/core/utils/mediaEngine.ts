@@ -95,7 +95,7 @@ export class MediaEngine {
    * 设置禁用状态 / Set disabled state
    * @param disabled 是否禁用 / Whether disabled
    */
-  setDisabled(disabled: boolean) {
+  setDisabled(disabled: boolean): void {
     this.disabled = disabled;
   }
 
@@ -117,7 +117,7 @@ export class MediaEngine {
     typeOrHandler: MediaType | MediaDropHandler,
     handler?: MediaDropHandler,
   ): () => void {
-    let type: MediaType = "attachment";
+    let type: MediaType;
     let fn: MediaDropHandler;
 
     if (typeof typeOrHandler === "function") {
@@ -157,7 +157,7 @@ export class MediaEngine {
     typeOrHandler: MediaType | MediaPasteHandler,
     handler?: MediaPasteHandler,
   ): () => void {
-    let type: MediaType = "attachment";
+    let type: MediaType;
     let fn: MediaPasteHandler;
 
     if (typeof typeOrHandler === "function") {
@@ -185,11 +185,12 @@ export class MediaEngine {
    * @param handlers 处理器列表 / Handler list
    * @param event 事件对象 / Event object
    */
-  private dispatchFiles<T extends Function>(
+
+  private dispatchFiles<T extends (...args: any[]) => unknown>(
     files: File[],
     handlers: TypedHandler<T>[],
     event: DragEvent | ClipboardEvent,
-  ) {
+  ): void {
     const typePriority: MediaType[] = ["image", "video", "attachment"];
 
     const remainingFiles = [...files];
@@ -206,7 +207,12 @@ export class MediaEngine {
       if (filesOfType.length === 0) continue;
 
       for (const h of typeHandlers) {
-        (h.handler as any)(filesOfType, event);
+        (
+          h.handler as (
+            files: File[],
+            event: DragEvent | ClipboardEvent,
+          ) => void
+        )(filesOfType, event);
       }
 
       const remainingSet = new Set(remainingFiles);
@@ -221,12 +227,12 @@ export class MediaEngine {
   /**
    * 绑定事件 / Bind events
    */
-  private bind() {
+  private bind(): void {
     if (this.bound) return;
 
     this.bound = true;
 
-    this.onDragOver = (e: DragEvent) => {
+    this.onDragOver = (e: DragEvent): void => {
       /** 禁用状态下阻止悬停效果，避免误导用户可以拖拽上传 */
       if (this.disabled) {
         return;
@@ -238,7 +244,7 @@ export class MediaEngine {
       }
     };
 
-    this.onDropEvent = (e: DragEvent) => {
+    this.onDropEvent = (e: DragEvent): void => {
       /** 禁用状态下阻止所有拖拽释放的回调和上传 */
       if (this.disabled) {
         e.preventDefault();
@@ -257,7 +263,7 @@ export class MediaEngine {
       e.stopPropagation();
     };
 
-    this.onPasteEvent = (e: ClipboardEvent) => {
+    this.onPasteEvent = (e: ClipboardEvent): void => {
       /** 禁用状态下阻止所有粘贴的回调和上传 */
       if (this.disabled) {
         e.preventDefault();
@@ -306,7 +312,7 @@ export class MediaEngine {
   /**
    * 解绑事件并销毁 / Unbind events and destroy
    */
-  destroy() {
+  destroy(): void {
     if (!this.bound) return;
 
     this.root.removeEventListener("dragover", this.onDragOver, true);

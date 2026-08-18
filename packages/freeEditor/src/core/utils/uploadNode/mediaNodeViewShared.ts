@@ -43,7 +43,7 @@ export function createActionButton(
 
   btn.textContent = i18n.t(ACTION_BUTTON_I18N_KEYS[type]);
 
-  btn.onclick = (e: MouseEvent) => {
+  btn.onclick = (e: MouseEvent): void => {
     e.preventDefault();
 
     e.stopPropagation();
@@ -125,7 +125,7 @@ export function createBaseNodeView<TAttrs>(
      * @param updatedNode 更新后的节点 / Updated node
      * @returns 是否更新成功 / Whether update succeeded
      */
-    update(updatedNode) {
+    update(updatedNode): boolean {
       if (updatedNode.type.name !== props.node.type.name) {
         return false;
       }
@@ -138,7 +138,7 @@ export function createBaseNodeView<TAttrs>(
     /**
      * 销毁视图 / Destroy view
      */
-    destroy() {
+    destroy(): void {
       view.destroy();
     },
   };

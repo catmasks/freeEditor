@@ -1,6 +1,6 @@
-// @ts-ignore
+// @ts-expect-error 忽略类型检查
 import { Editor, i18n } from "@catmasks/free-editor";
-// @ts-ignore
+// @ts-expect-error 忽略类型检查错误
 import type { UploadResult, UploadContext } from "@catmasks/free-editor";
 
 import { updateDemoTexts } from "./i18n";
@@ -112,11 +112,11 @@ export function initEditor(): void {
       video: {
         maxSize: 500 * 1024 * 1024,
         accept: ["video/*"],
-        onUploadError(error, file) {
+        onUploadError(error: any, file: File) {
           console.error("[video upload error]", error.message, file);
           alert(i18n.t("upload.uploadFailed"));
         },
-        onSuccess(result, file) {
+        onSuccess(result: UploadResult, file: File) {
           console.log("[video upload success]", result, file);
         },
         async upload(file: File, ctx: UploadContext) {
@@ -138,11 +138,11 @@ export function initEditor(): void {
         },
       },
       attachment: {
-        onUploadError(error, file) {
+        onUploadError(error: any, file: File) {
           console.error("[file upload error]", error.message, file);
           alert(i18n.t("upload.uploadFailed"));
         },
-        onSuccess(result, file) {
+        onSuccess(result: UploadResult, file: File) {
           console.log("[file upload success]", result, file);
         },
         async upload(file: File, ctx: UploadContext) {

@@ -1,4 +1,8 @@
-import { InputRule, textblockTypeInputRule, wrappingInputRule } from "@tiptap/core";
+import {
+  InputRule,
+  textblockTypeInputRule,
+  wrappingInputRule,
+} from "@tiptap/core";
 import type { Schema } from "@tiptap/pm/model";
 
 /**
@@ -10,8 +14,12 @@ export function createMarkdownInputRules(schema: Schema): InputRule[] {
 
   if (schema.nodes.heading) {
     rules.push(
-      ...[1, 2, 3].map(level =>
-        textblockTypeInputRule({ find: new RegExp(`^(#{${level}})\\s$`), type: schema.nodes.heading, getAttributes: { level } }),
+      ...[1, 2, 3].map((level) =>
+        textblockTypeInputRule({
+          find: new RegExp(`^(#{${level}})\\s$`),
+          type: schema.nodes.heading,
+          getAttributes: { level },
+        }),
       ),
     );
   }
@@ -20,7 +28,7 @@ export function createMarkdownInputRules(schema: Schema): InputRule[] {
     rules.push(
       new InputRule({
         find: /^[-*]\s$/,
-        handler: ({ state, range, chain }) => {
+        handler: ({ state, range, chain }): null => {
           const $from = state.doc.resolve(range.from);
           if ($from.parentOffset > 0) return null;
           chain().wrapInList("bulletList").run();
@@ -31,13 +39,15 @@ export function createMarkdownInputRules(schema: Schema): InputRule[] {
   }
 
   if (schema.nodes.blockquote) {
-    rules.push(wrappingInputRule({ find: /^>\s$/, type: schema.nodes.blockquote }));
+    rules.push(
+      wrappingInputRule({ find: /^>\s$/, type: schema.nodes.blockquote }),
+    );
   }
 
   rules.push(
     new InputRule({
       find: /^@\s$/,
-      handler: ({ state, range }) => {
+      handler: ({ state, range }): null => {
         const $from = state.doc.resolve(range.from);
         if ($from.parentOffset > 0) return null;
         state.tr.delete(range.from, range.to);

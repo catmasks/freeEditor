@@ -84,7 +84,7 @@ function getCurrentAlignment(editor: Editor): string | null {
   return null;
 }
 
-export function createAlignmentToolbar(editor: Editor) {
+export function createAlignmentToolbar(editor: Editor): HTMLElement {
   return createSelectToolbar({
     editor,
     options: getAlignmentOptions(),

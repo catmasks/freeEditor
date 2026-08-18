@@ -27,7 +27,7 @@ const getFontSizeOptions = (): SelectOption[] => [
  * @param editor 编辑器实例 / Editor instance
  * @returns Select 工具栏元素 / Select toolbar element
  */
-export function createFontSizeToolbar(editor: Editor) {
+export function createFontSizeToolbar(editor: Editor): HTMLElement {
   return createSelectToolbar({
     editor,
     options: getFontSizeOptions(),

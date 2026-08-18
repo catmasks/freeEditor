@@ -23,13 +23,18 @@ export interface MarkdownOptions {
 /** Markdown 节点序列化器 */
 export interface MarkdownNodeSerializer {
   /** @param node 当前节点  @param state 序列化器状态  @param parent 父节点  @param index 子节点索引 */
-  serialize: (node: any, state: any, parent: any, index: number) => void;
+  serialize: (
+    node: unknown,
+    state: unknown,
+    parent: unknown,
+    index: number,
+  ) => void;
 }
 
 /** Markdown 标记序列化器 */
 export interface MarkdownMarkSerializer {
-  open: string | ((state: any, mark: any) => string);
-  close: string | ((state: any, mark: any) => string);
+  open: string | ((state: unknown, mark: unknown) => string);
+  close: string | ((state: unknown, mark: unknown) => string);
   mixable?: boolean;
   expelEnclosingWhitespace?: boolean;
 }
@@ -41,14 +46,20 @@ export interface MarkdownStorage {
   /** 获取当前编辑器内容的 Markdown 字符串 */
   getMarkdown: () => string;
   /** 注册自定义节点序列化器 */
-  registerNodeSerializer: (name: string, serializer: MarkdownNodeSerializer) => Promise<void>;
+  registerNodeSerializer: (
+    name: string,
+    serializer: MarkdownNodeSerializer,
+  ) => Promise<void>;
   /** 注册自定义标记序列化器 */
-  registerMarkSerializer: (name: string, serializer: MarkdownMarkSerializer) => Promise<void>;
+  registerMarkSerializer: (
+    name: string,
+    serializer: MarkdownMarkSerializer,
+  ) => Promise<void>;
 }
 
 /** Markdown 解析结果 */
 export interface MarkdownParseResult {
-  json: Record<string, any>;
+  json: Record<string, unknown>;
   success: boolean;
   error?: string;
 }

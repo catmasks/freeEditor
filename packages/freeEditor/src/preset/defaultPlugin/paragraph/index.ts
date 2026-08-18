@@ -32,7 +32,7 @@ export const CustomParagraph = Node.create({
       alignment: {
         default: null,
 
-        parseHTML(element) {
+        parseHTML(element: HTMLElement): string | null {
           return (
             element.style.textAlign ||
             element.getAttribute("data-align") ||
@@ -40,13 +40,15 @@ export const CustomParagraph = Node.create({
           );
         },
 
-        renderHTML(attributes) {
+        renderHTML(
+          attributes: Record<string, unknown>,
+        ): Record<string, string> {
           if (!attributes.alignment) {
             return {};
           }
 
           return {
-            style: `text-align:${attributes.alignment}`,
+            style: `text-align:${attributes.alignment as string}`,
           };
         },
       },
@@ -54,7 +56,7 @@ export const CustomParagraph = Node.create({
       lineHeight: {
         default: null,
 
-        parseHTML(element) {
+        parseHTML(element: HTMLElement): string | null {
           return (
             element.style.lineHeight ||
             element.getAttribute("data-line-height") ||
@@ -62,13 +64,15 @@ export const CustomParagraph = Node.create({
           );
         },
 
-        renderHTML(attributes) {
+        renderHTML(
+          attributes: Record<string, unknown>,
+        ): Record<string, string> {
           if (!attributes.lineHeight) {
             return {};
           }
 
           return {
-            style: `line-height:${attributes.lineHeight}`,
+            style: `line-height:${attributes.lineHeight as string}`,
           };
         },
       },
@@ -76,17 +80,19 @@ export const CustomParagraph = Node.create({
       indent: {
         default: 0,
 
-        parseHTML(element) {
+        parseHTML(element: HTMLElement): number {
           return Number(element.getAttribute("data-indent") || 0);
         },
 
-        renderHTML(attributes) {
+        renderHTML(
+          attributes: Record<string, unknown>,
+        ): Record<string, string | number> {
           if (!attributes.indent) {
             return {};
           }
 
           return {
-            "data-indent": attributes.indent,
+            "data-indent": attributes.indent as number,
           };
         },
       },

@@ -15,7 +15,7 @@ const REDO_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createRedoToolbar(editor: Editor) {
+export function createRedoToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: REDO_ICON,

@@ -189,8 +189,8 @@ export const CustomVideo = Node.create({
        * @returns 命令函数 / Command function
        */
       setVideo:
-        (options: any) =>
-        ({ commands }: any) => {
+        (options: Record<string, unknown>) =>
+        ({ commands }: { commands: any }): boolean => {
           return commands.insertContent({
             type: this.name,
 

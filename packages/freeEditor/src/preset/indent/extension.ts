@@ -1,4 +1,5 @@
 import { Extension } from "@tiptap/core";
+import type { EditorState, Transaction } from "@tiptap/pm/state";
 
 /**
  * 最大缩进级别（每级 2em，即首行缩进 2 字符）
@@ -16,8 +17,8 @@ const MAX_INDENT_LEVEL = 5;
  * @returns 是否发生了实际变化 / Whether actual change happened
  */
 function mutateIndent(
-  state: any,
-  tr: any,
+  state: EditorState,
+  tr: Transaction,
   mutate: (currentLevel: number) => number,
 ): boolean {
   const { selection, doc } = state;
@@ -27,19 +28,26 @@ function mutateIndent(
 
   // 遍历选区（含空选区光标位置）范围内的块节点
   // Iterate block nodes within selection (including cursor position for empty selection)
-  doc.nodesBetween($from.pos, $to.pos, (node: any, pos: number) => {
-    if (targetTypes.includes(node.type.name)) {
-      const currentLevel = node.attrs.indent || 0;
-      const newLevel = Math.max(
-        0,
-        Math.min(mutate(currentLevel), MAX_INDENT_LEVEL),
-      );
-      if (newLevel !== currentLevel) {
-        tr.setNodeMarkup(pos, undefined, { ...node.attrs, indent: newLevel });
-        changed = true;
+  doc.nodesBetween(
+    $from.pos,
+    $to.pos,
+    (
+      node: { type: { name: string }; attrs: Record<string, any> },
+      pos: number,
+    ): void | boolean => {
+      if (targetTypes.includes(node.type.name)) {
+        const currentLevel = node.attrs.indent || 0;
+        const newLevel = Math.max(
+          0,
+          Math.min(mutate(currentLevel), MAX_INDENT_LEVEL),
+        );
+        if (newLevel !== currentLevel) {
+          tr.setNodeMarkup(pos, undefined, { ...node.attrs, indent: newLevel });
+          changed = true;
+        }
       }
-    }
-  });
+    },
+  );
 
   return changed;
 }
@@ -75,7 +83,7 @@ export const Indent = Extension.create({
              * @param element DOM 元素 / DOM element
              * @returns 缩进级别（0 ~ 5） / Indent level (0 ~ 5)
              */
-            parseHTML: (element) => {
+            parseHTML: (element): number => {
               const em = parseFloat(element.style.textIndent) || 0;
               return Math.max(
                 0,
@@ -91,7 +99,9 @@ export const Indent = Extension.create({
              * @param attributes 节点属性 / Node attributes
              * @returns HTML 属性对象 / HTML attribute object
              */
-            renderHTML: (attributes) => {
+            renderHTML: (
+              attributes,
+            ): Record<string, string> | Record<string, never> => {
               if (!attributes.indent || attributes.indent <= 0) return {};
               return { style: `text-indent: ${attributes.indent * 2}em` };
             },
@@ -116,7 +126,7 @@ export const Indent = Extension.create({
        */
       setIndent:
         (levels: number = 1) =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const changed = mutateIndent(state, tr, (l) => l + levels);
           if (changed && dispatch) dispatch(tr);
           return changed;
@@ -130,7 +140,7 @@ export const Indent = Extension.create({
        */
       setOutdent:
         (levels: number = 1) =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const changed = mutateIndent(state, tr, (l) => l - levels);
           if (changed && dispatch) dispatch(tr);
           return changed;
@@ -143,7 +153,7 @@ export const Indent = Extension.create({
        */
       unsetIndent:
         () =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const changed = mutateIndent(state, tr, () => 0);
           if (changed && dispatch) dispatch(tr);
           return changed;
@@ -159,9 +169,9 @@ export const Indent = Extension.create({
   addKeyboardShortcuts() {
     return {
       /** Tab 增加缩进 */
-      Tab: () => this.editor.commands.setIndent(),
+      Tab: (): boolean => this.editor.commands.setIndent(),
       /** Shift + Tab 减少缩进 */
-      "Shift-Tab": () => this.editor.commands.setOutdent(),
+      "Shift-Tab": (): boolean => this.editor.commands.setOutdent(),
     };
   },
 });
@@ -193,7 +203,7 @@ export const IndentFeature = Extension.create({
     return {
       setIndent:
         (levels: number = 1) =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const changed = mutateIndent(state, tr, (l) => l + levels);
           if (changed && dispatch) dispatch(tr);
           return changed;
@@ -201,7 +211,7 @@ export const IndentFeature = Extension.create({
 
       unsetIndent:
         () =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const changed = mutateIndent(state, tr, () => 0);
           if (changed && dispatch) dispatch(tr);
           return changed;
@@ -212,7 +222,7 @@ export const IndentFeature = Extension.create({
   addKeyboardShortcuts() {
     return {
       /** Tab 增加缩进 */
-      Tab: () => this.editor.commands.setIndent(),
+      Tab: (): boolean => this.editor.commands.setIndent(),
     };
   },
 });
@@ -229,7 +239,7 @@ export const OutdentFeature = Extension.create({
     return {
       setOutdent:
         (levels: number = 1) =>
-        ({ tr, state, dispatch }) => {
+        ({ tr, state, dispatch }): boolean => {
           const changed = mutateIndent(state, tr, (l) => l - levels);
           if (changed && dispatch) dispatch(tr);
           return changed;
@@ -240,7 +250,7 @@ export const OutdentFeature = Extension.create({
   addKeyboardShortcuts() {
     return {
       /** Shift + Tab 减少缩进 */
-      "Shift-Tab": () => this.editor.commands.setOutdent(),
+      "Shift-Tab": (): boolean => this.editor.commands.setOutdent(),
     };
   },
 });

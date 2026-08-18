@@ -323,7 +323,14 @@ export class FloatingToolbar {
    * @param target - 目标元素 / Target element
    * @returns 边界矩形 / Boundary rectangle
    */
-  private getBoundaryRect(target: HTMLElement | null) {
+  private getBoundaryRect(target: HTMLElement | null): {
+    top: number;
+    left: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
+  } {
     const scrollParent = this.getScrollParent(target);
 
     if (scrollParent instanceof HTMLElement) {
@@ -388,7 +395,7 @@ export class FloatingToolbar {
 
     const isTop = this.isTopPlacement();
 
-    let left = 0;
+    let left: number;
 
     switch (alignType) {
       case "start":
@@ -528,7 +535,7 @@ export class FloatingToolbar {
    * 绑定事件 / Bind events
    */
   private bindEvents(): void {
-    this.scrollHandler = () => {
+    this.scrollHandler = (): void => {
       if (this.visible) {
         this.updatePosition();
       }
@@ -536,7 +543,7 @@ export class FloatingToolbar {
 
     window.addEventListener("scroll", this.scrollHandler, true);
 
-    this.resizeHandler = () => {
+    this.resizeHandler = (): void => {
       if (this.visible) {
         this.updatePosition();
       }
@@ -544,7 +551,7 @@ export class FloatingToolbar {
 
     window.addEventListener("resize", this.resizeHandler);
 
-    this.keydownHandler = (e) => {
+    this.keydownHandler = (e: KeyboardEvent): void => {
       if (!this.visible) {
         return;
       }

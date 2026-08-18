@@ -111,7 +111,7 @@ export const handleUploadFiles = async (
   editor: Editor,
   input: File | File[] | FileList,
   type?: MediaType,
-) => {
+): Promise<UploadTask | (UploadTask | undefined)[] | undefined> => {
   const uploader = editor.storage.mediaUploader;
 
   if (!uploader || typeof uploader.upload !== "function") {
@@ -121,7 +121,7 @@ export const handleUploadFiles = async (
     );
   }
 
-  const files: File[] = (() => {
+  const files: File[] = ((): File[] => {
     if (input instanceof File) {
       return [input];
     }
@@ -248,7 +248,7 @@ async function defaultUploadHandler(
 
   if (extraData) {
     Object.entries(extraData).forEach(([key, value]) => {
-      formData.append(key, value as any);
+      formData.append(key, value as string);
     });
   }
 
@@ -303,7 +303,7 @@ async function defaultUploadHandler(
   const isValidUrl =
     /^data:[^;]+;base64,/.test(url) ||
     url.startsWith("blob:") ||
-    (() => {
+    ((): boolean => {
       try {
         const parsedUrl = new URL(url);
 
@@ -377,7 +377,7 @@ function getMediaConfig(
  * @param editor 编辑器实例 / Editor instance.
  * @param options 插入选项 / Insert options.
  */
-function insertMediaNode(editor: Editor, options: InsertOptions) {
+function insertMediaNode(editor: Editor, options: InsertOptions): void {
   const nodeType = editor.schema.nodes[options.type];
 
   if (!nodeType) {
@@ -415,8 +415,8 @@ function insertMediaNode(editor: Editor, options: InsertOptions) {
 function updateMediaNode(
   editor: Editor,
   id: string,
-  attrs: Record<string, any>,
-) {
+  attrs: Record<string, unknown>,
+): void {
   editor.state.doc.descendants((node, pos) => {
     if (node.attrs.id !== id) {
       return;
@@ -447,7 +447,7 @@ function replaceMediaNodeWithLink(
   id: string,
   url: string,
   text: string,
-) {
+): void {
   editor.state.doc.descendants((node, pos) => {
     if (node.attrs.id !== id) {
       return;
@@ -482,7 +482,7 @@ function replaceMediaNodeWithLink(
  * @param editor 编辑器实例 / Editor instance.
  * @param id 节点 ID / Node ID.
  */
-function removeMediaNode(editor: Editor, id: string) {
+function removeMediaNode(editor: Editor, id: string): void {
   editor.state.doc.descendants((node, pos) => {
     if (node.attrs.id !== id) {
       return;
@@ -518,6 +518,7 @@ function insertUploadPlaceholder(
 
   if (!nodeType) {
     console.error("[MediaUploader] uploadPlaceholder 节点未注册。");
+
     console.error("[MediaUploader] uploadPlaceholder node not registered.");
 
     return false;
@@ -554,7 +555,7 @@ function insertUploadPlaceholder(
 function updateUploadPlaceholder(
   editor: Editor,
   id: string,
-  attrs: Record<string, any>,
+  attrs: Record<string, unknown>,
 ): void {
   editor.state.doc.descendants((node, pos) => {
     if (node.type.name !== "uploadPlaceholder") {
@@ -918,9 +919,12 @@ export function useMediaUploader(
    * 普通编辑器上传
    * Normal editor upload
    */
-  const upload = async (file: File, type: MediaType = "image") => {
+  const upload = async (
+    file: File,
+    type: MediaType = "image",
+  ): Promise<UploadTask | undefined> => {
     if (!editor) {
-      return;
+      return undefined;
     }
 
     const config = getMediaConfig(options, type);
@@ -967,7 +971,7 @@ export function useMediaUploader(
 
         hasRealProgress = false;
 
-        const run = async () => {
+        const run = async (): Promise<void> => {
           task.status = "uploading";
 
           /**
@@ -1255,7 +1259,7 @@ export function useMediaUploader(
      * 重试普通媒体上传。
      * Retry normal media upload.
      */
-    retry(taskId: string) {
+    retry(taskId: string): void {
       taskMap.get(taskId)?.retry();
     },
 
@@ -1265,7 +1269,7 @@ export function useMediaUploader(
      *
      * @param taskId 任务 ID / Task ID.
      */
-    cancel(taskId: string) {
+    cancel(taskId: string): void {
       /**
        * 优先处理普通媒体任务。
        * Prioritize normal media tasks.
@@ -1294,7 +1298,7 @@ export function useMediaUploader(
      * Get normal media upload task.
      * @param id 任务 ID / Task ID.
      */
-    getTask(id: string) {
+    getTask(id: string): UploadTask | undefined {
       return taskMap.get(id);
     },
   };

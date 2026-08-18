@@ -145,19 +145,22 @@ export class Editor {
 
     /** 从 editor 实例上获取 mediaEngine（由 setup 函数写入 view） */
     this.mediaEngine =
-      ((this.core.editor.view as any).editor?.storage
-        ?.mediaEngine as MediaEngine | null) || null;
+      ((
+        this.core.editor.view as unknown as {
+          editor?: { storage?: { mediaEngine?: MediaEngine } };
+        }
+      ).editor?.storage?.mediaEngine as MediaEngine | null) || null;
 
     /** 如果没有通过 storage 拿到，尝试从根容器查找（兜底） */
     if (!this.mediaEngine) {
-      const engineOnView = (this.core.editor.view as any).mediaEngine as
-        | MediaEngine
-        | undefined;
+      const engineOnView = (
+        this.core.editor.view as unknown as { mediaEngine?: MediaEngine }
+      ).mediaEngine as MediaEngine | undefined;
       if (engineOnView) this.mediaEngine = engineOnView;
     }
 
     /** 容器级别的事件拦截（防御性阻止禁用/只读下的 paste/drop） */
-    const blockEvent = (e: Event) => {
+    const blockEvent = (e: Event): boolean => {
       if (this.isDisabled || this.isReadonly) {
         e.preventDefault();
         e.stopPropagation();
@@ -166,16 +169,16 @@ export class Editor {
       return true;
     };
 
-    const onPasteBlock = (e: ClipboardEvent) => blockEvent(e);
-    const onDropBlock = (e: DragEvent) => blockEvent(e);
-    const onDragOverBlock = (e: DragEvent) => {
+    const onPasteBlock = (e: ClipboardEvent): boolean => blockEvent(e);
+    const onDropBlock = (e: DragEvent): boolean => blockEvent(e);
+    const onDragOverBlock = (_e: DragEvent): boolean => {
       if (this.isDisabled || this.isReadonly) {
         return true; /** 不阻止默认行为（允许系统默认拖拽行为），但不触发上传 */
       }
       return true;
     };
-    const onDragStartBlock = (e: DragEvent) => blockEvent(e);
-    const onBeforeInputBlock = (e: InputEvent) => blockEvent(e);
+    const onDragStartBlock = (e: DragEvent): boolean => blockEvent(e);
+    const onBeforeInputBlock = (e: InputEvent): boolean => blockEvent(e);
 
     this.root.addEventListener("paste", onPasteBlock, true);
     this.root.addEventListener("drop", onDropBlock, true);
@@ -219,7 +222,7 @@ export class Editor {
    * 获取编辑器是否已挂载 / Get whether the editor is mounted
    * @returns 是否已挂载 / Whether mounted
    */
-  get isMounted() {
+  get isMounted(): boolean {
     return this.mounted;
   }
 
@@ -227,7 +230,7 @@ export class Editor {
    * 获取编辑器是否已销毁 / Get whether the editor is destroyed
    * @returns 是否已销毁 / Whether destroyed
    */
-  get isDestroyed() {
+  get isDestroyed(): boolean {
     return this.destroyed;
   }
 
@@ -243,7 +246,7 @@ export class Editor {
    * 是否为深色模式 / Whether it is dark mode
    * @returns 是否为深色模式 / Whether dark mode
    */
-  get isDark() {
+  get isDark(): boolean {
     return this.theme === "dark";
   }
 
@@ -251,7 +254,7 @@ export class Editor {
    * 设置主题 / Set theme
    * @param theme - 主题名称 / Theme name
    */
-  setTheme(theme: EditorTheme) {
+  setTheme(theme: EditorTheme): void {
     if (this.destroyed) {
       return;
     }
@@ -262,7 +265,7 @@ export class Editor {
   /**
    * 切换主题 / Toggle theme
    */
-  toggleTheme() {
+  toggleTheme(): void {
     this.setTheme(this.isDark ? "light" : "dark");
   }
 
@@ -278,7 +281,7 @@ export class Editor {
    * 设置语言 / Set locale
    * @param locale - 语言 / Locale
    */
-  setLocale(locale: Locale) {
+  setLocale(locale: Locale): void {
     if (this.destroyed) {
       return;
     }
@@ -312,7 +315,7 @@ export class Editor {
    * 设置禁用状态 / Set disabled state
    * @param disabled - 是否禁用 / Whether disabled
    */
-  setDisabled(disabled: boolean) {
+  setDisabled(disabled: boolean): void {
     if (this.destroyed) {
       return;
     }
@@ -349,7 +352,7 @@ export class Editor {
    * 设置只读状态（动态切换） / Set readonly state (dynamic toggle)
    * @param readonly - 是否只读 / Whether readonly
    */
-  setReadonly(readonly: boolean) {
+  setReadonly(readonly: boolean): void {
     if (this.destroyed) {
       return;
     }
@@ -386,11 +389,10 @@ export class Editor {
    * 同步媒体引擎的禁用状态 / Sync media engine disabled state
    * 当禁用或只读时，媒体引擎全部禁止粘贴/拖拽回调（避免触发上传）
    */
-  private syncMediaEngineDisabled() {
+  private syncMediaEngineDisabled(): void {
     if (!this.mediaEngine) {
       this.mediaEngine =
-        ((this.core.editor as any).storage
-          ?.mediaEngine as MediaEngine | null) || null;
+        (this.core.editor.storage?.mediaEngine as MediaEngine | null) || null;
     }
 
     if (this.mediaEngine) {
@@ -404,7 +406,7 @@ export class Editor {
    * - 禁用：工具栏可见但交互禁用（pointer-events: none + 子元素 disabled + 视觉灰显）
    * - 正常：工具栏显示且可交互
    */
-  private syncToolbarState() {
+  private syncToolbarState(): void {
     if (!this.toolbar) {
       return;
     }
@@ -480,7 +482,7 @@ export class Editor {
   /**
    * 同步容器的状态样式和额外事件拦截 / Sync container state style and extra event interception
    */
-  private syncContainerState() {
+  private syncContainerState(): void {
     if (!this.root) {
       return;
     }
@@ -514,7 +516,7 @@ export class Editor {
    * 同步媒体节点状态（禁用/只读时移除调整大小手柄和选中样式）
    * Sync media node state (remove resize handles and selected style when disabled/readonly)
    */
-  private syncMediaNodeState() {
+  private syncMediaNodeState(): void {
     if (!this.root) return;
 
     const shouldBlock = this.isDisabled || this.isReadonly;
@@ -535,7 +537,7 @@ export class Editor {
   /**
    * 刷新占位符显示 / Refresh placeholder display
    */
-  private refreshPlaceholder() {
+  private refreshPlaceholder(): void {
     const editor = this.core.editor;
     if (!editor || editor.isDestroyed) {
       return;
@@ -548,7 +550,7 @@ export class Editor {
   /**
    * 强制刷新编辑器视图（触发一次空事务让 ProseMirror 重新计算 editable/选区等）
    */
-  private forceRefreshView() {
+  private forceRefreshView(): void {
     const editor = this.core.editor;
     if (!editor || editor.isDestroyed) {
       return;
@@ -566,7 +568,7 @@ export class Editor {
         const value = shouldEdit ? "true" : "false";
         dom.setAttribute("contenteditable", value);
         try {
-          (dom as any).contentEditable = value;
+          dom.contentEditable = value;
         } catch (_e) {
           /* ignore */
         }
@@ -581,7 +583,7 @@ export class Editor {
    * 根据传入的 height / maxHeight 配置，设置根容器和内容区的高度，
    * 并监听工具栏高度变化，实时更新编辑区可用高度。
    */
-  private applyHeightConstraints() {
+  private applyHeightConstraints(): void {
     if (this.heightOption) {
       this.root.style.height = `${this.heightOption}px`;
     }
@@ -613,7 +615,7 @@ export class Editor {
    * - 固定高度模式（height）：内容区高度 = 总高度 - 工具栏高度
    * - 最大高度模式（maxHeight）：内容区最大高度 = 最大总高度 - 工具栏高度
    */
-  private updateContentHeight() {
+  private updateContentHeight(): void {
     if (!this.toolbar || !this.content) return;
     if (!this.heightOption && !this.maxHeightOption) return;
 
@@ -629,7 +631,7 @@ export class Editor {
   /**
    * 重新构建工具栏 / Rebuild toolbar
    */
-  private rebuildToolbar() {
+  private rebuildToolbar(): void {
     if (!this.toolbar || !this.root) {
       return;
     }
@@ -653,7 +655,7 @@ export class Editor {
    * 获取 HTML 内容 / Get HTML content
    * @returns HTML 字符串 / HTML string
    */
-  getHtml() {
+  getHtml(): string {
     if (this.destroyed) {
       throw new Error("Editor has been destroyed");
     }
@@ -664,7 +666,7 @@ export class Editor {
    * 获取 JSON 内容 / Get JSON content
    * @returns JSON 字符串 / JSON string
    */
-  getJson() {
+  getJson(): Record<string, unknown> {
     if (this.destroyed) {
       throw new Error("Editor has been destroyed");
     }
@@ -674,7 +676,7 @@ export class Editor {
   /**
    * 销毁编辑器 / Destroy editor
    */
-  destroy() {
+  destroy(): void {
     if (this.destroyed) {
       return;
     }

@@ -25,7 +25,7 @@ export function MediaNodeViewRenderer(
    * 更新节点属性 / Update node attributes
    * @param attrs 部分属性 / Partial attributes
    */
-  const updateAttributes = (attrs: Partial<MediaNodeAttrs>) => {
+  const updateAttributes = (attrs: Partial<MediaNodeAttrs>): void => {
     const pos = props.getPos();
 
     if (typeof pos !== "number") {
@@ -68,14 +68,14 @@ export function MediaNodeViewRenderer(
     /**
      * 选中节点 / Select node
      */
-    selectNode() {
+    selectNode(): void {
       view.setSelected(true);
     },
 
     /**
      * 取消选中节点 / Deselect node
      */
-    deselectNode() {
+    deselectNode(): void {
       view.setSelected(false);
     },
   };

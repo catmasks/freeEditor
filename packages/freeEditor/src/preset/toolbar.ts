@@ -49,7 +49,7 @@ export function createSimpleToolbar(
 
   const wrapper = createToolbarButton(createIcon(iconSvg), tooltip);
 
-  const render = () => {
+  const render = (): void => {
     wrapper.classList.toggle("is-active", isActive?.() || false);
   };
 
@@ -118,13 +118,13 @@ export function createColorPickerToolbar(
     target: wrapper,
     placement: "bottom-center",
     value: getCurrentColor(),
-    onChange: (color) => {
+    onChange: (color): void => {
       setColor(color);
       render();
     },
   });
 
-  const render = () => {
+  const render = (): void => {
     const color = getCurrentColor();
     wrapper.classList.toggle("is-active", !!color);
     dropdown.setValue(color);
@@ -146,7 +146,7 @@ export function createColorPickerToolbar(
 
   render();
 
-  const destroy = () => {
+  const destroy = (): void => {
     editor.off("selectionUpdate", render);
     editor.off("transaction", render);
     dropdown.destroy();
@@ -223,12 +223,12 @@ export function createSelectToolbar(
     value: null,
     options: selectOptions,
     tooltip,
-    onChange(value) {
+    onChange(value): void {
       onChange(value);
     },
   });
 
-  const sync = () => {
+  const sync = (): void => {
     select.setValue(getValue());
   };
 

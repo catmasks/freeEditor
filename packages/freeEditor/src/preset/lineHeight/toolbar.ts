@@ -68,7 +68,7 @@ function getCurrentLineHeight(editor: Editor): string | null {
  * @param editor 编辑器实例 / Editor instance
  * @returns Select 工具栏元素 / Select toolbar element
  */
-export function createLineHeightToolbar(editor: Editor) {
+export function createLineHeightToolbar(editor: Editor): HTMLElement {
   return createSelectToolbar({
     editor,
     options: getLineHeightOptions(),

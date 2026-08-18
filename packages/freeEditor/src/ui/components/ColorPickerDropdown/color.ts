@@ -21,13 +21,12 @@ export function hexToHsv(hex: string): HSVColor {
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
 
-  let h = 0,
-    s = 0,
-    v = max;
+  let h = 0;
+  const v = max;
 
   const d = max - min;
 
-  s = max === 0 ? 0 : d / max;
+  const s = max === 0 ? 0 : d / max;
 
   if (max !== min) {
     switch (max) {
@@ -69,9 +68,7 @@ export function hsvToHex(
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
   const m = (v as number) - c;
 
-  let r = 0,
-    g = 0,
-    b = 0;
+  let r, g, b;
 
   if (h < 60) [r, g, b] = [c, x, 0];
   else if (h < 120) [r, g, b] = [x, c, 0];
@@ -80,7 +77,7 @@ export function hsvToHex(
   else if (h < 300) [r, g, b] = [x, 0, c];
   else [r, g, b] = [c, 0, x];
 
-  const toHex = (n: number) =>
+  const toHex = (n: number): string =>
     Math.round((n + m) * 255)
       .toString(16)
       .padStart(2, "0");

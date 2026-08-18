@@ -1,10 +1,6 @@
 import { FloatingToolbar, type FloatingPlacement } from "../FloatingToolbar";
 
-import {
-  createToolbarButton,
-  bindTooltip,
-  type TooltipType,
-} from "../button";
+import { createToolbarButton, bindTooltip, type TooltipType } from "../button";
 
 import { i18n } from "../../../core/index";
 
@@ -139,7 +135,7 @@ export class Select {
 
       placement: "bottom-start",
 
-      onChange: () => {},
+      onChange: (): void => {},
 
       ...options,
     };
@@ -193,7 +189,7 @@ export class Select {
 
       content: this.dropdownEl,
 
-      onClose: () => {
+      onClose: (): void => {
         this.setOpen(false);
       },
     });
@@ -210,7 +206,7 @@ export class Select {
   /**
    * 绑定事件 / Bind events
    */
-  private bindEvents() {
+  private bindEvents(): void {
     this.triggerEl.addEventListener("click", () => {
       this.toggle();
     });
@@ -219,7 +215,7 @@ export class Select {
   /**
    * 渲染当前值 / Render current value
    */
-  private renderValue() {
+  private renderValue(): void {
     const current = this.options.options.find(
       (item) => item.value === this.value,
     );
@@ -240,7 +236,7 @@ export class Select {
   /**
    * 渲染选项 / Render options
    */
-  private renderOptions() {
+  private renderOptions(): void {
     this.dropdownEl.innerHTML = "";
 
     this.optionTooltipDestroys.forEach((destroy) => destroy());
@@ -300,7 +296,7 @@ export class Select {
   /**
    * 打开下拉框 / Open dropdown
    */
-  async openDropdown() {
+  async openDropdown(): Promise<void> {
     if (this.open) {
       return;
     }
@@ -313,7 +309,7 @@ export class Select {
   /**
    * 关闭下拉框 / Close dropdown
    */
-  async close() {
+  async close(): Promise<void> {
     if (!this.open) {
       return;
     }
@@ -326,15 +322,19 @@ export class Select {
   /**
    * 切换下拉框状态 / Toggle dropdown state
    */
-  toggle() {
-    this.open ? this.close() : this.openDropdown();
+  async toggle(): Promise<void> {
+    if (this.open) {
+      await this.close();
+    } else {
+      await this.openDropdown();
+    }
   }
 
   /**
    * 设置打开状态 / Set open state
    * @param state - 打开状态 / Open state
    */
-  private setOpen(state: boolean) {
+  private setOpen(state: boolean): void {
     this.open = state;
 
     if (state) {
@@ -352,7 +352,7 @@ export class Select {
    * 设置值 / Set value
    * @param value - 值 / Value
    */
-  setValue(value: string | number | null) {
+  setValue(value: string | number | null): void {
     this.value = value;
 
     this.renderValue();
@@ -364,7 +364,7 @@ export class Select {
    * 获取值 / Get value
    * @returns 当前值 / Current value
    */
-  getValue() {
+  getValue(): string | number | null {
     return this.value;
   }
 
@@ -372,7 +372,7 @@ export class Select {
    * 设置选项 / Set options
    * @param options - 选项列表 / Option list
    */
-  setOptions(options: SelectOption[]) {
+  setOptions(options: SelectOption[]): void {
     this.options.options = options;
 
     this.renderValue();
@@ -383,7 +383,7 @@ export class Select {
   /**
    * 销毁选择器 / Destroy select
    */
-  destroy() {
+  destroy(): void {
     this.optionTooltipDestroys.forEach((destroy) => destroy());
     this.optionTooltipDestroys = [];
 

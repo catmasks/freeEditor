@@ -116,21 +116,18 @@ export function bindTooltip(
     });
   }
 
-  const show = () => {
+  const show = (): void => {
     const rect = target.getBoundingClientRect();
 
     let blocked = false;
-
-    let tooltipWidth = 0;
-    let tooltipHeight = 0;
 
     tooltipEl.style.left = "0px";
     tooltipEl.style.top = "0px";
     tooltipEl.style.display = "block";
 
     const tooltipRect = tooltipEl.getBoundingClientRect();
-    tooltipWidth = tooltipRect.width;
-    tooltipHeight = tooltipRect.height;
+    const tooltipWidth = tooltipRect.width;
+    const tooltipHeight = tooltipRect.height;
 
     const { left, top } = calcTooltipPosition(
       rect,
@@ -144,7 +141,11 @@ export function bindTooltip(
       const activeId = fm.getActiveId();
 
       if (activeId) {
-        const active = (fm as any).instances?.get(activeId);
+        const active = (
+          fm as unknown as {
+            instances: Map<string, { getToolbarEl?: () => HTMLElement | null }>;
+          }
+        ).instances?.get(activeId);
         const floatingEl = active?.getToolbarEl?.();
 
         if (floatingEl) {
@@ -173,14 +174,14 @@ export function bindTooltip(
     tooltipEl.style.top = `${top}px`;
   };
 
-  const hide = () => {
+  const hide = (): void => {
     tooltipEl.style.display = "none";
   };
 
   target.addEventListener("mouseenter", show);
   target.addEventListener("mouseleave", hide);
 
-  const destroy = () => {
+  const destroy = (): void => {
     tooltipEl.remove();
     target.removeEventListener("mouseenter", show);
     target.removeEventListener("mouseleave", hide);
@@ -202,7 +203,7 @@ export function createToolbarButton(
   content: HTMLElement,
   tooltip: TooltipType,
   options?: Omit<BindTooltipOptions, "skipFloatingCheck">,
-) {
+): HTMLElement {
   const item = document.createElement("div");
   item.className = "free-editor__toolbar__item";
 
@@ -210,7 +211,8 @@ export function createToolbarButton(
 
   item.appendChild(content);
 
-  (item as any).__tooltipDestroy = destroy;
+  (item as HTMLElement & { __tooltipDestroy?: () => void }).__tooltipDestroy =
+    destroy;
 
   return item;
 }

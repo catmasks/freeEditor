@@ -61,7 +61,7 @@ export const ListItem = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      Enter: () => {
+      Enter: (): boolean => {
         return this.editor.commands.splitListItem(this.name);
       },
 
@@ -70,7 +70,7 @@ export const ListItem = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      Tab: () => {
+      Tab: (): boolean => {
         return this.editor.commands.sinkListItem(this.name);
       },
 
@@ -79,7 +79,7 @@ export const ListItem = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Shift-Tab": () => {
+      "Shift-Tab": (): boolean => {
         return this.editor.commands.liftListItem(this.name);
       },
     };

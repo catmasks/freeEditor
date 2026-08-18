@@ -48,10 +48,7 @@ export const Divider = Node.create({
    * @returns HTML 渲染描述 / HTML render description
    */
   renderHTML({ HTMLAttributes }) {
-    return [
-      "hr",
-      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
-    ];
+    return ["hr", mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)];
   },
 
   /**
@@ -73,7 +70,7 @@ export const Divider = Node.create({
        */
       setDivider:
         () =>
-        ({ chain }) => {
+        ({ chain }): boolean => {
           return chain()
             .insertContent([
               {
@@ -101,7 +98,7 @@ export const Divider = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-Shift-h": () => {
+      "Mod-Shift-h": (): boolean => {
         return this.editor.commands.setDivider();
       },
     };

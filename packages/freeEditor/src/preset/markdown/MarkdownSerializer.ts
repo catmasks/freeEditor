@@ -7,9 +7,11 @@ import type { MarkdownNodeSerializer, MarkdownMarkSerializer } from "./types";
  * @returns prosemirror-markdown 运行时模块
  * @throws 当 prosemirror-markdown 加载失败时抛出错误
  */
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 async function loadMarkdownSerializer(): Promise<
   typeof import("prosemirror-markdown")
 > {
+  /* eslint-enable @typescript-eslint/consistent-type-imports */
   try {
     return await import("prosemirror-markdown");
   } catch (error) {
@@ -181,7 +183,12 @@ export async function createMarkdownSerializer(
   };
 
   for (const [name, serializer] of Object.entries(extraNodes)) {
-    mergedNodes[name] = (state: any, node: any, parent: any, index: number) => {
+    mergedNodes[name] = (
+      state: any,
+      node: any,
+      parent: any,
+      index: number,
+    ): void => {
       serializer.serialize(node, state, parent, index);
     };
   }

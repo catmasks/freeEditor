@@ -16,7 +16,7 @@ const BLOCKQUOTE_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createBlockquoteToolbar(editor: Editor) {
+export function createBlockquoteToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: BLOCKQUOTE_ICON,

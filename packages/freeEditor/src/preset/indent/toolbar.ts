@@ -16,7 +16,7 @@ const INDENT_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createIndentToolbar(editor: Editor) {
+export function createIndentToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: INDENT_ICON,

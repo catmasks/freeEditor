@@ -711,7 +711,7 @@ export const ImportWord = Extension.create({
        */
       importWord:
         (file: File) =>
-        ({ editor }: CommandProps) => {
+        ({ editor }: CommandProps): boolean => {
           if (!file) {
             return false;
           }

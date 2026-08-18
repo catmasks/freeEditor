@@ -29,7 +29,7 @@ export const Underline = Mark.create({
          * @param value 样式值 / Style value
          * @returns 属性对象或 false / Attribute object or false
          */
-        getAttrs: (value) => {
+        getAttrs: (value): Record<string, never> | false => {
           if (value === "underline") {
             return {};
           }
@@ -61,7 +61,7 @@ export const Underline = Mark.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-u": () => {
+      "Mod-u": (): boolean => {
         return this.editor.commands.setUnderline();
       },
     };
@@ -83,7 +83,7 @@ export const Underline = Mark.create({
        */
       setUnderline:
         () =>
-        ({ commands, editor }) => {
+        ({ commands, editor }): boolean => {
           const isActive = editor.isActive(this.name);
 
           if (isActive) {
@@ -100,7 +100,7 @@ export const Underline = Mark.create({
        */
       unsetUnderline:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.unsetMark(this.name);
         },
     };

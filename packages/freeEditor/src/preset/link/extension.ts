@@ -99,8 +99,8 @@ export const CustomLink = Mark.create({
        * @returns 命令函数 / Command function
        */
       setLink:
-        (attrs) =>
-        ({ chain }) => {
+        (attrs): any =>
+        ({ chain }: { chain: any }): boolean => {
           return chain()
             .extendMarkRange(this.name)
 
@@ -121,7 +121,7 @@ export const CustomLink = Mark.create({
        */
       unsetLink:
         () =>
-        ({ chain }) => {
+        ({ chain }): boolean => {
           return chain()
             .extendMarkRange(this.name)
 
@@ -144,7 +144,7 @@ export const CustomLink = Mark.create({
     return [
       new Plugin({
         props: {
-          handleClick: (view, pos, event) => {
+          handleClick: (view, pos, event): boolean => {
             /** 判断是否应该直接打开链接 */
             const shouldOpenOnClick =
               editorRuntimeState.disabled ||

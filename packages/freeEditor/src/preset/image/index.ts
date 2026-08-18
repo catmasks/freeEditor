@@ -27,7 +27,7 @@ const createMediaFloatingToolbarContent = (
     fn: () => void,
 
     className = "",
-  ) => {
+  ): HTMLElement => {
     const el = document.createElement("span");
 
     el.className = `free-editor__media-node__action ${className}`;
@@ -44,11 +44,11 @@ const createMediaFloatingToolbarContent = (
 
     el.style.whiteSpace = "nowrap";
 
-    el.onmousedown = (e) => {
+    el.onmousedown = (e: MouseEvent): void => {
       e.stopPropagation();
     };
 
-    el.onclick = (e) => {
+    el.onclick = (e: MouseEvent): void => {
       e.stopPropagation();
 
       fn();
@@ -84,7 +84,7 @@ const createMediaFloatingToolbarContent = (
     return wrap;
   }
 
-  const setPresetWidth = (p: number) => {
+  const setPresetWidth = (p: number): void => {
     const width = `${p * 100}%`;
     const { state, view } = editor;
     const { selection } = state;
@@ -101,7 +101,7 @@ const createMediaFloatingToolbarContent = (
     }
   };
 
-  const resetSize = () => {
+  const resetSize = (): void => {
     const { state, view } = editor;
     const { selection } = state;
     const nodeSel = selection as any;
@@ -194,8 +194,8 @@ export const ImagePlugin: EditorPlugin = {
    * @param context 插件上下文 / Plugin context
    * @returns 清理函数 / Cleanup function
    */
-  setup(editor, context: EditorPluginContext) {
-    const handleImages = (files: File[]) => {
+  setup(editor: Editor, context: EditorPluginContext): () => void {
+    const handleImages = (files: File[]): void => {
       handleUploadFiles(editor, files, "image");
     };
 

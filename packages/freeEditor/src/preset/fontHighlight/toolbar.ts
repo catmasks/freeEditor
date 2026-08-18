@@ -30,7 +30,7 @@ const FONT_HIGHLIGHT_ICON = `
  * @param editor 编辑器实例 / Editor instance
  * @returns 颜色选择器工具栏元素 / Color picker toolbar element
  */
-export function createFontHighlightToolbar(editor: Editor) {
+export function createFontHighlightToolbar(editor: Editor): HTMLElement {
   return createColorPickerToolbar({
     editor,
     iconSvg: FONT_HIGHLIGHT_ICON,

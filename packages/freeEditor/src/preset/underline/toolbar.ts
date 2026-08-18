@@ -14,7 +14,7 @@ const UNDERLINE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="20" heigh
  * @param editor 编辑器实例 / Editor instance
  * @returns 工具栏按钮元素 / Toolbar button element
  */
-export function createUnderlineToolbar(editor: Editor) {
+export function createUnderlineToolbar(editor: Editor): HTMLElement {
   return createSimpleToolbar({
     editor,
     iconSvg: UNDERLINE_ICON,

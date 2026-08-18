@@ -29,7 +29,7 @@ export const Italic = Mark.create({
          * @param value 样式值 / Style value
          * @returns 属性对象或 false / Attribute object or false
          */
-        getAttrs: (value) => {
+        getAttrs: (value: string): Record<string, never> | false => {
           if (value === "italic") {
             return {};
           }
@@ -61,7 +61,7 @@ export const Italic = Mark.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-i": () => {
+      "Mod-i": (): boolean => {
         return this.editor.commands.setItalic();
       },
     };
@@ -82,7 +82,13 @@ export const Italic = Mark.create({
        * @returns 命令函数 / Command function
        */
       setItalic:
-        () =>
+        (): (({
+          commands,
+          editor,
+        }: {
+          commands: Record<string, (...args: any[]) => boolean>;
+          editor: { isActive: (name: string) => boolean };
+        }) => boolean) =>
         ({ commands, editor }) => {
           const isActive = editor.isActive(this.name);
 
@@ -99,7 +105,11 @@ export const Italic = Mark.create({
        * @returns 命令函数 / Command function
        */
       unsetItalic:
-        () =>
+        (): (({
+          commands,
+        }: {
+          commands: Record<string, (...args: any[]) => boolean>;
+        }) => boolean) =>
         ({ commands }) => {
           return commands.unsetMark(this.name);
         },

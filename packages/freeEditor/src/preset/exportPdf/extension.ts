@@ -1,5 +1,6 @@
 import { Extension } from "@tiptap/core";
 import type { Editor } from "@tiptap/core";
+import type { jsPDF as JsPDFConstructor } from "jspdf";
 import { downloadFile } from "../../core/index";
 
 export interface ExportPdfOptions {
@@ -52,17 +53,17 @@ async function waitForImages(container: HTMLElement): Promise<void> {
             return;
           }
 
-          const handleLoad = () => {
+          const handleLoad = (): void => {
             cleanup();
             resolve();
           };
 
-          const handleError = () => {
+          const handleError = (): void => {
             cleanup();
             resolve();
           };
 
-          const cleanup = () => {
+          const cleanup = (): void => {
             image.removeEventListener("load", handleLoad);
             image.removeEventListener("error", handleError);
           };
@@ -87,7 +88,9 @@ async function waitForFonts(): Promise<void> {
 
   try {
     await document.fonts.ready;
-  } catch {}
+  } catch {
+    /* 忽略字体加载错误 */
+  }
 }
 
 /**
@@ -289,8 +292,8 @@ function cleanupPdfOnlyElements(container: HTMLElement): void {
  */
 function createPdfFromCanvas(
   canvas: HTMLCanvasElement,
-  jsPDF: typeof import("jspdf").jsPDF,
-): InstanceType<typeof jsPDF> {
+  jsPDF: typeof JsPDFConstructor,
+): InstanceType<typeof JsPDFConstructor> {
   const pdf = new jsPDF({
     orientation: "portrait",
     unit: "mm",
@@ -470,7 +473,7 @@ export const ExportPdf = Extension.create<ExportPdfOptions>({
     return {
       exportPdf:
         () =>
-        ({ editor }: { editor: Editor }) => {
+        ({ editor }: { editor: Editor }): boolean => {
           const fileName = this.options.fileName || "freeEditor.pdf";
 
           exportEditorToPdf(editor, fileName).catch((error: unknown) => {

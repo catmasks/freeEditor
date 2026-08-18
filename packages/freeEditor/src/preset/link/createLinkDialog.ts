@@ -171,7 +171,7 @@ export class LinkDialog {
    *
    * @param event 键盘事件 / Keyboard event
    */
-  private onKeydown = (event: KeyboardEvent) => {
+  private onKeydown = (event: KeyboardEvent): void => {
     if (event.key === "Enter") {
       this.confirm();
     }

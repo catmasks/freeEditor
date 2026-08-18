@@ -48,7 +48,7 @@ export const CustomCodeBlock = Node.create({
          * @param element HTML 元素 / HTML element
          * @returns 语言名称或 null / Language name or null
          */
-        parseHTML: (element) => {
+        parseHTML: (element: HTMLElement): string | null => {
           return element.getAttribute("data-language") || null;
         },
 
@@ -58,13 +58,15 @@ export const CustomCodeBlock = Node.create({
          * @param attrs 节点属性 / Node attributes
          * @returns HTML 属性对象 / HTML attributes object
          */
-        renderHTML: (attrs) => {
+        renderHTML: (
+          attrs: Record<string, unknown>,
+        ): Record<string, string> => {
           if (!attrs.language) {
             return {};
           }
 
           return {
-            "data-language": attrs.language,
+            "data-language": attrs.language as string,
           };
         },
       },
@@ -110,7 +112,7 @@ export const CustomCodeBlock = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      Tab: ({ editor }) => {
+      Tab: ({ editor }): boolean => {
         if (!editor.isActive(this.name)) {
           return false;
         }
@@ -123,7 +125,7 @@ export const CustomCodeBlock = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      Backspace: ({ editor }) => {
+      Backspace: ({ editor }): boolean => {
         const { state } = editor;
 
         const { selection } = state;
@@ -164,7 +166,7 @@ export const CustomCodeBlock = Node.create({
        */
       setCodeBlock:
         (language?: string | null) =>
-        ({ commands, editor }) => {
+        ({ commands, editor }): boolean => {
           const isActive = editor.isActive(this.name);
 
           if (isActive) {
@@ -183,7 +185,7 @@ export const CustomCodeBlock = Node.create({
        */
       unsetCodeBlock:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.clearNodes();
         },
     };

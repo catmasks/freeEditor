@@ -47,7 +47,7 @@ export const CustomHeading = Node.create({
          * @param element HTML 元素 / HTML element
          * @returns 标题等级 / Heading level
          */
-        parseHTML: (element) => {
+        parseHTML: (element): number => {
           const tag = element.tagName.toLowerCase();
 
           const level = Number(tag.replace("h", ""));
@@ -60,7 +60,7 @@ export const CustomHeading = Node.create({
          *
          * @returns HTML 属性对象 / HTML attributes object
          */
-        renderHTML: () => {
+        renderHTML: (): Record<string, never> => {
           return {};
         },
       },
@@ -107,40 +107,40 @@ export const CustomHeading = Node.create({
    */
   addKeyboardShortcuts() {
     return {
-      "Mod-Alt-0": () => {
+      "Mod-Alt-0": (): boolean => {
         return this.editor.commands.unsetHeading();
       },
-      "Mod-Alt-1": () => {
+      "Mod-Alt-1": (): boolean => {
         return this.editor.commands.setHeading({
           level: 1,
         });
       },
 
-      "Mod-Alt-2": () => {
+      "Mod-Alt-2": (): boolean => {
         return this.editor.commands.setHeading({
           level: 2,
         });
       },
 
-      "Mod-Alt-3": () => {
+      "Mod-Alt-3": (): boolean => {
         return this.editor.commands.setHeading({
           level: 3,
         });
       },
 
-      "Mod-Alt-4": () => {
+      "Mod-Alt-4": (): boolean => {
         return this.editor.commands.setHeading({
           level: 4,
         });
       },
 
-      "Mod-Alt-5": () => {
+      "Mod-Alt-5": (): boolean => {
         return this.editor.commands.setHeading({
           level: 5,
         });
       },
 
-      "Mod-Alt-6": () => {
+      "Mod-Alt-6": (): boolean => {
         return this.editor.commands.setHeading({
           level: 6,
         });
@@ -166,7 +166,7 @@ export const CustomHeading = Node.create({
        */
       setHeading:
         (attrs: { level: number }) =>
-        ({ commands, editor }) => {
+        ({ commands, editor }): boolean => {
           if (!this.options.levels.includes(attrs.level)) {
             return false;
           }
@@ -191,7 +191,7 @@ export const CustomHeading = Node.create({
        */
       unsetHeading:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.setNode("paragraph");
         },
     };

@@ -72,7 +72,7 @@ export const LineBreak = Node.create({
        */
       setLineBreak:
         () =>
-        ({ chain, state }) => {
+        ({ chain, state }): boolean => {
           const { selection } = state;
           const { $from } = selection;
 
@@ -106,7 +106,7 @@ export const LineBreak = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Shift-Enter": () => {
+      "Shift-Enter": (): boolean => {
         return this.editor.commands.setLineBreak();
       },
     };

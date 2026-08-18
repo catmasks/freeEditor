@@ -64,7 +64,7 @@ export const Blockquote = Node.create({
        */
       setBlockquote:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.wrapIn(this.name);
         },
 
@@ -75,7 +75,7 @@ export const Blockquote = Node.create({
        */
       unsetBlockquote:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.lift(this.name);
         },
 
@@ -88,7 +88,7 @@ export const Blockquote = Node.create({
        */
       toggleBlockquote:
         () =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const isActive = editor.isActive(this.name);
           if (isActive) {
             return chain().focus().lift(this.name).run();
@@ -110,7 +110,7 @@ export const Blockquote = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-Shift-b": () => {
+      "Mod-Shift-b": (): boolean => {
         return this.editor.commands.toggleBlockquote();
       },
     };

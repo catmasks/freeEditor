@@ -11,7 +11,11 @@ const createFloatingToolbarContent = (editor: Editor): HTMLElement => {
   wrap.style.alignItems = "center";
   wrap.style.gap = "4px";
 
-  const createBtn = (text: string, onClick: () => void, type = "") => {
+  const createBtn = (
+    text: string,
+    onClick: () => void,
+    type = "",
+  ): HTMLElement => {
     const btn = document.createElement("span");
     btn.className = `free-editor__media-node__action ${type}`;
     btn.textContent = text;
@@ -20,10 +24,10 @@ const createFloatingToolbarContent = (editor: Editor): HTMLElement => {
     btn.style.borderRadius = "6px";
     btn.style.fontSize = "13px";
     btn.style.whiteSpace = "nowrap";
-    btn.onmousedown = (e) => {
+    btn.onmousedown = (e: MouseEvent): void => {
       e.stopPropagation();
     };
-    btn.onclick = (e) => {
+    btn.onclick = (e: MouseEvent): void => {
       e.stopPropagation();
       onClick();
     };
@@ -143,13 +147,17 @@ export const LinkPlugin: EditorPlugin = {
   /**
    * 扩展实例（配置关闭点击打开链接）/ Extension instance (configured to disable click-to-open)
    */
-  schema: [CustomLinkSchema.configure({
-    openOnClick: false,
-  })],
+  schema: [
+    CustomLinkSchema.configure({
+      openOnClick: false,
+    }),
+  ],
 
-  extensions: [CustomLink.configure({
-    openOnClick: false,
-  })],
+  extensions: [
+    CustomLink.configure({
+      openOnClick: false,
+    }),
+  ],
 
   /**
    * 工具栏创建函数 / Toolbar creation function
@@ -163,7 +171,7 @@ export const LinkPlugin: EditorPlugin = {
    * @param context 插件上下文 / Plugin context
    * @returns 清理函数 / Cleanup function
    */
-  setup(editor: Editor, context: EditorPluginContext) {
+  setup(editor: Editor, _context: EditorPluginContext) {
     const unregister = editor.storage.floatingToolbar?.registerItem({
       key: "link",
       matchMarks: ["link"],

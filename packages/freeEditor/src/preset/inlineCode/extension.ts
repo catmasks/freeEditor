@@ -1,9 +1,4 @@
-import {
-  Mark,
-  markInputRule,
-  markPasteRule,
-  mergeAttributes,
-} from "@tiptap/core";
+import { Mark, mergeAttributes } from "@tiptap/core";
 
 /**
  * 行内代码标记 / Inline code mark
@@ -56,7 +51,7 @@ export const InlineCode = Mark.create({
          * @param node - DOM 节点 / DOM node
          * @returns 属性对象或 false / Attributes object or false
          */
-        getAttrs(node) {
+        getAttrs(node): Record<string, never> | false {
           if (
             node instanceof HTMLElement &&
             node.parentElement?.tagName === "PRE"
@@ -97,7 +92,7 @@ export const InlineCode = Mark.create({
        */
       setInlineCode:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.toggleMark(this.name);
         },
 
@@ -111,7 +106,7 @@ export const InlineCode = Mark.create({
        */
       unsetInlineCode:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.unsetMark(this.name);
         },
     };
@@ -122,7 +117,7 @@ export const InlineCode = Mark.create({
    */
   addKeyboardShortcuts() {
     return {
-      "Mod-e": () => {
+      "Mod-e": (): boolean => {
         return this.editor.commands.setInlineCode();
       },
     };

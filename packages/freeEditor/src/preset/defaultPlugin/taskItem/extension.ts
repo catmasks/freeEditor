@@ -1,4 +1,4 @@
-import { Node, mergeAttributes } from "@tiptap/core";
+﻿import { Node, mergeAttributes } from "@tiptap/core";
 
 /**
  * 任务列表项节点 / Task list item node
@@ -25,11 +25,13 @@ export const TaskItem = Node.create({
     return {
       checked: {
         default: false,
-        parseHTML: (element) =>
+        parseHTML: (element: HTMLElement): boolean =>
           element
             .querySelector("input[type=checkbox]")
-            ?.hasAttribute("checked"),
-        renderHTML: (attributes) => {
+            ?.hasAttribute("checked") ?? false,
+        renderHTML: (
+          attributes: Record<string, unknown>,
+        ): Record<string, string> => {
           return {
             "data-checked": attributes.checked ? "true" : "false",
           };
@@ -93,7 +95,15 @@ export const TaskItem = Node.create({
    * 用于处理复选框点击事件 / Handles checkbox click events
    */
   addNodeView() {
-    return ({ node, editor, getPos }) => {
+    return ({
+      node,
+      editor,
+      getPos,
+    }): {
+      dom: HTMLLIElement;
+      contentDOM: HTMLDivElement;
+      update: (updatedNode: any) => boolean;
+    } => {
       const dom = document.createElement("li");
       dom.classList.add("task-item");
       dom.setAttribute("data-type", "taskItem");
@@ -136,7 +146,7 @@ export const TaskItem = Node.create({
       return {
         dom,
         contentDOM: content,
-        update: (updatedNode) => {
+        update: (updatedNode: any): boolean => {
           if (updatedNode.type !== this.type) {
             return false;
           }
@@ -163,7 +173,7 @@ export const TaskItem = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      Enter: () => {
+      Enter: (): boolean => {
         return this.editor.commands.splitListItem(this.name);
       },
 
@@ -172,7 +182,7 @@ export const TaskItem = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      Tab: () => {
+      Tab: (): boolean => {
         return this.editor.commands.sinkListItem(this.name);
       },
 
@@ -181,7 +191,7 @@ export const TaskItem = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Shift-Tab": () => {
+      "Shift-Tab": (): boolean => {
         return this.editor.commands.liftListItem(this.name);
       },
     };

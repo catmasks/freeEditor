@@ -354,13 +354,13 @@ export function createEditorPlugins(
       editor.storage.mediaUploader = useMediaUploader(editor, uploader);
     }
 
-    (editor.view as any).editor = editor;
+    (editor.view as unknown as { editor: Editor }).editor = editor;
 
     const mediaEngine = root ? new MediaEngine(root) : undefined;
 
     /** 将 mediaEngine 挂载到 storage，便于主类访问和同步禁用状态 */
     if (mediaEngine) {
-      (editor.storage as any).mediaEngine = mediaEngine;
+      editor.storage.mediaEngine = mediaEngine;
     }
 
     const cleanups: (() => void)[] = [];

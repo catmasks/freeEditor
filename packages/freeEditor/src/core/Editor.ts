@@ -44,7 +44,7 @@ export class CoreEditor {
    * 获取是否禁用 / Get whether disabled
    * @returns 是否禁用 / Whether disabled
    */
-  get disabled() {
+  get disabled(): boolean {
     return this.isDisabled;
   }
 
@@ -52,7 +52,7 @@ export class CoreEditor {
    * 获取是否只读 / Get whether readonly
    * @returns 是否只读 / Whether readonly
    */
-  get readonly() {
+  get readonly(): boolean {
     return this.isReadonly;
   }
 
@@ -60,7 +60,7 @@ export class CoreEditor {
    * 设置禁用状态 / Set disabled state
    * @param disabled 是否禁用 / Whether disabled
    */
-  setDisabled(disabled: boolean) {
+  setDisabled(disabled: boolean): void {
     this.isDisabled = disabled;
     this.updateEditable();
   }
@@ -69,7 +69,7 @@ export class CoreEditor {
    * 设置只读状态 / Set readonly state
    * @param readonly 是否只读 / Whether readonly
    */
-  setReadonly(readonly: boolean) {
+  setReadonly(readonly: boolean): void {
     this.isReadonly = readonly;
     this.updateEditable();
   }
@@ -81,7 +81,7 @@ export class CoreEditor {
    * 调用 Tiptap 官方 setEditable API
    * 直接设置 DOM 的 contenteditable 属性（兜底方案）
    */
-  private updateEditable() {
+  private updateEditable(): void {
     const editable = !(this.isDisabled || this.isReadonly);
 
     /** 调用官方 API 设置可编辑状态 */
@@ -94,7 +94,7 @@ export class CoreEditor {
       dom.setAttribute("contenteditable", value);
       /** 兼容非标准属性访问 */
       try {
-        (dom as any).contentEditable = value;
+        dom.contentEditable = value;
       } catch (_e) {
         /* 忽略 */
       }
@@ -105,20 +105,20 @@ export class CoreEditor {
    * 获取 HTML 内容 / Get HTML content
    * @returns HTML 字符串 / HTML string
    */
-  getHtml() {
+  getHtml(): string {
     return this.editor.getHTML();
   }
   /**
    * 获取 JSON 内容 / Get JSON content
    * @returns JSON 字符串 / JSON string
    */
-  getJson() {
+  getJson(): Record<string, unknown> {
     return this.editor.getJSON();
   }
   /**
    * 销毁编辑器实例 / Destroy editor instance
    */
-  destroy() {
+  destroy(): void {
     this.editor.destroy();
   }
 }

@@ -1,6 +1,6 @@
 import { Extension } from "@tiptap/core";
 import type { Editor } from "@tiptap/core";
-import { Node as ProseMirrorNode } from "@tiptap/pm/model";
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import type { Mark } from "@tiptap/pm/model";
 
 import { downloadFile } from "../../core/index";
@@ -20,7 +20,6 @@ import type {
   TableRow,
   TableCell,
   AlignmentType,
-  LevelFormat,
   UnderlineType,
   ImageRun,
   ExternalHyperlink,
@@ -29,13 +28,15 @@ import type {
 /**
  * DOCX 运行时模块类型。
  */
-type DocxRuntime = typeof import("docx");
+import type * as DocxModule from "docx";
+
+type DocxRuntime = typeof DocxModule;
 
 /**
  * 编号配置（用于列表）。
  * Numbering configuration for lists.
  */
-function createNumberingConfig(runtime: DocxRuntime) {
+function createNumberingConfig(runtime: DocxRuntime): any {
   return [
     {
       reference: "bullet-list",
@@ -1783,7 +1784,7 @@ export const ExportWord = Extension.create<ExportWordOptions>({
     return {
       exportWord:
         () =>
-        ({ editor }: { editor: Editor }) => {
+        ({ editor }: { editor: Editor }): boolean => {
           const doc = editor.state.doc;
 
           const fileName = this.options.fileName ?? "freeEditor.docx";

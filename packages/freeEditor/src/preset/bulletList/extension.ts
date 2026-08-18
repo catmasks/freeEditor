@@ -82,7 +82,7 @@ export const BulletList = Node.create({
        */
       setBulletList:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.wrapInList(this.name);
         },
 
@@ -93,7 +93,7 @@ export const BulletList = Node.create({
        */
       unsetBulletList:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.liftListItem("listItem");
         },
 
@@ -106,7 +106,7 @@ export const BulletList = Node.create({
        */
       toggleBulletList:
         () =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const isActive = editor.isActive(this.name);
           if (isActive) {
             return chain().focus().liftListItem("listItem").run();
@@ -135,7 +135,7 @@ export const BulletList = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-Shift-8": () => {
+      "Mod-Shift-8": (): boolean => {
         return this.editor.commands.toggleBulletList();
       },
     };

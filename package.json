@@ -14,10 +14,8 @@
     "build": "pnpm --filter @catmasks/free-editor build",
     "lint:packages": "eslint packages/*/src/**/*.ts",
     "lint:fix:packages": "eslint packages/*/src/**/*.ts --fix",
-    "lint:config:packages": "eslint packages/*/vite.config.ts",
     "lint:playground": "eslint playground/src/**/*.ts",
-    "lint:fix:playground": "eslint playground/src/**/*.ts --fix",
-    "lint:config:playground": "eslint playground/vite.config.ts"
+    "lint:fix:playground": "eslint playground/src/**/*.ts --fix"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

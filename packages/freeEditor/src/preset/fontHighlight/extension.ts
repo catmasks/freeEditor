@@ -28,7 +28,7 @@ export const CustomFontHighlight = Extension.create({
              * @param element HTML 元素 / HTML element
              * @returns 背景色值或 null / Background color value or null
              */
-            parseHTML: (element) => {
+            parseHTML: (element: HTMLElement): string | null => {
               return element.style.backgroundColor || null;
             },
           },
@@ -54,7 +54,7 @@ export const CustomFontHighlight = Extension.create({
        */
       setHighlight:
         (backgroundColor?: string | null) =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const attrs = editor.getAttributes("style");
 
           if (attrs.backgroundColor === backgroundColor) {
@@ -81,7 +81,7 @@ export const CustomFontHighlight = Extension.create({
        */
       unsetHighlight:
         () =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const attrs = editor.getAttributes("style");
 
           return chain()

@@ -53,11 +53,13 @@ export const OrderedList = Node.create({
       start: {
         default: 1,
 
-        parseHTML: (element) => {
+        parseHTML: (element): number => {
           return Number(element.getAttribute("start")) || 1;
         },
 
-        renderHTML: (attributes) => {
+        renderHTML: (
+          attributes,
+        ): Record<string, number> | Record<string, never> => {
           if (!attributes.start || attributes.start === 1) {
             return {};
           }
@@ -113,7 +115,7 @@ export const OrderedList = Node.create({
        */
       setOrderedList:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.wrapInList(this.name);
         },
 
@@ -124,7 +126,7 @@ export const OrderedList = Node.create({
        */
       unsetOrderedList:
         () =>
-        ({ commands }) => {
+        ({ commands }): boolean => {
           return commands.liftListItem("listItem");
         },
 
@@ -137,7 +139,7 @@ export const OrderedList = Node.create({
        */
       toggleOrderedList:
         () =>
-        ({ chain, editor }) => {
+        ({ chain, editor }): boolean => {
           const isActive = editor.isActive(this.name);
           if (isActive) {
             return chain().focus().liftListItem("listItem").run();
@@ -166,7 +168,7 @@ export const OrderedList = Node.create({
        *
        * @returns 是否处理了快捷键 / Whether the shortcut was handled
        */
-      "Mod-Shift-7": () => {
+      "Mod-Shift-7": (): boolean => {
         return this.editor.commands.toggleOrderedList();
       },
     };
