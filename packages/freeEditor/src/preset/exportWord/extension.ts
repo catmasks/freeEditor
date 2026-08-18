@@ -191,6 +191,28 @@ function inferImageType(src: string): "jpg" | "png" | "gif" | "bmp" {
 }
 
 /**
+ * 将 CSS 单位值转换为像素值。
+ * Converts a CSS unit value to pixels.
+ */
+function convertUnitToPx(number: number, unit: string): number {
+  switch (unit) {
+    case "pt":
+      return Math.round(number * 1.333);
+
+    case "em":
+    case "rem":
+      return Math.round(number * 16);
+
+    case "%":
+      return Math.round((number * IMAGE_MAX_WIDTH) / 100);
+
+    case "px":
+    default:
+      return Math.round(number);
+  }
+}
+
+/**
  * 解析 CSS 尺寸值（支持 px、pt、em、rem、%）。
  * Parses CSS size values (supports px, pt, em, rem, %).
  *
@@ -222,21 +244,7 @@ function parseCssSize(value: unknown): number | undefined {
 
   const unit = match[2] ?? "px";
 
-  switch (unit) {
-    case "pt":
-      return Math.round(number * 1.333);
-
-    case "em":
-    case "rem":
-      return Math.round(number * 16);
-
-    case "%":
-      return Math.round((number * IMAGE_MAX_WIDTH) / 100);
-
-    case "px":
-    default:
-      return Math.round(number);
-  }
+  return convertUnitToPx(number, unit);
 }
 
 /**
@@ -417,6 +425,144 @@ interface TextRunOptions {
 }
 
 /**
+ * 从 mark attrs 中提取字体样式属性（fontSize, fontFamily, color, backgroundColor）。
+ * Extracts font style properties from mark attrs.
+ */
+function applyTextStyleAttrs(
+  mark: Mark,
+  state: {
+    size: number | undefined;
+    font: string | undefined;
+    color: string | undefined;
+    shading: { fill: string; type: "clear" } | undefined;
+  },
+): void {
+  const attrs = mark.attrs as {
+    fontSize?: unknown;
+    fontFamily?: unknown;
+    color?: unknown;
+    backgroundColor?: unknown;
+  };
+
+  if (attrs.fontSize) {
+    const parsedSize = parseFontSizeToHalfPoint(attrs.fontSize);
+
+    if (parsedSize !== undefined) {
+      state.size = parsedSize;
+    }
+  }
+
+  if (typeof attrs.fontFamily === "string" && attrs.fontFamily.trim()) {
+    state.font = attrs.fontFamily.trim();
+  }
+
+  const normalizedColor = normalizeColor(attrs.color);
+
+  if (normalizedColor) {
+    state.color = normalizedColor;
+  }
+
+  const normalizedBackground = normalizeColor(attrs.backgroundColor);
+
+  if (normalizedBackground) {
+    state.shading = {
+      fill: normalizedBackground,
+      type: "clear",
+    };
+  }
+}
+
+/**
+ * 为内联代码应用默认样式（Consolas 字体 + 浅灰背景）。
+ * Applies default styles for inline code (Consolas font + light gray background).
+ */
+function applyInlineCodeDefaults(
+  isInlineCode: boolean,
+  state: {
+    font: string | undefined;
+    shading: { fill: string; type: "clear" } | undefined;
+  },
+): void {
+  if (!isInlineCode) {
+    return;
+  }
+
+  if (!state.font) {
+    state.font = "Consolas";
+  }
+
+  if (!state.shading) {
+    state.shading = {
+      fill: "F5F5F5",
+      type: "clear",
+    };
+  }
+}
+
+/**
+ * 处理单个 mark 的样式，更新状态对象。
+ * Processes a single mark's style, updating the state object.
+ */
+function handleMark(
+  mark: Mark,
+  runtime: DocxRuntime,
+  state: {
+    bold: boolean | undefined;
+    italics: boolean | undefined;
+    strike: boolean | undefined;
+    underline:
+      | {
+          type: (typeof UnderlineType)[keyof typeof UnderlineType];
+        }
+      | undefined;
+    superScript: boolean | undefined;
+    subScript: boolean | undefined;
+    styleState: {
+      size: number | undefined;
+      font: string | undefined;
+      color: string | undefined;
+      shading: { fill: string; type: "clear" } | undefined;
+    };
+  },
+): void {
+  switch (mark.type.name) {
+    case "bold":
+      state.bold = true;
+      break;
+
+    case "italic":
+      state.italics = true;
+      break;
+
+    case "underline":
+      state.underline = {
+        type: runtime.UnderlineType.SINGLE,
+      };
+      break;
+
+    case "strike":
+      state.strike = true;
+      break;
+
+    case "superscript":
+      state.superScript = true;
+      break;
+
+    case "subscript":
+      state.subScript = true;
+      break;
+
+    case "textStyle":
+    case "style":
+      applyTextStyleAttrs(mark, state.styleState);
+      break;
+
+    default:
+      break;
+  }
+}
+
+/**
  * 从 ProseMirror marks 提取 TextRun 样式选项。
  * Extracts TextRun style options from ProseMirror marks.
  *
@@ -428,175 +574,47 @@ function getTextRunOptions(
   marks: readonly Mark[],
   runtime: DocxRuntime,
 ): TextRunOptions {
-  let bold: boolean | undefined;
-
-  let italics: boolean | undefined;
-
-  let strike: boolean | undefined;
-
-  let underline:
-    | {
-        type: (typeof UnderlineType)[keyof typeof UnderlineType];
-      }
-    | undefined;
-
-  let superScript: boolean | undefined;
-
-  let subScript: boolean | undefined;
-
-  let font: string | undefined;
-
-  let size: number | undefined;
-
-  let color: string | undefined;
-
-  let shading:
-    | {
-        fill: string;
-        type: "clear";
-      }
-    | undefined;
-
-  let isInlineCode = false;
+  const state = {
+    bold: undefined as boolean | undefined,
+    italics: undefined as boolean | undefined,
+    strike: undefined as boolean | undefined,
+    underline: undefined as
+      | {
+          type: (typeof UnderlineType)[keyof typeof UnderlineType];
+        }
+      | undefined,
+    superScript: undefined as boolean | undefined,
+    subScript: undefined as boolean | undefined,
+    isInlineCode: false,
+    styleState: {
+      size: undefined as number | undefined,
+      font: undefined as string | undefined,
+      color: undefined as string | undefined,
+      shading: undefined as { fill: string; type: "clear" } | undefined,
+    },
+  };
 
   for (const mark of marks) {
-    switch (mark.type.name) {
-      case "bold":
-        bold = true;
-        break;
-
-      case "italic":
-        italics = true;
-        break;
-
-      case "underline":
-        underline = {
-          type: runtime.UnderlineType.SINGLE,
-        };
-        break;
-
-      case "strike":
-        strike = true;
-        break;
-
-      case "superscript":
-        superScript = true;
-        break;
-
-      case "subscript":
-        subScript = true;
-        break;
-
-      case "code":
-      case "inlineCode":
-        isInlineCode = true;
-        break;
-
-      case "textStyle": {
-        const attrs = mark.attrs as {
-          fontSize?: unknown;
-          fontFamily?: unknown;
-          color?: unknown;
-          backgroundColor?: unknown;
-        };
-
-        if (attrs.fontSize) {
-          const parsedSize = parseFontSizeToHalfPoint(attrs.fontSize);
-
-          if (parsedSize !== undefined) {
-            size = parsedSize;
-          }
-        }
-
-        if (typeof attrs.fontFamily === "string" && attrs.fontFamily.trim()) {
-          font = attrs.fontFamily.trim();
-        }
-
-        const normalizedColor = normalizeColor(attrs.color);
-
-        if (normalizedColor) {
-          color = normalizedColor;
-        }
-
-        const normalizedBackground = normalizeColor(attrs.backgroundColor);
-
-        if (normalizedBackground) {
-          shading = {
-            fill: normalizedBackground,
-            type: "clear",
-          };
-        }
-
-        break;
-      }
-
-      case "style": {
-        const attrs = mark.attrs as {
-          fontSize?: unknown;
-          fontFamily?: unknown;
-          color?: unknown;
-          backgroundColor?: unknown;
-        };
-
-        if (attrs.fontSize) {
-          const parsedSize = parseFontSizeToHalfPoint(attrs.fontSize);
-
-          if (parsedSize !== undefined) {
-            size = parsedSize;
-          }
-        }
-
-        if (typeof attrs.fontFamily === "string" && attrs.fontFamily.trim()) {
-          font = attrs.fontFamily.trim();
-        }
-
-        const normalizedColor = normalizeColor(attrs.color);
-
-        if (normalizedColor) {
-          color = normalizedColor;
-        }
-
-        const normalizedBackground = normalizeColor(attrs.backgroundColor);
-
-        if (normalizedBackground) {
-          shading = {
-            fill: normalizedBackground,
-            type: "clear",
-          };
-        }
-
-        break;
-      }
-
-      default:
-        break;
+    if (mark.type.name === "code" || mark.type.name === "inlineCode") {
+      state.isInlineCode = true;
     }
+
+    handleMark(mark, runtime, state);
   }
 
-  if (isInlineCode) {
-    if (!font) {
-      font = "Consolas";
-    }
-
-    if (!shading) {
-      shading = {
-        fill: "F5F5F5",
-        type: "clear",
-      };
-    }
-  }
+  applyInlineCodeDefaults(state.isInlineCode, state.styleState);
 
   return {
-    bold,
-    italics,
-    strike,
-    underline,
-    superScript,
-    subScript,
-    font,
-    size,
-    color,
-    shading,
+    bold: state.bold,
+    italics: state.italics,
+    strike: state.strike,
+    underline: state.underline,
+    superScript: state.superScript,
+    subScript: state.subScript,
+    font: state.styleState.font,
+    size: state.styleState.size,
+    color: state.styleState.color,
+    shading: state.styleState.shading,
   };
 }
 
@@ -1375,6 +1393,68 @@ async function convertTableCellContent(
 }
 
 /**
+ * 转换单个表格单元格，处理表头样式、colspan 和 rowspan。
+ * Converts a single table cell, handling header styling, colspan, and rowspan.
+ */
+async function convertCell(
+  cell: ProseMirrorNode,
+  runtime: DocxRuntime,
+): Promise<TableCell | null> {
+  if (cell.type.name !== "tableCell" && cell.type.name !== "tableHeader") {
+    return null;
+  }
+
+  const cellAttrs = cell.attrs as Record<string, unknown>;
+
+  const isHeader = cell.type.name === "tableHeader";
+
+  const cellChildren = await convertTableCellContent(cell, runtime);
+
+  return new runtime.TableCell({
+    children: cellChildren,
+    ...(isHeader
+      ? {
+          shading: {
+            fill: "F2F2F2",
+            type: "clear",
+          },
+        }
+      : {}),
+    ...(typeof cellAttrs.colspan === "number" && cellAttrs.colspan > 1
+      ? {
+          columnSpan: cellAttrs.colspan,
+        }
+      : {}),
+    ...(typeof cellAttrs.rowspan === "number" && cellAttrs.rowspan > 1
+      ? {
+          rowSpan: cellAttrs.rowspan,
+        }
+      : {}),
+  });
+}
+
+/**
+ * 转换单个表格行，收集其所有单元格。
+ * Converts a single table row, collecting all its cells.
+ */
+async function convertRow(
+  row: ProseMirrorNode,
+  runtime: DocxRuntime,
+): Promise<TableCell[]> {
+  const cells: TableCell[] = [];
+
+  for (let j = 0; j < row.content.childCount; j++) {
+    const cell = await convertCell(row.content.child(j), runtime);
+
+    if (cell !== null) {
+      cells.push(cell);
+    }
+  }
+
+  return cells;
+}
+
+/**
  * 转换表格。
  * Converts a table.
  *
@@ -1395,45 +1475,7 @@ async function convertTable(
       continue;
     }
 
-    const cells: TableCell[] = [];
-
-    for (let j = 0; j < row.content.childCount; j++) {
-      const cell = row.content.child(j);
-
-      if (cell.type.name !== "tableCell" && cell.type.name !== "tableHeader") {
-        continue;
-      }
-
-      const cellAttrs = cell.attrs as Record<string, unknown>;
-
-      const isHeader = cell.type.name === "tableHeader";
-
-      const cellChildren = await convertTableCellContent(cell, runtime);
-
-      const tableCell = new runtime.TableCell({
-        children: cellChildren,
-        ...(isHeader
-          ? {
-              shading: {
-                fill: "F2F2F2",
-                type: "clear",
-              },
-            }
-          : {}),
-        ...(typeof cellAttrs.colspan === "number" && cellAttrs.colspan > 1
-          ? {
-              columnSpan: cellAttrs.colspan,
-            }
-          : {}),
-        ...(typeof cellAttrs.rowspan === "number" && cellAttrs.rowspan > 1
-          ? {
-              rowSpan: cellAttrs.rowspan,
-            }
-          : {}),
-      });
-
-      cells.push(tableCell);
-    }
+    const cells = await convertRow(row, runtime);
 
     if (cells.length > 0) {
       rows.push(
@@ -1466,6 +1508,188 @@ async function convertTable(
 }
 
 /**
+ * 转换 listItem 节点，处理段落和嵌套列表。
+ * Converts a listItem node, handling paragraphs and nested lists.
+ */
+async function convertListItem(
+  node: ProseMirrorNode,
+  context: ConvertContext,
+  runtime: DocxRuntime,
+): Promise<Paragraph[]> {
+  const parentContext = createContext({
+    listLevel: context.listLevel,
+    listType: context.listType ?? "bullet",
+  });
+
+  const result: Paragraph[] = [];
+
+  for (let i = 0; i < node.content.childCount; i++) {
+    const child = node.content.child(i);
+
+    if (child.type.name === "paragraph") {
+      result.push(await convertParagraph(child, parentContext, runtime));
+    } else {
+      const nested = await convertBlockNode(
+        child,
+        createContext({
+          listLevel: context.listLevel + 1,
+          listType: context.listType,
+        }),
+        runtime,
+      );
+
+      result.push(
+        ...nested.filter(
+          (element): element is Paragraph =>
+            element instanceof runtime.Paragraph,
+        ),
+      );
+    }
+  }
+
+  return result;
+}
+
+/**
+ * 转换 taskItem 节点，添加复选框标记。
+ * Converts a taskItem node, adding checkbox markers.
+ */
+async function convertTaskItemNode(
+  node: ProseMirrorNode,
+  runtime: DocxRuntime,
+): Promise<Paragraph[]> {
+  const checked = isTaskChecked(node);
+
+  const result: Paragraph[] = [];
+
+  for (let i = 0; i < node.content.childCount; i++) {
+    const child = node.content.child(i);
+
+    if (child.type.name === "paragraph") {
+      const content = await convertInlineContent(
+        child,
+        createContext(),
+        runtime,
+      );
+
+      result.push(
+        new runtime.Paragraph({
+          children: [
+            new runtime.TextRun({
+              text: checked ? "☑ " : "☐ ",
+            }),
+            ...content,
+          ],
+        }),
+      );
+    }
+  }
+
+  return result;
+}
+
+/**
+ * 转换未知类型的块级节点，递归处理子节点或回退到内联内容。
+ * Converts unknown block-level nodes, recursively processing children or falling back to inline content.
+ */
+async function convertDefaultBlock(
+  node: ProseMirrorNode,
+  context: ConvertContext,
+  runtime: DocxRuntime,
+): Promise<(Paragraph | Table)[]> {
+  const results: (Paragraph | Table)[] = [];
+
+  if (node.content.size > 0) {
+    for (let i = 0; i < node.content.childCount; i++) {
+      const child = node.content.child(i);
+
+      const converted = await convertBlockNode(child, context, runtime);
+
+      results.push(...converted);
+    }
+  }
+
+  if (results.length === 0 && node.textContent) {
+    const children = await convertInlineContent(node, context, runtime);
+
+    if (children.length > 0) {
+      results.push(
+        new runtime.Paragraph({
+          children,
+        }),
+      );
+    }
+  }
+
+  return results;
+}
+
+/**
+ * 创建分割线段落。
+ * Creates a divider paragraph.
+ */
+function createDivider(runtime: DocxRuntime): Paragraph {
+  return new runtime.Paragraph({
+    spacing: {
+      before: 120,
+      after: 120,
+    },
+    border: {
+      bottom: {
+        color: "A6A6A6",
+        space: 1,
+        style: "single",
+        size: 6,
+      },
+    },
+    children: [
+      new runtime.TextRun({
+        text: "",
+      }),
+    ],
+  });
+}
+
+/**
+ * 转换 bulletList 或 orderedList 节点。
+ * Converts a bulletList or orderedList node.
+ */
+async function convertListNode(
+  node: ProseMirrorNode,
+  context: ConvertContext,
+  runtime: DocxRuntime,
+  isBullet: boolean,
+): Promise<(Paragraph | Table)[]> {
+  return await convertList(
+    node,
+    createContext({
+      listLevel: context.listLevel,
+      listType: isBullet ? "bullet" : "ordered",
+    }),
+    runtime,
+  );
+}
+
+/**
+ * 转换 taskList 节点。
+ * Converts a taskList node.
+ */
+async function convertTaskListWithContext(
+  node: ProseMirrorNode,
+  context: ConvertContext,
+  runtime: DocxRuntime,
+): Promise<(Paragraph | Table)[]> {
+  return await convertTaskList(
+    node,
+    createContext({
+      listLevel: context.listLevel,
+      listType: null,
+    }),
+    runtime,
+  );
+}
+
+/**
  * 转换块级节点（paragraph, heading, blockquote, codeBlock, list, taskList, divider, table 等）。
  * Converts block-level nodes (paragraph, heading, blockquote, codeBlock, list, taskList, divider, table, etc.).
  *
@@ -1474,174 +1698,59 @@ async function convertTable(
  * @param runtime - DOCX 运行时模块 / DOCX runtime module
  * @returns Paragraph 或 Table 数组 / Array of Paragraph or Table
  */
+type BlockHandler = (
+  node: ProseMirrorNode,
+  context: ConvertContext,
+  runtime: DocxRuntime,
+) => Promise<(Paragraph | Table)[]>;
+
+const blockHandlers: Record<string, BlockHandler> = {
+  paragraph: async (node, context, runtime) => [
+    await convertParagraph(node, context, runtime),
+  ],
+
+  heading: async (node, _context, runtime) => [
+    await convertHeading(node, runtime),
+  ],
+
+  blockquote: async (node, _context, runtime) =>
+    await convertBlockquote(node, runtime),
+
+  codeBlock: async (node, _context, runtime) =>
+    await convertCodeBlock(node, runtime),
+
+  bulletList: async (node, context, runtime) =>
+    await convertListNode(node, context, runtime, true),
+
+  orderedList: async (node, context, runtime) =>
+    await convertListNode(node, context, runtime, false),
+
+  taskList: async (node, context, runtime) =>
+    await convertTaskListWithContext(node, context, runtime),
+
+  divider: async (_node, _context, runtime) => [createDivider(runtime)],
+
+  table: async (node, _context, runtime) => await convertTable(node, runtime),
+
+  listItem: async (node, context, runtime) =>
+    await convertListItem(node, context, runtime),
+
+  taskItem: async (node, _context, runtime) =>
+    await convertTaskItemNode(node, runtime),
+};
+
 async function convertBlockNode(
   node: ProseMirrorNode,
   context: ConvertContext,
   runtime: DocxRuntime,
 ): Promise<(Paragraph | Table)[]> {
-  switch (node.type.name) {
-    case "paragraph":
-      return [await convertParagraph(node, context, runtime)];
+  const handler = blockHandlers[node.type.name];
 
-    case "heading":
-      return [await convertHeading(node, runtime)];
-
-    case "blockquote":
-      return await convertBlockquote(node, runtime);
-
-    case "codeBlock":
-      return await convertCodeBlock(node, runtime);
-
-    case "bulletList":
-      return await convertList(
-        node,
-        createContext({
-          listLevel: context.listLevel,
-          listType: "bullet",
-        }),
-        runtime,
-      );
-
-    case "orderedList":
-      return await convertList(
-        node,
-        createContext({
-          listLevel: context.listLevel,
-          listType: "ordered",
-        }),
-        runtime,
-      );
-
-    case "taskList":
-      return await convertTaskList(
-        node,
-        createContext({
-          listLevel: context.listLevel,
-          listType: null,
-        }),
-        runtime,
-      );
-
-    case "divider":
-      return [
-        new runtime.Paragraph({
-          spacing: {
-            before: 120,
-            after: 120,
-          },
-          border: {
-            bottom: {
-              color: "A6A6A6",
-              space: 1,
-              style: "single",
-              size: 6,
-            },
-          },
-          children: [
-            new runtime.TextRun({
-              text: "",
-            }),
-          ],
-        }),
-      ];
-
-    case "table":
-      return await convertTable(node, runtime);
-
-    case "listItem": {
-      const parentContext = createContext({
-        listLevel: context.listLevel,
-        listType: context.listType ?? "bullet",
-      });
-
-      const result: Paragraph[] = [];
-
-      for (let i = 0; i < node.content.childCount; i++) {
-        const child = node.content.child(i);
-
-        if (child.type.name === "paragraph") {
-          result.push(await convertParagraph(child, parentContext, runtime));
-        } else {
-          const nested = await convertBlockNode(
-            child,
-            createContext({
-              listLevel: context.listLevel + 1,
-              listType: context.listType,
-            }),
-            runtime,
-          );
-
-          result.push(
-            ...nested.filter(
-              (element): element is Paragraph =>
-                element instanceof runtime.Paragraph,
-            ),
-          );
-        }
-      }
-
-      return result;
-    }
-
-    case "taskItem": {
-      const checked = isTaskChecked(node);
-
-      const result: Paragraph[] = [];
-
-      for (let i = 0; i < node.content.childCount; i++) {
-        const child = node.content.child(i);
-
-        if (child.type.name === "paragraph") {
-          const content = await convertInlineContent(
-            child,
-            createContext(),
-            runtime,
-          );
-
-          result.push(
-            new runtime.Paragraph({
-              children: [
-                new runtime.TextRun({
-                  text: checked ? "☑ " : "☐ ",
-                }),
-                ...content,
-              ],
-            }),
-          );
-        }
-      }
-
-      return result;
-    }
-
-    default: {
-      const results: (Paragraph | Table)[] = [];
-
-      if (node.content.size > 0) {
-        for (let i = 0; i < node.content.childCount; i++) {
-          const child = node.content.child(i);
-
-          const converted = await convertBlockNode(child, context, runtime);
-
-          results.push(...converted);
-        }
-      }
-
-      if (results.length === 0 && node.textContent) {
-        const children = await convertInlineContent(node, context, runtime);
-
-        if (children.length > 0) {
-          results.push(
-            new runtime.Paragraph({
-              children,
-            }),
-          );
-        }
-      }
-
-      return results;
-    }
+  if (handler) {
+    return handler(node, context, runtime);
   }
+
+  return await convertDefaultBlock(node, context, runtime);
 }
 
 /**

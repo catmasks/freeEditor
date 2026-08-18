@@ -360,110 +360,143 @@ export class FloatingToolbar {
   }
 
   /**
-   * 更新位置 / Update position
+   * 计算水平位置 left / Calculate horizontal left position
+   *
+   * @param targetRect - 目标矩形 / Target rectangle.
+   * @param toolbarRect - 工具栏矩形 / Toolbar rectangle.
+   * @returns 计算出的 left 值 / Calculated left value.
    */
-  private async updatePosition(): Promise<void> {
-    if (this.destroyed) {
-      return;
-    }
-
-    const toolbar = this.toolbarEl;
-
-    const targetRect = this.getTargetRect();
-
-    if (!toolbar || !targetRect) {
-      return;
-    }
-
-    await new Promise((r) => requestAnimationFrame(r));
-
-    const toolbarRect = toolbar.getBoundingClientRect();
-
-    if (!toolbarRect.width || !toolbarRect.height) {
-      return;
-    }
-
-    const offset = this.getOffset();
-
-    const targetEl = this.getTargetElement();
-
-    const boundaryRect = this.getBoundaryRect(targetEl);
-
-    const placement = this.getPlacement();
-
+  private calculateLeft(
+    targetRect: DOMRect,
+    toolbarRect: DOMRect,
+  ): number {
     const alignType = this.getAlignType();
-
-    const isTop = this.isTopPlacement();
-
-    let left: number;
 
     switch (alignType) {
       case "start":
-        left = targetRect.left;
-        break;
-
+        return targetRect.left;
       case "end":
-        left = targetRect.right - toolbarRect.width;
-        break;
-
+        return targetRect.right - toolbarRect.width;
       default:
-        left = targetRect.left + targetRect.width / 2 - toolbarRect.width / 2;
+        return targetRect.left + targetRect.width / 2 - toolbarRect.width / 2;
     }
+  }
+
+  /**
+   * 计算垂直位置 top / Calculate vertical top position
+   *
+   * @param targetRect - 目标矩形 / Target rectangle.
+   * @param toolbarRect - 工具栏矩形 / Toolbar rectangle.
+   * @param boundaryRect - 边界矩形 / Boundary rectangle.
+   * @param offset - 偏移量 / Offset.
+   * @returns 包含计算出的 top 和最终 placement 的对象 / Object with calculated top and final placement.
+   */
+  private calculateTop(
+    targetRect: DOMRect,
+    toolbarRect: DOMRect,
+    boundaryRect: { top: number; bottom: number },
+    offset: number,
+  ): { top: number; finalPlacement: FloatingPlacement } {
+    const placement = this.getPlacement();
+    const isTop = this.isTopPlacement();
+    let finalPlacement = placement;
 
     let top = isTop
       ? targetRect.top - toolbarRect.height - offset
       : targetRect.bottom + offset;
 
-    let finalPlacement = placement;
-
+    // 溢出调整 / Overflow adjustment
     if (isTop) {
       const overflowTop = top < boundaryRect.top + 8;
-
       if (overflowTop) {
         top = targetRect.bottom + offset;
-
         finalPlacement = this.replacePlacement(placement, "top", "bottom");
       }
     } else {
       const overflowBottom = top + toolbarRect.height > boundaryRect.bottom - 8;
-
       if (overflowBottom) {
         top = targetRect.top - toolbarRect.height - offset;
-
         finalPlacement = this.replacePlacement(placement, "bottom", "top");
       }
     }
 
+    // 边界约束 / Boundary clipping
     if (top < boundaryRect.top + 8) {
       top = boundaryRect.top + 8;
     }
-
     if (top + toolbarRect.height > boundaryRect.bottom - 8) {
       top = boundaryRect.bottom - toolbarRect.height - 8;
     }
 
-    left = Math.max(8, left);
+    return { top, finalPlacement };
+  }
 
-    left = Math.min(window.innerWidth - toolbarRect.width - 8, left);
-
-    let transformOrigin = "bottom center";
-
-    if (finalPlacement.startsWith("bottom")) {
-      transformOrigin = "top center";
-    }
+  /**
+   * 计算变换原点 / Calculate transform origin
+   *
+   * @param finalPlacement - 最终放置位置 / Final placement.
+   * @returns 变换原点字符串 / Transform origin string.
+   */
+  private calculateTransformOrigin(finalPlacement: FloatingPlacement): string {
+    let transformOrigin = finalPlacement.startsWith("bottom")
+      ? "top center"
+      : "bottom center";
 
     if (finalPlacement.endsWith("start")) {
       transformOrigin = transformOrigin.replace("center", "left");
     }
-
     if (finalPlacement.endsWith("end")) {
       transformOrigin = transformOrigin.replace("center", "right");
     }
 
+    return transformOrigin;
+  }
+
+  /**
+   * 约束水平位置在窗口内 / Clamp horizontal position within window
+   *
+   * @param left - 原始 left 值 / Original left value.
+   * @param toolbarWidth - 工具栏宽度 / Toolbar width.
+   * @returns 约束后的 left 值 / Clamped left value.
+   */
+  private clampHorizontalPosition(left: number, toolbarWidth: number): number {
+    left = Math.max(8, left);
+    return Math.min(window.innerWidth - toolbarWidth - 8, left);
+  }
+
+  /**
+   * 更新位置 / Update position
+   */
+  private async updatePosition(): Promise<void> {
+    if (this.destroyed) return;
+
+    const toolbar = this.toolbarEl;
+    const targetRect = this.getTargetRect();
+    if (!toolbar || !targetRect) return;
+
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    const toolbarRect = toolbar.getBoundingClientRect();
+    if (!toolbarRect.width || !toolbarRect.height) return;
+
+    const offset = this.getOffset();
+    const targetEl = this.getTargetElement();
+    const boundaryRect = this.getBoundaryRect(targetEl);
+
+    const left = this.calculateLeft(targetRect, toolbarRect);
+    const clampedLeft = this.clampHorizontalPosition(left, toolbarRect.width);
+
+    const { top, finalPlacement } = this.calculateTop(
+      targetRect,
+      toolbarRect,
+      boundaryRect,
+      offset,
+    );
+
+    const transformOrigin = this.calculateTransformOrigin(finalPlacement);
+
     toolbar.style.top = `${top}px`;
-
-    toolbar.style.left = `${left}px`;
-
+    toolbar.style.left = `${clampedLeft}px`;
     toolbar.style.transformOrigin = transformOrigin;
   }
 

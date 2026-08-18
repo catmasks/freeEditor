@@ -29,27 +29,27 @@ export class Editor {
   /**
    * 根容器元素 / Root container element
    */
-  private root: HTMLElement;
+  private root!: HTMLElement;
 
   /**
    * 工具栏元素 / Toolbar element
    */
-  private toolbar: HTMLElement;
+  private toolbar!: HTMLElement;
 
   /**
    * 内容区域元素 / Content area element
    */
-  private content: HTMLElement;
+  private content!: HTMLElement;
 
   /**
    * 核心编辑器实例 / Core editor instance
    */
-  private core: CoreEditor;
+  private core!: CoreEditor;
 
   /**
    * 插件创建结果 / Plugin creation result
    */
-  private pluginResult: CreateEditorPluginsResult;
+  private pluginResult!: CreateEditorPluginsResult;
 
   /**
    * 销毁钩子函数数组 / Array of destroy hook functions
@@ -59,7 +59,7 @@ export class Editor {
   /**
    * 当前语言 / Current locale
    */
-  private currentLocale: Locale;
+  private currentLocale!: Locale;
 
   /**
    * 取消语言变化订阅 / Unsubscribe locale change
@@ -102,28 +102,61 @@ export class Editor {
    * @param options - 编辑器配置选项 / Editor configuration options
    */
   constructor(el: HTMLElement, options: EditorOptions = {}) {
-    /** 先同步一次 runtimeState，确保 CoreEditor 初始化时 editorProps.editable 就返回正确值 */
+    const { initialDisabled, initialReadonly } = this.initRuntimeState(options);
+
+    this.initDOM(el, options);
+
+    this.initEditor(options);
+
+    this.initMediaEngine();
+
+    this.setupEventBlocking();
+
+    this.subscribeLocale();
+
+    this.initHeight(options);
+
+    this.mounted = true;
+
+    this.applyInitialStates(initialDisabled, initialReadonly);
+  }
+
+  /**
+   * 初始化运行时状态 / Initialize runtime state
+   */
+  private initRuntimeState(options: EditorOptions): {
+    initialDisabled: boolean;
+    initialReadonly: boolean;
+  } {
     const initialDisabled = Boolean(options.disabled);
     const initialReadonly = Boolean(options.readonly);
     editorRuntimeState.disabled = initialDisabled;
     editorRuntimeState.readonly = initialReadonly;
+    return { initialDisabled, initialReadonly };
+  }
 
+  /**
+   * 初始化 DOM 结构 / Initialize DOM structure
+   */
+  private initDOM(el: HTMLElement, options: EditorOptions): void {
     this.currentLocale = options.locale || "zh-CN";
-    // [I18N] 发布语言变化通知
     i18n.setLocale(this.currentLocale);
+
     this.root = document.createElement("div");
     this.root.className = "free-editor__container";
 
     this.content = document.createElement("div");
     this.content.className = "free-editor__content";
-    this.content.addEventListener("pointerdown", () => {
-      ensureEditorFocus(this.core.editor);
-    });
     this.root.appendChild(this.content);
     el.appendChild(this.root);
 
     this.setTheme(options.theme || "light");
+  }
 
+  /**
+   * 初始化编辑器核心 / Initialize editor core
+   */
+  private initEditor(options: EditorOptions): void {
     this.pluginResult = createEditorPlugins({
       include: options.include || [],
       exclude: options.exclude || [],
@@ -143,6 +176,15 @@ export class Editor {
     const cleanup = this.pluginResult.setup(this.core.editor, this.root);
     this.destroyHooks.push(cleanup);
 
+    this.content.addEventListener("pointerdown", () => {
+      ensureEditorFocus(this.core.editor);
+    });
+  }
+
+  /**
+   * 初始化媒体引擎 / Initialize media engine
+   */
+  private initMediaEngine(): void {
     /** 从 editor 实例上获取 mediaEngine（由 setup 函数写入 view） */
     this.mediaEngine =
       ((
@@ -158,8 +200,12 @@ export class Editor {
       ).mediaEngine as MediaEngine | undefined;
       if (engineOnView) this.mediaEngine = engineOnView;
     }
+  }
 
-    /** 容器级别的事件拦截（防御性阻止禁用/只读下的 paste/drop） */
+  /**
+   * 设置事件拦截 / Set up event blocking
+   */
+  private setupEventBlocking(): void {
     const blockEvent = (e: Event): boolean => {
       if (this.isDisabled || this.isReadonly) {
         e.preventDefault();
@@ -173,7 +219,7 @@ export class Editor {
     const onDropBlock = (e: DragEvent): boolean => blockEvent(e);
     const onDragOverBlock = (_e: DragEvent): boolean => {
       if (this.isDisabled || this.isReadonly) {
-        return true; /** 不阻止默认行为（允许系统默认拖拽行为），但不触发上传 */
+        return true;
       }
       return true;
     };
@@ -193,23 +239,36 @@ export class Editor {
       this.root.removeEventListener("dragstart", onDragStartBlock, true);
       this.root.removeEventListener("beforeinput", onBeforeInputBlock, true);
     });
+  }
 
-    // [I18N] 订阅语言变化
+  /**
+   * 订阅语言变化 / Subscribe to locale changes
+   */
+  private subscribeLocale(): void {
     this.unsubscribeLocale = i18n.subscribe(() => {
       this.rebuildToolbar();
       this.refreshPlaceholder();
     });
+  }
 
-    /** 应用高度配置 */
+  /**
+   * 初始化高度配置 / Initialize height configuration
+   */
+  private initHeight(options: EditorOptions): void {
     this.heightOption = options.height;
     this.maxHeightOption = options.maxHeight;
     if (this.heightOption || this.maxHeightOption) {
       this.applyHeightConstraints();
     }
+  }
 
-    this.mounted = true;
-
-    /** 应用初始禁用/只读状态 */
+  /**
+   * 应用初始禁用/只读状态 / Apply initial disabled/readonly states
+   */
+  private applyInitialStates(
+    initialDisabled: boolean,
+    initialReadonly: boolean,
+  ): void {
     if (initialDisabled) {
       this.setDisabled(true);
     }

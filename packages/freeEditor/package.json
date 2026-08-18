@@ -24,6 +24,7 @@
   "scripts": {
     "copy-readme": "node scripts/copy-readme.mjs",
     "check-package": "node scripts/check-package.mjs",
+    "type-check": "tsc --noEmit",
     "build": "pnpm run copy-readme && vite build && pnpm run check-package",
     "prepack": "pnpm run copy-readme",
     "pack": "pnpm run build && pnpm pack --out free-editor.tgz"

@@ -13,9 +13,9 @@
     "dev": "pnpm --filter playground dev",
     "build": "pnpm --filter @catmasks/free-editor build",
     "lint:packages": "eslint packages/*/src/**/*.ts",
-    "lint:fix:packages": "eslint packages/*/src/**/*.ts --fix",
     "lint:playground": "eslint playground/src/**/*.ts",
-    "lint:fix:playground": "eslint playground/src/**/*.ts --fix"
+    "type-check:packages": "pnpm --filter @catmasks/free-editor type-check",
+    "prebuild": "pnpm run type-check:packages && pnpm run lint:packages"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

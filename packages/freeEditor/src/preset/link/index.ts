@@ -63,53 +63,69 @@ const createFloatingToolbarContent = (editor: Editor): HTMLElement => {
   return wrap;
 };
 
-const findLinkBounds = (
-  doc: any,
-  pos: number,
-): { start: number; end: number } | null => {
+/**
+ * 尝试从候选节点中查找链接标记。
+ * Try to find a link mark from a candidate node.
+ *
+ * @param node - 候选节点 / Candidate node.
+ * @param markType - 链接标记类型 / Link mark type.
+ * @returns 链接标记，或 null / Link mark, or null.
+ */
+function tryFindMarkInNode(node: any, markType: any): any {
+  if (!node || !node.isText) return null;
+  return node.marks.find((m: any) => m.type === markType) || null;
+}
+
+/**
+ * 在指定位置查找当前链接标记。
+ * Find the current link mark at a given position.
+ *
+ * @param doc - ProseMirror 文档对象 / ProseMirror document.
+ * @param pos - 位置 / Position.
+ * @returns 链接标记，或 null / Link mark, or null.
+ */
+function findCurrentMark(doc: any, pos: number): any {
   const $pos = doc.resolve(pos);
   const markType = doc.type.schema.marks.link;
-
   const parent = $pos.parent;
-  const parentStart = $pos.start();
-
-  let currentMark: any = null;
-
-  const offset = $pos.parentOffset;
   const index = $pos.index();
+  const offset = $pos.parentOffset;
 
-  const nodeAtOffset = parent.maybeChild(index);
-  if (nodeAtOffset && nodeAtOffset.isText) {
-    const mark = nodeAtOffset.marks.find((m: any) => m.type === markType);
-    if (mark) currentMark = mark;
+  // 从当前偏移位置查找 / Try to find from current offset
+  const markAtOffset = tryFindMarkInNode(parent.maybeChild(index), markType);
+  if (markAtOffset) return markAtOffset;
+
+  // 尝试前一个节点（在偏移为 0 时）/ Try previous node (when offset is 0)
+  if (offset === 0 && index > 0) {
+    const markPrev = tryFindMarkInNode(parent.maybeChild(index - 1), markType);
+    if (markPrev) return markPrev;
   }
 
-  if (!currentMark && offset === 0 && index > 0) {
-    const prevNode = parent.maybeChild(index - 1);
-    if (prevNode && prevNode.isText) {
-      const mark = prevNode.marks.find((m: any) => m.type === markType);
-      if (mark) currentMark = mark;
-    }
-  }
+  // 尝试 nodeBefore / Try nodeBefore
+  const markBefore = tryFindMarkInNode($pos.nodeBefore, markType);
+  if (markBefore) return markBefore;
 
-  if (!currentMark) {
-    const before = $pos.nodeBefore;
-    if (before && before.isText) {
-      const mark = before.marks.find((m: any) => m.type === markType);
-      if (mark) currentMark = mark;
-    }
-  }
+  // 尝试 nodeAfter / Try nodeAfter
+  const markAfter = tryFindMarkInNode($pos.nodeAfter, markType);
+  if (markAfter) return markAfter;
 
-  if (!currentMark) {
-    const after = $pos.nodeAfter;
-    if (after && after.isText) {
-      const mark = after.marks.find((m: any) => m.type === markType);
-      if (mark) currentMark = mark;
-    }
-  }
+  return null;
+}
 
-  if (!currentMark) return null;
-
+/**
+ * 扫描父节点，查找链接标记的起始和结束位置。
+ * Scan parent node to find the start and end positions of a link mark.
+ *
+ * @param parent - 父节点 / Parent node.
+ * @param parentStart - 父节点起始位置 / Parent node start position.
+ * @param currentMark - 当前链接标记 / Current link mark.
+ * @returns 链接的起始和结束位置，或 null / Link start and end positions, or null.
+ */
+function scanLinkBounds(
+  parent: any,
+  parentStart: number,
+  currentMark: any,
+): { start: number; end: number } | null {
   let linkStart = -1;
   let linkEnd = -1;
   let scanPos = parentStart;
@@ -133,6 +149,20 @@ const findLinkBounds = (
   }
 
   return { start: linkStart, end: linkEnd };
+}
+
+const findLinkBounds = (
+  doc: any,
+  pos: number,
+): { start: number; end: number } | null => {
+  const $pos = doc.resolve(pos);
+  const parent = $pos.parent;
+  const parentStart = $pos.start();
+
+  const currentMark = findCurrentMark(doc, pos);
+  if (!currentMark) return null;
+
+  return scanLinkBounds(parent, parentStart, currentMark);
 };
 
 /**

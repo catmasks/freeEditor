@@ -158,41 +158,70 @@ export class FloatingManager {
   }
 
   /**
+   * 检查点击是否在工具栏区域内 / Check if click is inside toolbar area
+   */
+  private isClickInToolbar(
+    active: FloatingAPI,
+    path: EventTarget[],
+    target: EventTarget | null,
+  ): boolean {
+    const toolbar = active.getToolbarEl();
+    return !!(
+      toolbar &&
+      (path.includes(toolbar) || toolbar.contains(target as Node))
+    );
+  }
+
+  /**
+   * 检查点击是否在目标区域内 / Check if click is inside target area
+   */
+  private isClickInTarget(
+    active: FloatingAPI,
+    path: EventTarget[],
+    target: EventTarget | null,
+    x: number,
+    y: number,
+  ): boolean {
+    const targetEl = active.getTargetEl();
+    if (
+      targetEl &&
+      (path.includes(targetEl) || targetEl.contains(target as Node))
+    ) {
+      return true;
+    }
+    return active.isPointInTarget ? active.isPointInTarget(x, y) : false;
+  }
+
+  /**
+   * 处理全局指针按下事件 / Handle global pointer down event
+   */
+  private handlePointerDown(e: PointerEvent): void {
+    if (!this.activeId) return;
+
+    const active = this.instances.get(this.activeId);
+    if (!active) return;
+
+    const path = (e.composedPath?.() || []) as EventTarget[];
+    const target = e.target as Node;
+
+    if (this.isClickInToolbar(active, path, target)) return;
+    if (this.isClickInTarget(active, path, target, e.clientX, e.clientY))
+      return;
+
+    active.close();
+    this.activeId = null;
+
+    this.notifyActiveChange();
+  }
+
+  /**
    * 绑定全局事件 / Bind global events
    */
   private bindGlobalEvents(): void {
     if (this.bound) return;
     this.bound = true;
 
-    window.addEventListener("pointerdown", (e) => {
-      if (!this.activeId) return;
-
-      const active = this.instances.get(this.activeId);
-      if (!active) return;
-
-      const toolbar = active.getToolbarEl();
-      const target = active.getTargetEl();
-
-      const path = (e.composedPath?.() || []) as EventTarget[];
-
-      const inToolbar =
-        toolbar &&
-        (path.includes(toolbar) || toolbar.contains(e.target as Node));
-
-      const inTarget =
-        target && (path.includes(target) || target.contains(e.target as Node));
-
-      const inTargetRect = active.isPointInTarget
-        ? active.isPointInTarget(e.clientX, e.clientY)
-        : false;
-
-      if (inToolbar || inTarget || inTargetRect) return;
-
-      active.close();
-      this.activeId = null;
-
-      this.notifyActiveChange();
-    });
+    window.addEventListener("pointerdown", (e) => this.handlePointerDown(e));
 
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") this.closeAll();

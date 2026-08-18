@@ -191,35 +191,34 @@ function sanitizeElementStyle(element: HTMLElement): void {
 }
 
 /**
- * 清理元素上的 Word 私有 HTML 属性（如 class、mso-* 等）。
- * Clean Word private HTML attributes (class, mso-*, etc.) from element.
+ * 清理 class 属性，移除 Word 私有类名。
+ * Clean class attribute, remove Word private class names.
  *
  * @param element - 目标 HTML 元素 / Target HTML element.
  */
-function normalizeElementAttributes(element: HTMLElement): void {
-  /**
-   * 清理 class 属性。
-   * Clean class attribute.
-   */
-  if (element.hasAttribute("class")) {
-    const className = element.getAttribute("class") || "";
+function normalizeClassAttribute(element: HTMLElement): void {
+  if (!element.hasAttribute("class")) return;
 
-    const classes = className
-      .split(/\s+/)
-      .filter(Boolean)
-      .filter((name) => !/^Mso/i.test(name) && !/^msolist/i.test(name));
+  const className = element.getAttribute("class") || "";
+  const classes = className
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((name) => !/^Mso/i.test(name) && !/^msolist/i.test(name));
 
-    if (classes.length) {
-      element.setAttribute("class", classes.join(" "));
-    } else {
-      element.removeAttribute("class");
-    }
+  if (classes.length) {
+    element.setAttribute("class", classes.join(" "));
+  } else {
+    element.removeAttribute("class");
   }
+}
 
-  /**
-   * 移除 Word 私有属性。
-   * Remove Word private attributes.
-   */
+/**
+ * 移除 Word 私有属性（mso-*, w:*, o:*）。
+ * Remove Word private attributes (mso-*, w:*, o:*).
+ *
+ * @param element - 目标 HTML 元素 / Target HTML element.
+ */
+function removeWordPrivateAttributes(element: HTMLElement): void {
   const attributes = Array.from(element.attributes);
 
   for (const attribute of attributes) {
@@ -233,17 +232,15 @@ function normalizeElementAttributes(element: HTMLElement): void {
       element.removeAttribute(attribute.name);
     }
   }
+}
 
-  /**
-   * 清理样式。
-   * Clean styles.
-   */
-  sanitizeElementStyle(element);
-
-  /**
-   * 移除空 class / style。
-   * Remove empty class/style.
-   */
+/**
+ * 移除空的 class 和 style 属性。
+ * Remove empty class and style attributes.
+ *
+ * @param element - 目标 HTML 元素 / Target HTML element.
+ */
+function removeEmptyAttributes(element: HTMLElement): void {
   if (element.hasAttribute("class") && !element.getAttribute("class")?.trim()) {
     element.removeAttribute("class");
   }
@@ -251,6 +248,159 @@ function normalizeElementAttributes(element: HTMLElement): void {
   if (element.hasAttribute("style") && !element.getAttribute("style")?.trim()) {
     element.removeAttribute("style");
   }
+}
+
+/**
+ * 清理元素上的 Word 私有 HTML 属性（如 class、mso-* 等）。
+ * Clean Word private HTML attributes (class, mso-*, etc.) from element.
+ *
+ * @param element - 目标 HTML 元素 / Target HTML element.
+ */
+function normalizeElementAttributes(element: HTMLElement): void {
+  normalizeClassAttribute(element);
+  removeWordPrivateAttributes(element);
+  sanitizeElementStyle(element);
+  removeEmptyAttributes(element);
+}
+
+/**
+ * 检测文本装饰相关的语义标签。
+ * Detect semantic tag from text-decoration properties.
+ *
+ * @param textDecoration - text-decoration 样式值 / text-decoration style value.
+ * @returns 目标标签名，或 null / Target tag name, or null.
+ */
+function detectTextDecorationTag(textDecoration: string): string | null {
+  if (textDecoration.includes("underline")) return "u";
+  if (textDecoration.includes("line-through")) return "del";
+  return null;
+}
+
+/**
+ * 检测垂直对齐相关的语义标签。
+ * Detect semantic tag from vertical-align property.
+ *
+ * @param verticalAlign - vertical-align 样式值 / vertical-align style value.
+ * @returns 目标标签名，或 null / Target tag name, or null.
+ */
+function detectVerticalAlignTag(verticalAlign: string): string | null {
+  if (verticalAlign === "super" || verticalAlign === "superscript")
+    return "sup";
+  if (verticalAlign === "sub" || verticalAlign === "subscript") return "sub";
+  return null;
+}
+
+/**
+ * 检测字体粗细相关的语义标签。
+ * Detect semantic tag from font-weight property.
+ *
+ * @param fontWeight - font-weight 样式值 / font-weight style value.
+ * @returns 目标标签名，或 null / Target tag name, or null.
+ */
+function detectFontWeightTag(fontWeight: string): string | null {
+  if (
+    fontWeight === "bold" ||
+    fontWeight === "bolder" ||
+    Number(fontWeight) >= 600
+  ) {
+    return "strong";
+  }
+  return null;
+}
+
+/**
+ * 检测字体样式相关的语义标签。
+ * Detect semantic tag from font-style property.
+ *
+ * @param fontStyle - font-style 样式值 / font-style style value.
+ * @returns 目标标签名，或 null / Target tag name, or null.
+ */
+function detectFontStyleTag(fontStyle: string): string | null {
+  if (fontStyle === "italic" || fontStyle === "oblique") return "em";
+  return null;
+}
+
+/**
+ * 根据样式检测需要转换的语义标签。
+ * Detect semantic tag based on style properties.
+ *
+ * @param style - 元素样式对象 / Element style object.
+ * @returns 目标标签名，或 null / Target tag name, or null.
+ */
+function detectSemanticTag(style: CSSStyleDeclaration): string | null {
+  const textDecoration = (
+    style.getPropertyValue("text-decoration-line") ||
+    style.getPropertyValue("text-decoration")
+  ).toLowerCase();
+  const verticalAlign = style.getPropertyValue("vertical-align").toLowerCase();
+  const fontWeight = style.getPropertyValue("font-weight").toLowerCase();
+  const fontStyle = style.getPropertyValue("font-style").toLowerCase();
+
+  return (
+    detectTextDecorationTag(textDecoration) ||
+    detectVerticalAlignTag(verticalAlign) ||
+    detectFontWeightTag(fontWeight) ||
+    detectFontStyleTag(fontStyle) ||
+    null
+  );
+}
+
+/**
+ * 移除已转换为语义标签的样式属性。
+ * Remove style properties that have been converted to semantic tags.
+ *
+ * @param targetTag - 目标语义标签 / Target semantic tag.
+ * @param style - 样式对象 / Style object.
+ */
+function removeConvertedStyle(
+  targetTag: string,
+  style: CSSStyleDeclaration,
+): void {
+  if (targetTag === "u" || targetTag === "del") {
+    style.removeProperty("text-decoration-line");
+    style.removeProperty("text-decoration");
+  } else if (targetTag === "sup" || targetTag === "sub") {
+    style.removeProperty("vertical-align");
+  } else if (targetTag === "strong") {
+    style.removeProperty("font-weight");
+  } else if (targetTag === "em") {
+    style.removeProperty("font-style");
+  }
+}
+
+/**
+ * 将 span 元素替换为语义标签元素。
+ * Replace a span element with a semantic tag element.
+ *
+ * @param element - 源 span 元素 / Source span element.
+ * @param targetTag - 目标语义标签 / Target semantic tag.
+ */
+function replaceSpanWithSemanticTag(
+  element: HTMLElement,
+  targetTag: string,
+): void {
+  const newElement = element.ownerDocument.createElement(targetTag);
+
+  // 复制非 style 属性 / Copy non-style attributes
+  for (const attr of Array.from(element.attributes)) {
+    if (attr.name === "style") continue;
+    newElement.setAttribute(attr.name, attr.value);
+  }
+
+  // 复制样式并移除已转换的属性 / Copy style and remove converted properties
+  newElement.style.cssText = element.style.cssText;
+  removeConvertedStyle(targetTag, newElement.style);
+
+  if (!newElement.style.length) {
+    newElement.removeAttribute("style");
+  }
+
+  // 移动子节点 / Move child nodes
+  while (element.firstChild) {
+    newElement.appendChild(element.firstChild);
+  }
+
+  element.replaceWith(newElement);
 }
 
 /**
@@ -266,83 +416,62 @@ function transformSemanticStyles(root: HTMLElement): void {
     const element = span as HTMLElement;
     sanitizeElementStyle(element);
 
-    const style = element.style;
-
-    // 检测需要转换的样式 / Detect styles to convert
-    const textDecoration = (
-      style.getPropertyValue("text-decoration-line") ||
-      style.getPropertyValue("text-decoration")
-    ).toLowerCase();
-    const verticalAlign = style
-      .getPropertyValue("vertical-align")
-      .toLowerCase();
-    const fontWeight = style.getPropertyValue("font-weight").toLowerCase();
-    const fontStyle = style.getPropertyValue("font-style").toLowerCase();
-
-    let targetTag: string | null = null;
-
-    // 按优先级选择语义标签 / Select semantic tags by priority
-    if (textDecoration.includes("underline")) {
-      targetTag = "u";
-    } else if (textDecoration.includes("line-through")) {
-      targetTag = "del";
-    } else if (verticalAlign === "super" || verticalAlign === "superscript") {
-      targetTag = "sup";
-    } else if (verticalAlign === "sub" || verticalAlign === "subscript") {
-      targetTag = "sub";
-    } else if (
-      fontWeight === "bold" ||
-      fontWeight === "bolder" ||
-      Number(fontWeight) >= 600
-    ) {
-      targetTag = "strong";
-    } else if (fontStyle === "italic" || fontStyle === "oblique") {
-      targetTag = "em";
-    }
-
+    const targetTag = detectSemanticTag(element.style);
     if (!targetTag) continue;
 
-    // 创建新标签 / Create new element
-    const newElement = element.ownerDocument.createElement(targetTag);
+    replaceSpanWithSemanticTag(element, targetTag);
+  }
+}
 
-    // 复制原 span 的所有属性 / Copy all attributes from original span except style
-    for (const attr of Array.from(element.attributes)) {
-      if (attr.name === "style") continue; // 稍后单独处理
-      newElement.setAttribute(attr.name, attr.value);
+/**
+ * 将行中的 td 单元格转换为 th 单元格。
+ * Convert td cells to th cells in a row.
+ *
+ * @param row - 表格行元素 / Table row element.
+ * @param doc - 文档对象 / Document object.
+ */
+function convertCellsToTh(row: Element, doc: Document): void {
+  const cells = Array.from(row.children);
+
+  for (const cell of cells) {
+    if (cell.tagName.toLowerCase() !== "td") continue;
+
+    const th = doc.createElement("th");
+
+    if (cell.hasAttribute("colspan")) {
+      th.setAttribute("colspan", cell.getAttribute("colspan") || "1");
     }
 
-    // 复制样式：移除已经转换为语义标签的属性，保留其余属性
-    const newStyle = newElement.style;
-    const cssText = style.cssText;
-
-    // 将原样式完整复制，然后删除已转换的属性
-    newStyle.cssText = cssText;
-
-    if (targetTag === "u") {
-      newStyle.removeProperty("text-decoration-line");
-      newStyle.removeProperty("text-decoration");
-    } else if (targetTag === "del") {
-      newStyle.removeProperty("text-decoration-line");
-      newStyle.removeProperty("text-decoration");
-    } else if (targetTag === "sup" || targetTag === "sub") {
-      newStyle.removeProperty("vertical-align");
-    } else if (targetTag === "strong") {
-      newStyle.removeProperty("font-weight");
-    } else if (targetTag === "em") {
-      newStyle.removeProperty("font-style");
+    if (cell.hasAttribute("rowspan")) {
+      th.setAttribute("rowspan", cell.getAttribute("rowspan") || "1");
     }
 
-    // 如果新标签没有 style 内容，移除 style 属性 / Remove style attribute if empty
-    if (!newStyle.length) {
-      newElement.removeAttribute("style");
+    while (cell.firstChild) {
+      th.appendChild(cell.firstChild);
     }
 
-    // 移动子节点 / Move child nodes to new element
-    while (element.firstChild) {
-      newElement.appendChild(element.firstChild);
-    }
+    cell.replaceWith(th);
+  }
+}
 
-    element.replaceWith(newElement);
+/**
+ * 将行包装在 thead 中并插入到表格。
+ * Wrap a row in thead and insert into the table.
+ *
+ * @param table - 表格元素 / Table element.
+ * @param row - 要包装的行元素 / Row element to wrap.
+ */
+function wrapRowInThead(table: Element, row: Element): void {
+  const thead = table.ownerDocument.createElement("thead");
+  row.remove();
+  thead.appendChild(row);
+
+  const tbody = table.querySelector(":scope > tbody");
+
+  if (tbody) {
+    table.insertBefore(thead, tbody);
+  } else {
+    table.insertBefore(thead, table.firstChild);
   }
 }
 
@@ -356,79 +485,20 @@ function normalizeTableHeader(root: HTMLElement): void {
   const tables = Array.from(root.querySelectorAll("table"));
 
   for (const table of tables) {
-    /**
-     * 跳过已有 thead 的表格。
-     * Skip tables that already have a thead.
-     */
     const existingHeader = table.querySelector(":scope > thead > tr");
 
     if (existingHeader) {
       continue;
     }
 
-    /**
-     * 获取第一行。
-     * Get the first row.
-     */
     const firstRow = table.querySelector(":scope > tbody > tr, :scope > tr");
 
     if (!firstRow) {
       continue;
     }
 
-    /**
-     * 将 td 转换为 th。
-     * Convert td to th.
-     */
-    const cells = Array.from(firstRow.children);
-
-    for (const cell of cells) {
-      if (cell.tagName.toLowerCase() !== "td") {
-        continue;
-      }
-
-      const th = table.ownerDocument.createElement("th");
-
-      /**
-       * 保留跨列/行属性。
-       * Preserve colspan/rowspan.
-       */
-      if (cell.hasAttribute("colspan")) {
-        th.setAttribute("colspan", cell.getAttribute("colspan") || "1");
-      }
-
-      if (cell.hasAttribute("rowspan")) {
-        th.setAttribute("rowspan", cell.getAttribute("rowspan") || "1");
-      }
-
-      /**
-       * 移动子节点。
-       * Move child nodes.
-       */
-      while (cell.firstChild) {
-        th.appendChild(cell.firstChild);
-      }
-
-      cell.replaceWith(th);
-    }
-
-    /**
-     * 创建 thead 并插入。
-     * Create thead and insert.
-     */
-    const thead = table.ownerDocument.createElement("thead");
-
-    firstRow.remove();
-
-    thead.appendChild(firstRow);
-
-    const tbody = table.querySelector(":scope > tbody");
-
-    if (tbody) {
-      table.insertBefore(thead, tbody);
-    } else {
-      table.insertBefore(thead, table.firstChild);
-    }
+    convertCellsToTh(firstRow, table.ownerDocument);
+    wrapRowInThead(table, firstRow);
   }
 }
 

@@ -72,7 +72,7 @@ const STORAGE_KEY = "formatPainter";
  * @returns 格式刷状态 / Format painter state
  */
 function getState(editor: Editor): FormatPainterState {
-  return (editor.storage as Record<string, unknown>)[
+  return (editor.storage as unknown as Record<string, unknown>)[
     STORAGE_KEY
   ] as FormatPainterState;
 }
@@ -85,37 +85,60 @@ function getState(editor: Editor): FormatPainterState {
  */
 function setState(editor: Editor, state: Partial<FormatPainterState>): void {
   Object.assign(
-    (editor.storage as Record<string, unknown>)[STORAGE_KEY],
+    (editor.storage as unknown as Record<string, unknown>)[
+      STORAGE_KEY
+    ] as object,
     state,
   );
 }
 
 /**
- * 捕获当前选区的格式 / Capture format from current selection
+ * 过滤出非空的属性 / Filter non-empty attributes
+ *
+ * @param attrs 原始属性对象 / Original attributes object
+ * @param excludeZero 是否排除 0 值 / Whether to exclude zero value
+ * @returns 过滤后的属性对象 / Filtered attributes object
+ */
+function filterNonEmptyAttrs(
+  attrs: Record<string, unknown>,
+  excludeZero = false,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(attrs)) {
+    if (value === null || value === undefined || value === "") continue;
+    if (excludeZero && value === 0) continue;
+    result[key] = value;
+  }
+
+  return result;
+}
+
+/**
+ * 捕获 style mark 的非空属性 / Capture non-empty style mark attributes
  *
  * @param editor 编辑器实例 / Editor instance
- * @returns 捕获的格式数据 / Captured format data
+ * @returns 捕获的标记列表 / Captured marks list
  */
-function captureFormat(editor: Editor): FormatData {
-  const marks: CapturedMark[] = [];
-  const nodeAttrs: CapturedNodeAttr[] = [];
-
-  // 捕获 style mark 的非空属性 / Capture non-empty style mark attributes
+function captureStyleMarks(editor: Editor): CapturedMark[] {
   const styleAttrs = editor.getAttributes("style");
-  const filteredStyleAttrs: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(styleAttrs)) {
-    if (value !== null && value !== undefined && value !== "") {
-      filteredStyleAttrs[key] = value;
-    }
-  }
+  const filteredStyleAttrs = filterNonEmptyAttrs(styleAttrs);
 
   if (Object.keys(filteredStyleAttrs).length > 0) {
-    marks.push({ name: "style", attrs: filteredStyleAttrs });
+    return [{ name: "style", attrs: filteredStyleAttrs }];
   }
 
-  // 捕获其他标记（bold, italic, underline, strike, superscript, subscript, inlineCode, link）
-  // Capture other marks
+  return [];
+}
+
+/**
+ * 捕获非 style 的标记（bold, italic, underline 等）/ Capture non-style marks
+ *
+ * @param editor 编辑器实例 / Editor instance
+ * @returns 捕获的标记列表 / Captured marks list
+ */
+function captureOtherMarks(editor: Editor): CapturedMark[] {
+  const marks: CapturedMark[] = [];
   const markTypes = Object.values(editor.schema.marks);
 
   for (const markType of markTypes) {
@@ -123,19 +146,22 @@ function captureFormat(editor: Editor): FormatData {
 
     if (editor.isActive(markType.name)) {
       const attrs = editor.getAttributes(markType.name);
-      const filteredAttrs: Record<string, unknown> = {};
-
-      for (const [key, value] of Object.entries(attrs)) {
-        if (value !== null && value !== undefined && value !== "") {
-          filteredAttrs[key] = value;
-        }
-      }
-
+      const filteredAttrs = filterNonEmptyAttrs(attrs);
       marks.push({ name: markType.name, attrs: filteredAttrs });
     }
   }
 
-  // 捕获节点属性（alignment, lineHeight, indent）/ Capture node attributes
+  return marks;
+}
+
+/**
+ * 捕获节点属性（alignment, lineHeight, indent）/ Capture node attributes
+ *
+ * @param editor 编辑器实例 / Editor instance
+ * @returns 捕获的节点属性列表 / Captured node attributes list
+ */
+function captureNodeAttributes(editor: Editor): CapturedNodeAttr[] {
+  const nodeAttrs: CapturedNodeAttr[] = [];
   const { $from } = editor.state.selection;
 
   for (let d = $from.depth; d >= 0; d--) {
@@ -160,6 +186,22 @@ function captureFormat(editor: Editor): FormatData {
       break;
     }
   }
+
+  return nodeAttrs;
+}
+
+/**
+ * 捕获当前选区的格式 / Capture format from current selection
+ *
+ * @param editor 编辑器实例 / Editor instance
+ * @returns 捕获的格式数据 / Captured format data
+ */
+function captureFormat(editor: Editor): FormatData {
+  const marks: CapturedMark[] = [
+    ...captureStyleMarks(editor),
+    ...captureOtherMarks(editor),
+  ];
+  const nodeAttrs = captureNodeAttributes(editor);
 
   return { marks, nodeAttrs };
 }
@@ -227,8 +269,8 @@ function applyFormat(editor: Editor, formatData: FormatData): void {
  */
 export function createFormatPainterToolbar(editor: Editor): HTMLElement {
   // 初始化状态存储 / Initialize state storage
-  if (!(editor.storage as Record<string, unknown>)[STORAGE_KEY]) {
-    (editor.storage as Record<string, unknown>)[STORAGE_KEY] = {
+  if (!(editor.storage as unknown as Record<string, unknown>)[STORAGE_KEY]) {
+    (editor.storage as unknown as Record<string, unknown>)[STORAGE_KEY] = {
       active: false,
       formatData: null,
       cleanup: null,

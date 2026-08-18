@@ -205,6 +205,101 @@ function getFullFileName(file: File): string {
 }
 
 /**
+ * 创建上传 FormData。
+ * Create upload FormData.
+ *
+ * @param file 文件对象 / The file object.
+ * @param fieldName 字段名 / Field name.
+ * @param data 额外数据 / Extra data.
+ */
+function createUploadFormData(
+  file: File,
+  fieldName: string | undefined,
+  data: unknown,
+): FormData {
+  const formData = new FormData();
+
+  formData.append(fieldName || "file", file);
+
+  const extraData = typeof data === "function" ? data() : data;
+
+  if (extraData) {
+    Object.entries(extraData).forEach(([key, value]) => {
+      formData.append(key, value as string);
+    });
+  }
+
+  return formData;
+}
+
+/**
+ * 校验上传 URL 格式。
+ * Validate upload URL format.
+ *
+ * @param url 上传 URL / Upload URL.
+ */
+function isValidUploadUrl(url: string): boolean {
+  if (/^data:[^;]+;base64,/.test(url)) {
+    return true;
+  }
+
+  if (url.startsWith("blob:")) {
+    return true;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+
+    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 解析并校验上传响应。
+ * Parse and validate upload response.
+ *
+ * @param result 服务端响应结果 / Server response result.
+ * @param format 响应格式化函数 / Response format function.
+ * @param file 原始文件 / Original file.
+ */
+async function parseUploadResponse(
+  result: unknown,
+  format:
+    | ((result: unknown) => UploadResult | Promise<UploadResult>)
+    | undefined,
+  file: File,
+): Promise<UploadResult> {
+  let parsed: UploadResult = result as UploadResult;
+
+  if (typeof format === "function") {
+    parsed = await format(result);
+  }
+
+  const url = parsed?.url;
+
+  if (!url || typeof url !== "string") {
+    throw new MediaUploadError(
+      MEDIA_UPLOAD_ERROR_CODE.INVALID_RESPONSE_URL,
+      i18n.t("upload.invalidResponseUrl"),
+    );
+  }
+
+  if (!isValidUploadUrl(url)) {
+    throw new MediaUploadError(
+      MEDIA_UPLOAD_ERROR_CODE.INVALID_URL_FORMAT,
+      i18n.t("upload.invalidUrlFormat"),
+    );
+  }
+
+  return {
+    url,
+    name: parsed?.name || getFileName(file),
+  };
+}
+
+/**
  * 默认上传处理函数。
  * Default upload handler function.
  *
@@ -232,30 +327,8 @@ async function defaultUploadHandler(
     );
   }
 
-  /**
-   * 创建 FormData。
-   * Create FormData.
-   */
-  const formData = new FormData();
+  const formData = createUploadFormData(file, fieldName, data);
 
-  formData.append(fieldName || "file", file);
-
-  /**
-   * 额外数据。
-   * Extra data.
-   */
-  const extraData = typeof data === "function" ? data() : data;
-
-  if (extraData) {
-    Object.entries(extraData).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-  }
-
-  /**
-   * 发起请求。
-   * Send request.
-   */
   const response = await fetch(action, {
     method,
     headers,
@@ -271,69 +344,15 @@ async function defaultUploadHandler(
     );
   }
 
-  /**
-   * 读取服务端响应。
-   * Read server response.
-   */
   const result = await response.json();
 
-  let parsed: UploadResult = result;
+  const uploadResult = await parseUploadResponse(result, format, file);
 
-  /**
-   * 自定义响应格式化。
-   * Custom response formatting.
-   */
-  if (typeof format === "function") {
-    parsed = await format(result);
-  }
-
-  const url = parsed?.url;
-
-  if (!url || typeof url !== "string") {
-    throw new MediaUploadError(
-      MEDIA_UPLOAD_ERROR_CODE.INVALID_RESPONSE_URL,
-      i18n.t("upload.invalidResponseUrl"),
-    );
-  }
-
-  /**
-   * URL 格式校验。
-   * Validate URL format.
-   */
-  const isValidUrl =
-    /^data:[^;]+;base64,/.test(url) ||
-    url.startsWith("blob:") ||
-    ((): boolean => {
-      try {
-        const parsedUrl = new URL(url);
-
-        return (
-          parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:"
-        );
-      } catch {
-        return false;
-      }
-    })();
-
-  if (!isValidUrl) {
-    throw new MediaUploadError(
-      MEDIA_UPLOAD_ERROR_CODE.INVALID_URL_FORMAT,
-      i18n.t("upload.invalidUrlFormat"),
-    );
-  }
-
-  /**
-   * 上传完成。
-   * Upload complete.
-   */
   context.onProgress?.({
     percent: 100,
   } as UploadProgress);
 
-  return {
-    url,
-    name: parsed?.name || getFileName(file),
-  };
+  return uploadResult;
 }
 
 /**
@@ -603,6 +622,98 @@ function removeUploadPlaceholder(editor: Editor, id: string): void {
 }
 
 /**
+ * 校验文件类型是否在允许列表中。
+ * Validate file type against accept list.
+ *
+ * @param file 文件对象 / The file object.
+ * @param config 上传配置 / Upload configuration.
+ */
+function validateFileType(file: File, config: MediaUploaderConfig): void {
+  if (!config.accept?.length) {
+    return;
+  }
+
+  const fileName = file.name.toLowerCase();
+
+  const allowed = config.accept.some((item) => {
+    const acceptItem = item.toLowerCase().trim();
+
+    if (acceptItem.endsWith("/*")) {
+      const prefix = acceptItem.replace("/*", "/");
+
+      return file.type.startsWith(prefix);
+    }
+
+    if (acceptItem.includes("/")) {
+      return file.type === acceptItem;
+    }
+
+    const ext = acceptItem.startsWith(".") ? acceptItem : `.${acceptItem}`;
+
+    return fileName.endsWith(ext);
+  });
+
+  if (allowed) {
+    return;
+  }
+
+  const error = new MediaUploadError(
+    MEDIA_UPLOAD_ERROR_CODE.FILE_TYPE_INVALID,
+    `${i18n.t("upload.fileTypeInvalid")}: ${file.type || file.name}`,
+  );
+
+  config.onTypeError?.(error, file);
+
+  throw error;
+}
+
+/**
+ * 校验文件大小。
+ * Validate file size.
+ *
+ * @param file 文件对象 / The file object.
+ * @param config 上传配置 / Upload configuration.
+ */
+function validateFileSize(file: File, config: MediaUploaderConfig): void {
+  if (!config.maxSize || file.size <= config.maxSize) {
+    return;
+  }
+
+  const error = new MediaUploadError(
+    MEDIA_UPLOAD_ERROR_CODE.FILE_SIZE_EXCEEDED,
+    i18n.t("upload.fileSizeExceeded"),
+  );
+
+  config.onSizeError?.(error, file);
+
+  throw error;
+}
+
+/**
+ * 自定义校验。
+ * Custom validation.
+ *
+ * @param file 文件对象 / The file object.
+ * @param config 上传配置 / Upload configuration.
+ */
+function validateFileCustom(file: File, config: MediaUploaderConfig): void {
+  const validateMessage = config.validate?.(file);
+
+  if (typeof validateMessage !== "string") {
+    return;
+  }
+
+  const error = new MediaUploadError(
+    MEDIA_UPLOAD_ERROR_CODE.FILE_VALIDATE_FAILED,
+    validateMessage,
+  );
+
+  config.onValidateError?.(error, file);
+
+  throw error;
+}
+
+/**
  * 上传前统一校验和处理。
  * Pre-upload validation and processing.
  *
@@ -616,79 +727,12 @@ async function prepareUploadFile(
   type: MediaType,
   config: MediaUploaderConfig,
 ): Promise<File> {
-  /**
-   * 文件类型校验。
-   * File type validation.
-   */
-  if (config.accept?.length) {
-    const fileName = file.name.toLowerCase();
+  validateFileType(file, config);
 
-    const allowed = config.accept.some((item) => {
-      const acceptItem = item.toLowerCase().trim();
+  validateFileSize(file, config);
 
-      if (acceptItem.endsWith("/*")) {
-        const prefix = acceptItem.replace("/*", "/");
+  validateFileCustom(file, config);
 
-        return file.type.startsWith(prefix);
-      }
-
-      if (acceptItem.includes("/")) {
-        return file.type === acceptItem;
-      }
-
-      const ext = acceptItem.startsWith(".") ? acceptItem : `.${acceptItem}`;
-
-      return fileName.endsWith(ext);
-    });
-
-    if (!allowed) {
-      const error = new MediaUploadError(
-        MEDIA_UPLOAD_ERROR_CODE.FILE_TYPE_INVALID,
-        `${i18n.t("upload.fileTypeInvalid")}: ${file.type || file.name}`,
-      );
-
-      config.onTypeError?.(error, file);
-
-      throw error;
-    }
-  }
-
-  /**
-   * 文件大小校验。
-   * File size validation.
-   */
-  if (config.maxSize && file.size > config.maxSize) {
-    const error = new MediaUploadError(
-      MEDIA_UPLOAD_ERROR_CODE.FILE_SIZE_EXCEEDED,
-      i18n.t("upload.fileSizeExceeded"),
-    );
-
-    config.onSizeError?.(error, file);
-
-    throw error;
-  }
-
-  /**
-   * 自定义校验。
-   * Custom validation.
-   */
-  const validateMessage = config.validate?.(file);
-
-  if (typeof validateMessage === "string") {
-    const error = new MediaUploadError(
-      MEDIA_UPLOAD_ERROR_CODE.FILE_VALIDATE_FAILED,
-      validateMessage,
-    );
-
-    config.onValidateError?.(error, file);
-
-    throw error;
-  }
-
-  /**
-   * 上传前处理。
-   * Pre-upload processing.
-   */
   const processed = await config.beforeUpload?.(file);
 
   if (processed === false) {
@@ -726,6 +770,101 @@ export function useMediaUploader(
   const uploadFileControllers = new Map<string, AbortController>();
 
   /**
+   * 模拟进度状态。
+   * Fake progress state.
+   */
+  interface FakeProgressState {
+    timer: number | undefined;
+    progress: number;
+    hasReal: boolean;
+  }
+
+  /**
+   * 创建模拟进度状态。
+   * Create fake progress state.
+   */
+  function createFakeProgressState(): FakeProgressState {
+    return { timer: undefined, progress: 0, hasReal: false };
+  }
+
+  /**
+   * 启动模拟进度定时器（占位节点）。
+   * Start fake progress timer (placeholder node).
+   */
+  function startPlaceholderFakeTimer(
+    editor: Editor,
+    taskId: string,
+    signal: AbortSignal,
+    state: FakeProgressState,
+  ): void {
+    state.timer = window.setInterval(() => {
+      if (state.hasReal || signal.aborted) {
+        return;
+      }
+
+      if (state.progress >= 90) {
+        return;
+      }
+
+      state.progress += (90 - state.progress) * 0.08;
+
+      updateUploadPlaceholder(editor, taskId, {
+        progress: Math.floor(state.progress),
+      });
+    }, 200);
+  }
+
+  /**
+   * 清除模拟进度定时器。
+   * Clear fake progress timer.
+   */
+  function clearFakeTimer(state: FakeProgressState): void {
+    if (state.timer !== undefined) {
+      clearInterval(state.timer);
+
+      state.timer = undefined;
+    }
+  }
+
+  /**
+   * 创建上传进度回调处理器（占位节点）。
+   * Create upload progress handler (placeholder node).
+   */
+  function createPlaceholderProgressHandler(
+    editor: Editor,
+    taskId: string,
+    config: MediaUploaderConfig,
+    finalFile: File,
+    state: FakeProgressState,
+  ): (progress: Partial<UploadProgress>) => void {
+    return (progress: Partial<UploadProgress>) => {
+      const percent = normalizeProgress(progress);
+
+      if (percent === null) {
+        return;
+      }
+
+      state.hasReal = true;
+
+      clearFakeTimer(state);
+
+      updateUploadPlaceholder(editor, taskId, {
+        progress: percent,
+      });
+
+      config.onProgress?.(
+        {
+          ...progress,
+          percent,
+          loaded: progress.loaded ?? 0,
+          total: progress.total ?? 0,
+        },
+        finalFile,
+      );
+    };
+  }
+
+  /**
    * 纯上传
    * Pure upload
    */
@@ -742,36 +881,14 @@ export function useMediaUploader(
 
     const config = getMediaConfig(options, type);
 
-    /**
-     * 上传前校验。
-     * Pre-upload validation.
-     */
     const finalFile = await prepareUploadFile(file, type, config);
 
-    /**
-     * 生成纯上传任务 ID。
-     * Generate pure upload task ID.
-     */
     const taskId = crypto.randomUUID();
 
-    /**
-     * 创建 AbortController。
-     * Create AbortController.
-     */
     const controller = new AbortController();
 
-    /**
-     * 保存 controller，
-     * Save controller,
-     * 供 UploadGenerator.cancel() 使用。
-     * for use by UploadGenerator.cancel().
-     */
     uploadFileControllers.set(taskId, controller);
 
-    /**
-     * 插入上传占位。
-     * Insert upload placeholder.
-     */
     const inserted = insertUploadPlaceholder(editor, {
       id: taskId,
       name: finalFile.name,
@@ -789,97 +906,35 @@ export function useMediaUploader(
       );
     }
 
-    let fakeTimer: number | undefined;
+    const fakeState = createFakeProgressState();
 
-    let fakeProgress = 0;
-
-    let hasRealProgress = false;
-
-    fakeTimer = window.setInterval(() => {
-      if (hasRealProgress || controller.signal.aborted) {
-        return;
-      }
-
-      if (fakeProgress >= 90) {
-        return;
-      }
-
-      fakeProgress += (90 - fakeProgress) * 0.08;
-
-      updateUploadPlaceholder(editor, taskId, {
-        progress: Math.floor(fakeProgress),
-      });
-    }, 200);
+    startPlaceholderFakeTimer(editor, taskId, controller.signal, fakeState);
 
     try {
-      /**
-       * 执行纯上传。
-       * Execute pure upload.
-       */
       const result = await config.upload!(finalFile, {
         signal: controller.signal,
 
         config,
 
-        onProgress(progress) {
-          const percent = normalizeProgress(progress);
-
-          if (percent === null) {
-            return;
-          }
-
-          hasRealProgress = true;
-
-          if (fakeTimer) {
-            clearInterval(fakeTimer);
-
-            fakeTimer = undefined;
-          }
-
-          /**
-           * 更新上传占位进度。
-           * Update upload placeholder progress.
-           */
-          updateUploadPlaceholder(editor, taskId, {
-            progress: percent,
-          });
-
-          /**
-           * 保留外部上传进度回调。
-           * Keep external upload progress callback.
-           */
-          config.onProgress?.(
-            {
-              ...progress,
-              percent,
-            },
-            finalFile,
-          );
-        },
+        onProgress: createPlaceholderProgressHandler(
+          editor,
+          taskId,
+          config,
+          finalFile,
+          fakeState,
+        ),
       });
 
-      if (fakeTimer) {
-        clearInterval(fakeTimer);
-
-        fakeTimer = undefined;
-      }
+      clearFakeTimer(fakeState);
 
       updateUploadPlaceholder(editor, taskId, {
         progress: 100,
       });
 
-      /**
-       * 上传成功。
-       * Upload success.
-       */
       config.onSuccess?.(result, finalFile);
 
       return result;
     } catch (error: any) {
-      /**
-       * 取消。
-       * Cancellation.
-       */
       if (error?.name === "AbortError") {
         const uploadError = new MediaUploadError(
           MEDIA_UPLOAD_ERROR_CODE.UPLOAD_ABORTED,
@@ -891,26 +946,14 @@ export function useMediaUploader(
         throw uploadError;
       }
 
-      /**
-       * 普通上传失败。
-       * Normal upload failure.
-       */
       config.onUploadError?.(error, finalFile);
 
       throw error;
     } finally {
       uploadFileControllers.delete(taskId);
 
-      if (fakeTimer) {
-        clearInterval(fakeTimer);
+      clearFakeTimer(fakeState);
 
-        fakeTimer = undefined;
-      }
-
-      /**
-       * 最终删除上传占位。
-       * Finally remove upload placeholder.
-       */
       removeUploadPlaceholder(editor, taskId);
     }
   };
@@ -971,22 +1014,145 @@ export function useMediaUploader(
 
         hasRealProgress = false;
 
+        /**
+         * 处理上传成功。
+         * Handle upload success.
+         */
+        const handleSuccess = (result: UploadResult): void => {
+          if (aborted) {
+            return;
+          }
+
+          if (fakeTimer) {
+            clearInterval(fakeTimer);
+
+            fakeTimer = undefined;
+          }
+
+          task.status = "success";
+
+          task.progress = 100;
+
+          task.response = result;
+
+          const displayName =
+            result.name ||
+            (type === "attachment"
+              ? getFullFileName(finalFile)
+              : getFileName(finalFile));
+
+          if (type === "attachment") {
+            replaceMediaNodeWithLink(editor, nodeId, result.url, displayName);
+          } else {
+            updateMediaNode(editor, nodeId, {
+              src: result.url,
+              name: displayName,
+              loading: false,
+              progress: 100,
+              error: false,
+            });
+          }
+
+          taskMap.delete(nodeId);
+
+          config.onSuccess?.(result, finalFile);
+        };
+
+        /**
+         * 处理上传错误。
+         * Handle upload error.
+         */
+        const handleError = (error: any): void => {
+          console.error(error);
+
+          if (aborted) {
+            return;
+          }
+
+          if (fakeTimer) {
+            clearInterval(fakeTimer);
+
+            fakeTimer = undefined;
+          }
+
+          if (error?.name === "AbortError") {
+            task.status = "canceled";
+
+            task.error = new MediaUploadError(
+              MEDIA_UPLOAD_ERROR_CODE.UPLOAD_ABORTED,
+              i18n.t("upload.uploadAborted"),
+            );
+
+            updateMediaNode(editor, nodeId, {
+              loading: false,
+              error: true,
+            });
+
+            config.onUploadError?.(task.error, finalFile);
+
+            return;
+          }
+
+          task.status = "error";
+
+          task.error = error;
+
+          updateMediaNode(editor, nodeId, {
+            loading: false,
+            error: true,
+          });
+
+          config.onUploadError?.(error, finalFile);
+        };
+
+        /**
+         * 创建媒体节点进度回调。
+         * Create media node progress handler.
+         */
+        const onProgress = (progress: Partial<UploadProgress>): void => {
+          if (aborted) {
+            return;
+          }
+
+          const value = normalizeProgress(progress);
+
+          if (value === null) {
+            return;
+          }
+
+          hasRealProgress = true;
+
+          if (fakeTimer) {
+            clearInterval(fakeTimer);
+
+            fakeTimer = undefined;
+          }
+
+          task.progress = value;
+
+          updateMediaNode(editor, nodeId, {
+            progress: value,
+          });
+
+          config.onProgress?.(
+            {
+              ...progress,
+              percent: value,
+              loaded: progress.loaded ?? 0,
+              total: progress.total ?? 0,
+            },
+            finalFile,
+          );
+        };
+
         const run = async (): Promise<void> => {
           task.status = "uploading";
 
-          /**
-           * 更新媒体节点。
-           * Update media node.
-           */
           updateMediaNode(editor, nodeId, {
             loading: true,
             error: false,
           });
 
-          /**
-           * 模拟进度。
-           * Simulate progress.
-           */
           fakeTimer = window.setInterval(() => {
             if (aborted || hasRealProgress) {
               return;
@@ -1008,152 +1174,17 @@ export function useMediaUploader(
           }, 200);
 
           try {
-            /**
-             * 真正上传。
-             * Actual upload.
-             */
             const result = await config.upload!(finalFile, {
               signal: controller.signal,
 
               config,
 
-              onProgress(progress) {
-                if (aborted) {
-                  return;
-                }
-
-                const value = normalizeProgress(progress);
-
-                if (value === null) {
-                  return;
-                }
-
-                hasRealProgress = true;
-
-                if (fakeTimer) {
-                  clearInterval(fakeTimer);
-
-                  fakeTimer = undefined;
-                }
-
-                task.progress = value;
-
-                updateMediaNode(editor, nodeId, {
-                  progress: value,
-                });
-
-                config.onProgress?.(
-                  {
-                    ...progress,
-                    percent: value,
-                  },
-                  finalFile,
-                );
-              },
+              onProgress,
             });
 
-            if (aborted) {
-              return;
-            }
-
-            if (fakeTimer) {
-              clearInterval(fakeTimer);
-
-              fakeTimer = undefined;
-            }
-
-            /**
-             * 上传成功。
-             * Upload success.
-             */
-            task.status = "success";
-
-            task.progress = 100;
-
-            task.response = result;
-
-            const displayName =
-              result.name ||
-              (type === "attachment"
-                ? getFullFileName(finalFile)
-                : getFileName(finalFile));
-
-            /**
-             * 附件：
-             * Attachment:
-             * 替换为链接文本。
-             * Replace with link text.
-             */
-            if (type === "attachment") {
-              replaceMediaNodeWithLink(editor, nodeId, result.url, displayName);
-            } else {
-              /**
-               * 图片 / 视频：
-               * Image / Video:
-               * 更新节点。
-               * Update node.
-               */
-              updateMediaNode(editor, nodeId, {
-                src: result.url,
-                name: displayName,
-                loading: false,
-                progress: 100,
-                error: false,
-              });
-            }
-
-            taskMap.delete(nodeId);
-
-            config.onSuccess?.(result, finalFile);
+            handleSuccess(result);
           } catch (error: any) {
-            console.error(error);
-
-            if (aborted) {
-              return;
-            }
-
-            if (fakeTimer) {
-              clearInterval(fakeTimer);
-
-              fakeTimer = undefined;
-            }
-
-            /**
-             * 上传取消。
-             * Upload canceled.
-             */
-            if (error?.name === "AbortError") {
-              task.status = "canceled";
-
-              task.error = new MediaUploadError(
-                MEDIA_UPLOAD_ERROR_CODE.UPLOAD_ABORTED,
-                i18n.t("upload.uploadAborted"),
-              );
-
-              updateMediaNode(editor, nodeId, {
-                loading: false,
-                error: true,
-              });
-
-              config.onUploadError?.(task.error, finalFile);
-
-              return;
-            }
-
-            /**
-             * 普通上传失败。
-             * Normal upload failure.
-             */
-            task.status = "error";
-
-            task.error = error;
-
-            updateMediaNode(editor, nodeId, {
-              loading: false,
-              error: true,
-            });
-
-            config.onUploadError?.(error, finalFile);
+            handleError(error);
           }
         };
 

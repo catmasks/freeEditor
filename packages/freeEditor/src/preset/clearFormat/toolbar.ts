@@ -125,6 +125,52 @@ function getDefaultNodeAttr(
 }
 
 /**
+ * 判断节点是否为可处理的目标文本块节点
+ *
+ * @param node ProseMirror 节点
+ * @returns 是否为有效的目标节点
+ */
+function isValidTargetNode(
+  node: ProseMirrorNode | null,
+): node is ProseMirrorNode {
+  return node !== null && !node.isInline && node.isTextblock;
+}
+
+/**
+ * 将节点属性重置为 Schema 默认值
+ *
+ * 遍历需要清除的属性列表，将节点属性恢复为 Schema 中定义的默认值。
+ *
+ * @param node ProseMirror 节点
+ * @returns 修改后的属性对象，若无变化则返回 null
+ */
+function resetNodeAttrsToDefaults(
+  node: ProseMirrorNode,
+): Record<string, unknown> | null {
+  const nextAttrs = { ...node.attrs };
+  let changed = false;
+
+  for (const attr of NODE_ATTRS_TO_CLEAR) {
+    if (!(attr in node.attrs)) {
+      continue;
+    }
+
+    const defaultValue = getDefaultNodeAttr(node, attr);
+
+    if (defaultValue === undefined) {
+      continue;
+    }
+
+    if (node.attrs[attr] !== defaultValue) {
+      nextAttrs[attr] = defaultValue;
+      changed = true;
+    }
+  }
+
+  return changed ? nextAttrs : null;
+}
+
+/**
  * 清除节点属性 / Clear node attributes
  *
  * 将节点属性恢复为 Schema 中定义的默认值。
@@ -134,9 +180,6 @@ function getDefaultNodeAttr(
 function clearNodeAttributes(editor: Editor): void {
   const { state, view } = editor;
 
-  /**
-   * 获取需要处理的节点位置。
-   */
   const positions = getTargetNodePositions(editor);
 
   if (positions.length === 0) {
@@ -147,12 +190,9 @@ function clearNodeAttributes(editor: Editor): void {
   let changed = false;
 
   for (const pos of positions) {
-    /**
-     * 从 transaction 当前文档中获取节点。
-     */
     const node = tr.doc.nodeAt(pos);
 
-    if (!node || node.isInline || !node.isTextblock) {
+    if (!isValidTargetNode(node)) {
       continue;
     }
 
@@ -160,56 +200,17 @@ function clearNodeAttributes(editor: Editor): void {
       continue;
     }
 
-    /**
-     * 从当前节点属性复制一份。
-     */
-    const nextAttrs = {
-      ...node.attrs,
-    };
+    const nextAttrs = resetNodeAttrsToDefaults(node);
 
-    let nodeChanged = false;
-
-    for (const attr of NODE_ATTRS_TO_CLEAR) {
-      /**
-       * 当前节点没有这个属性，不处理。
-       */
-      if (!(attr in node.attrs)) {
-        continue;
-      }
-
-      const defaultValue = getDefaultNodeAttr(node, attr);
-
-      /**
-       * Schema 没有定义默认值时不要擅自修改。
-       */
-      if (defaultValue === undefined) {
-        continue;
-      }
-
-      /**
-       * 只有当前值和默认值不同才进行修改。
-       */
-      if (node.attrs[attr] !== defaultValue) {
-        nextAttrs[attr] = defaultValue;
-        nodeChanged = true;
-      }
-    }
-
-    if (!nodeChanged) {
+    if (!nextAttrs) {
       continue;
     }
 
-    /**
-     * 恢复节点属性。
-     */
     tr.setNodeMarkup(pos, undefined, nextAttrs);
 
     changed = true;
   }
 
-  /**
-   * 没有任何实际修改时不 dispatch。
-   */
   if (changed) {
     view.dispatch(tr);
   }

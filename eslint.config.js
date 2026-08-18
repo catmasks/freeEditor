@@ -58,10 +58,10 @@ export default [
         },
       ],
 
-      "no-console": ["warn", { allow: ["warn", "error"] }], // 使用 console 时给出警告, 允许 warn 和 error 方法
+      "no-console": ["error", { allow: ["warn", "error"] }], //仅允许 warn 和 error 方法
 
       // 圈复杂度, 限制函数的圈复杂度为 10
-      complexity: ["warn", { max: 10 }],
+      complexity: ["error", { max: 10 }],
     },
   },
 

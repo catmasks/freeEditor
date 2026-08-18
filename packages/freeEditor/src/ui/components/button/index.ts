@@ -68,6 +68,44 @@ function calcTooltipPosition(
   }
 }
 
+/**
+ * 检查 tooltip 是否与浮动工具栏重叠。
+ * Check if the tooltip overlaps with the floating toolbar.
+ *
+ * @param left - tooltip 的 left 位置 / Tooltip left position.
+ * @param top - tooltip 的 top 位置 / Tooltip top position.
+ * @param tooltipWidth - tooltip 宽度 / Tooltip width.
+ * @param tooltipHeight - tooltip 高度 / Tooltip height.
+ * @returns 是否重叠 / Whether overlapping.
+ */
+function isOverlappingWithFloatingToolbar(
+  left: number,
+  top: number,
+  tooltipWidth: number,
+  tooltipHeight: number,
+): boolean {
+  const fm = FloatingManager.getInstance();
+  const activeId = fm.getActiveId();
+  if (!activeId) return false;
+
+  const active = (
+    fm as unknown as {
+      instances: Map<string, { getToolbarEl?: () => HTMLElement | null }>;
+    }
+  ).instances?.get(activeId);
+  const floatingEl = active?.getToolbarEl?.();
+  if (!floatingEl) return false;
+
+  const fr = floatingEl.getBoundingClientRect();
+
+  return !(
+    left + tooltipWidth < fr.left ||
+    left > fr.right ||
+    top + tooltipHeight < fr.top ||
+    top > fr.bottom
+  );
+}
+
 export function bindTooltip(
   target: HTMLElement,
   tooltip: TooltipType,
@@ -119,8 +157,6 @@ export function bindTooltip(
   const show = (): void => {
     const rect = target.getBoundingClientRect();
 
-    let blocked = false;
-
     tooltipEl.style.left = "0px";
     tooltipEl.style.top = "0px";
     tooltipEl.style.display = "block";
@@ -136,36 +172,10 @@ export function bindTooltip(
       placement,
     );
 
-    if (!skipFloatingCheck) {
-      const fm = FloatingManager.getInstance();
-      const activeId = fm.getActiveId();
-
-      if (activeId) {
-        const active = (
-          fm as unknown as {
-            instances: Map<string, { getToolbarEl?: () => HTMLElement | null }>;
-          }
-        ).instances?.get(activeId);
-        const floatingEl = active?.getToolbarEl?.();
-
-        if (floatingEl) {
-          const fr = floatingEl.getBoundingClientRect();
-
-          const willOverlap = !(
-            left + tooltipWidth < fr.left ||
-            left > fr.right ||
-            top + tooltipHeight < fr.top ||
-            top > fr.bottom
-          );
-
-          if (willOverlap) {
-            blocked = true;
-          }
-        }
-      }
-    }
-
-    if (blocked) {
+    if (
+      !skipFloatingCheck &&
+      isOverlappingWithFloatingToolbar(left, top, tooltipWidth, tooltipHeight)
+    ) {
       tooltipEl.style.display = "none";
       return;
     }

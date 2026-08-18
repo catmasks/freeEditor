@@ -728,11 +728,7 @@ export class MediaNodeView {
 
     const nextAttrs = this.options.attrs;
 
-    const isAttachment = nextAttrs.type === "attachment";
-
-    this.wrapper.style.width = isAttachment
-      ? nextAttrs.width || "auto"
-      : nextAttrs.width || "100%";
+    this.updateWrapperWidth(nextAttrs);
 
     if (nextAttrs.loading && prevAttrs.loading) {
       updateProgressText(
@@ -744,34 +740,66 @@ export class MediaNodeView {
       return;
     }
 
-    const stateChanged =
-      prevAttrs.loading !== nextAttrs.loading ||
-      prevAttrs.error !== nextAttrs.error ||
-      prevAttrs.src !== nextAttrs.src ||
-      prevAttrs.type !== nextAttrs.type ||
-      prevAttrs.name !== nextAttrs.name ||
-      prevAttrs.size !== nextAttrs.size;
-
-    if (!stateChanged) {
+    if (!this.hasStateChanged(prevAttrs, nextAttrs)) {
       return;
     }
 
+    this.reRenderContent(nextAttrs);
+
+    if (this.options.selected) {
+      this.wrapper.classList.add("free-editor__selected");
+    }
+  }
+
+  /**
+   * 更新包装器宽度 / Update wrapper width
+   * @param attrs 节点属性 / Node attributes
+   */
+  private updateWrapperWidth(attrs: MediaNodeAttrs): void {
+    const isAttachment = attrs.type === "attachment";
+
+    this.wrapper.style.width = isAttachment
+      ? attrs.width || "auto"
+      : attrs.width || "100%";
+  }
+
+  /**
+   * 检查状态是否发生变化 / Check if state has changed
+   * @param prev 先前属性 / Previous attributes
+   * @param next 当前属性 / Current attributes
+   * @returns 是否发生变化 / Whether changed
+   */
+  private hasStateChanged(
+    prev: MediaNodeAttrs,
+    next: MediaNodeAttrs,
+  ): boolean {
+    return (
+      prev.loading !== next.loading ||
+      prev.error !== next.error ||
+      prev.src !== next.src ||
+      prev.type !== next.type ||
+      prev.name !== next.name ||
+      prev.size !== next.size
+    );
+  }
+
+  /**
+   * 重新渲染内容 / Re-render content
+   * @param attrs 节点属性 / Node attributes
+   */
+  private reRenderContent(attrs: MediaNodeAttrs): void {
     this.wrapper.innerHTML = "";
 
-    if (nextAttrs.loading) {
+    if (attrs.loading) {
       this.renderLoading();
-    } else if (nextAttrs.error) {
+    } else if (attrs.error) {
       this.renderError();
     } else {
       this.renderMedia();
 
-      if (!isAttachment && this.isResizable) {
+      if (attrs.type !== "attachment" && this.isResizable) {
         this.renderResizeHandles();
       }
-    }
-
-    if (this.options.selected) {
-      this.wrapper.classList.add("free-editor__selected");
     }
   }
 

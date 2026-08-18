@@ -3,6 +3,84 @@ import type { Editor } from "@tiptap/core";
 import type { MarkdownParser } from "prosemirror-markdown";
 
 /**
+ * Markdown 语法检测器列表。
+ * List of Markdown syntax detectors.
+ * 每个检测器接收一行文本，返回是否匹配。
+ * Each detector takes a line of text and returns whether it matches.
+ */
+type MarkdownDetector = (line: string) => boolean;
+
+/** ATX 标题检测器 / ATX heading detector */
+const atxHeading: MarkdownDetector = (line) => /^#{1,6}\s+/.test(line);
+
+/** Setext 标题检测器 / Setext heading detector */
+const setextHeading: MarkdownDetector = (line) =>
+  /^=+\s*$/.test(line) || /^-+\s*$/.test(line);
+
+/** 粗体检测器 / Bold detector */
+const boldText: MarkdownDetector = (line) =>
+  /\*\*[^*]+\*\*/.test(line) || /__[^_]+__/.test(line);
+
+/** 斜体检测器 / Italic detector */
+const italicText: MarkdownDetector = (line) =>
+  /\*[^*\s][^*]*\*/.test(line) || /_[^_\s][^_]*_/.test(line);
+
+/** 无序列表检测器 / Unordered list detector */
+const unorderedList: MarkdownDetector = (line) => /^[-*+]\s+/.test(line);
+
+/** 有序列表检测器 / Ordered list detector */
+const orderedList: MarkdownDetector = (line) => /^\d+\.\s+/.test(line);
+
+/** 引用检测器 / Blockquote detector */
+const blockquote: MarkdownDetector = (line) => /^>\s?/.test(line);
+
+/** 围栏代码块检测器 / Fenced code block detector */
+const fencedCodeBlock: MarkdownDetector = (line) =>
+  /^(?:`{3,}|~{3,})/.test(line);
+
+/** 行内代码检测器 / Inline code detector */
+const inlineCode: MarkdownDetector = (line) => /`[^`]+`/.test(line);
+
+/** 链接检测器 / Link detector */
+const linkText: MarkdownDetector = (line) => /\[[^\]]+\]\([^)]+\)/.test(line);
+
+/** 图片检测器 / Image detector */
+const imageText: MarkdownDetector = (line) => /!\[[^\]]*\]\([^)]+\)/.test(line);
+
+/** 删除线检测器 / Strikethrough detector */
+const strikethrough: MarkdownDetector = (line) => /~~[^~]+~~/.test(line);
+
+/** 表格检测器 / Table detector */
+const tableRow: MarkdownDetector = (line) => /^\|.*\|$/.test(line);
+
+/** 表格分隔行检测器 / Table separator detector */
+const tableSeparator: MarkdownDetector = (line) =>
+  /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(line);
+
+/** 分割线检测器 / Thematic break detector */
+const thematicBreak: MarkdownDetector = (line) =>
+  /^(-{3,}|\*{3,}|_{3,})\s*$/.test(line);
+
+/** 所有 Markdown 检测器列表 / All Markdown detectors list */
+const MARKDOWN_DETECTORS: MarkdownDetector[] = [
+  atxHeading,
+  setextHeading,
+  boldText,
+  italicText,
+  unorderedList,
+  orderedList,
+  blockquote,
+  fencedCodeBlock,
+  inlineCode,
+  linkText,
+  imageText,
+  strikethrough,
+  tableRow,
+  tableSeparator,
+  thematicBreak,
+];
+
+/**
  * 判断文本是否包含明显的 Markdown 语法。
  */
 export function isMarkdown(text: string): boolean {
@@ -19,79 +97,10 @@ export function isMarkdown(text: string): boolean {
       continue;
     }
 
-    /** ATX 标题 */
-    if (/^#{1,6}\s+/.test(trimmed)) {
-      return true;
-    }
-
-    /** Setext 标题 */
-    if (/^=+\s*$/.test(trimmed) || /^-+\s*$/.test(trimmed)) {
-      return true;
-    }
-
-    /** 粗体 */
-    if (/\*\*[^*]+\*\*/.test(trimmed) || /__[^_]+__/.test(trimmed)) {
-      return true;
-    }
-
-    /** 斜体 */
-    if (/\*[^*\s][^*]*\*/.test(trimmed) || /_[^_\s][^_]*_/.test(trimmed)) {
-      return true;
-    }
-
-    /** 无序列表 */
-    if (/^[-*+]\s+/.test(trimmed)) {
-      return true;
-    }
-
-    /** 有序列表 */
-    if (/^\d+\.\s+/.test(trimmed)) {
-      return true;
-    }
-
-    /** 引用 */
-    if (/^>\s?/.test(trimmed)) {
-      return true;
-    }
-
-    /** Fenced Code Block */
-    if (/^(?:`{3,}|~{3,})/.test(trimmed)) {
-      return true;
-    }
-
-    /** 行内代码 */
-    if (/`[^`]+`/.test(trimmed)) {
-      return true;
-    }
-
-    /** Markdown 链接 */
-    if (/\[[^\]]+\]\([^)]+\)/.test(trimmed)) {
-      return true;
-    }
-
-    /** Markdown 图片 */
-    if (/!\[[^\]]*\]\([^)]+\)/.test(trimmed)) {
-      return true;
-    }
-
-    /** 删除线 */
-    if (/~~[^~]+~~/.test(trimmed)) {
-      return true;
-    }
-
-    /** Markdown 表格 */
-    if (/^\|.*\|$/.test(trimmed)) {
-      return true;
-    }
-
-    /** Markdown 表格分隔行 */
-    if (/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(trimmed)) {
-      return true;
-    }
-
-    /** 分割线 */
-    if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(trimmed)) {
-      return true;
+    for (const detector of MARKDOWN_DETECTORS) {
+      if (detector(trimmed)) {
+        return true;
+      }
     }
   }
 
@@ -147,7 +156,143 @@ function isFenceEnd(line: string, marker: "`" | "~", length: number): boolean {
 }
 
 /**
- * 将单独的 HTML 片段转换为 Markdown。
+ * 将 HTML 元素转换为 Markdown 字符串。
+ * Convert HTML element to Markdown string.
+ *
+ * @param element - HTML 元素 / HTML element.
+ * @param children - 子节点的 Markdown 字符串 / Markdown string of children.
+ * @returns Markdown 字符串 / Markdown string.
+ */
+function convertHeadingToMarkdown(
+  element: HTMLElement,
+  children: string,
+): string {
+  const level = Number(element.tagName.slice(1));
+  return `${"#".repeat(level)} ${children.trim()}\n\n`;
+}
+
+/**
+ * 将段落元素转换为 Markdown。
+ * Convert paragraph element to Markdown.
+ *
+ * @param children - 子节点的 Markdown 字符串 / Markdown string of children.
+ * @returns Markdown 字符串 / Markdown string.
+ */
+function convertParagraphToMarkdown(children: string): string {
+  return `${children.trim()}\n\n`;
+}
+
+/**
+ * 将内联格式元素转换为 Markdown。
+ * Convert inline formatting element to Markdown.
+ *
+ * @param tag - 标签名 / Tag name.
+ * @param children - 子节点的 Markdown 字符串 / Markdown string of children.
+ * @returns Markdown 字符串 / Markdown string.
+ */
+function convertInlineFormatToMarkdown(tag: string, children: string): string {
+  if (tag === "strong" || tag === "b") return `**${children.trim()}**`;
+  if (tag === "em" || tag === "i") return `*${children.trim()}*`;
+  if (tag === "s" || tag === "del") return `~~${children.trim()}~~`;
+  if (tag === "code") return `\`${children}\``;
+  return children;
+}
+
+/**
+ * 将链接元素转换为 Markdown。
+ * Convert link element to Markdown.
+ *
+ * @param element - 链接元素 / Link element.
+ * @param children - 子节点的 Markdown 字符串 / Markdown string of children.
+ * @returns Markdown 字符串 / Markdown string.
+ */
+function convertLinkToMarkdown(element: HTMLElement, children: string): string {
+  const href = element.getAttribute("href");
+  if (!href) return children;
+
+  const title = element.getAttribute("title");
+  if (title) {
+    return `[${children.trim()}](${href} "${title}")`;
+  }
+  return `[${children.trim()}](${href})`;
+}
+
+/**
+ * 将图片元素转换为 Markdown。
+ * Convert image element to Markdown.
+ *
+ * @param element - 图片元素 / Image element.
+ * @returns Markdown 字符串 / Markdown string.
+ */
+function convertImageToMarkdown(element: HTMLElement): string {
+  const src = element.getAttribute("src");
+  if (!src) return "";
+
+  const alt = element.getAttribute("alt") ?? "";
+  const title = element.getAttribute("title");
+
+  if (title) {
+    return `![${alt}](${src} "${title}")`;
+  }
+  return `![${alt}](${src})`;
+}
+
+/**
+ * 将块级容器元素转换为 Markdown。
+ * Convert block-level container element to Markdown.
+ *
+ * @param children - 子节点的 Markdown 字符串 / Markdown string of children.
+ * @returns Markdown 字符串 / Markdown string.
+ */
+function convertBlockContainerToMarkdown(children: string): string {
+  return `${children}\n`;
+}
+
+/**
+ * Node 转换器函数类型。
+ * Node converter function type.
+ */
+type NodeConverter = (element: HTMLElement, children: string) => string;
+
+/**
+ * 获取节点转换器映射。
+ * Get node converter map.
+ */
+function createNodeConverterMap(): Record<string, NodeConverter> {
+  return {
+    h1: (el, ch) => convertHeadingToMarkdown(el, ch),
+    h2: (el, ch) => convertHeadingToMarkdown(el, ch),
+    h3: (el, ch) => convertHeadingToMarkdown(el, ch),
+    h4: (el, ch) => convertHeadingToMarkdown(el, ch),
+    h5: (el, ch) => convertHeadingToMarkdown(el, ch),
+    h6: (el, ch) => convertHeadingToMarkdown(el, ch),
+    p: (_, ch) => convertParagraphToMarkdown(ch),
+    br: () => "\n",
+    strong: (_, ch) => convertInlineFormatToMarkdown("strong", ch),
+    b: (_, ch) => convertInlineFormatToMarkdown("b", ch),
+    em: (_, ch) => convertInlineFormatToMarkdown("em", ch),
+    i: (_, ch) => convertInlineFormatToMarkdown("i", ch),
+    s: (_, ch) => convertInlineFormatToMarkdown("s", ch),
+    del: (_, ch) => convertInlineFormatToMarkdown("del", ch),
+    code: (_, ch) => convertInlineFormatToMarkdown("code", ch),
+    a: (el, ch) => convertLinkToMarkdown(el, ch),
+    img: (el) => convertImageToMarkdown(el),
+    hr: () => "\n---\n\n",
+    div: (_, ch) => convertBlockContainerToMarkdown(ch),
+    section: (_, ch) => convertBlockContainerToMarkdown(ch),
+    article: (_, ch) => convertBlockContainerToMarkdown(ch),
+    header: (_, ch) => convertBlockContainerToMarkdown(ch),
+    footer: (_, ch) => convertBlockContainerToMarkdown(ch),
+    main: (_, ch) => convertBlockContainerToMarkdown(ch),
+    center: (_, ch) => convertBlockContainerToMarkdown(ch),
+    span: (_, ch) => ch,
+    small: (_, ch) => ch,
+    label: (_, ch) => ch,
+  };
+}
+
+/**
+ * 将 HTML 片段转换为 Markdown。
  */
 function htmlToMarkdown(html: string): string {
   if (!html || !hasHtml(html)) {
@@ -155,164 +300,28 @@ function htmlToMarkdown(html: string): string {
   }
 
   const container = document.createElement("div");
-
   container.innerHTML = html;
+
+  const nodeConverters = createNodeConverterMap();
 
   /**
    * 递归转换 DOM Node。
    */
   const convertNode = (node: Node): string => {
-    /**
-     * 文本节点。
-     */
     if (node.nodeType === Node.TEXT_NODE) {
       return node.textContent ?? "";
     }
 
-    /**
-     * 非元素节点。
-     */
     if (node.nodeType !== Node.ELEMENT_NODE) {
       return "";
     }
 
     const element = node as HTMLElement;
     const tag = element.tagName.toLowerCase();
-
     const children = Array.from(element.childNodes).map(convertNode).join("");
 
-    switch (tag) {
-      /**
-       * 标题
-       */
-      case "h1":
-        return `# ${children.trim()}\n\n`;
-
-      case "h2":
-        return `## ${children.trim()}\n\n`;
-
-      case "h3":
-        return `### ${children.trim()}\n\n`;
-
-      case "h4":
-        return `#### ${children.trim()}\n\n`;
-
-      case "h5":
-        return `##### ${children.trim()}\n\n`;
-
-      case "h6":
-        return `###### ${children.trim()}\n\n`;
-
-      /**
-       * 段落
-       */
-      case "p":
-        return `${children.trim()}\n\n`;
-
-      /**
-       * 换行
-       */
-      case "br":
-        return "\n";
-
-      /**
-       * 粗体
-       */
-      case "strong":
-      case "b":
-        return `**${children.trim()}**`;
-
-      /**
-       * 斜体
-       */
-      case "em":
-      case "i":
-        return `*${children.trim()}*`;
-
-      /**
-       * 删除线
-       */
-      case "s":
-      case "del":
-        return `~~${children.trim()}~~`;
-
-      /**
-       * 链接
-       */
-      case "a": {
-        const href = element.getAttribute("href");
-
-        if (!href) {
-          return children;
-        }
-
-        const title = element.getAttribute("title");
-
-        if (title) {
-          return `[${children.trim()}](${href} "${title}")`;
-        }
-
-        return `[${children.trim()}](${href})`;
-      }
-
-      /**
-       * 图片
-       */
-      case "img": {
-        const src = element.getAttribute("src");
-
-        if (!src) {
-          return "";
-        }
-
-        const alt = element.getAttribute("alt") ?? "";
-        const title = element.getAttribute("title");
-
-        if (title) {
-          return `![${alt}](${src} "${title}")`;
-        }
-
-        return `![${alt}](${src})`;
-      }
-
-      /**
-       * 分割线
-       */
-      case "hr":
-        return "\n---\n\n";
-
-      /**
-       * 块级容器
-       */
-      case "div":
-      case "section":
-      case "article":
-      case "header":
-      case "footer":
-      case "main":
-      case "center":
-        return `${children}\n`;
-
-      /**
-       * 行内容器
-       */
-      case "span":
-      case "small":
-      case "label":
-        return children;
-
-      /**
-       * 行内 code
-       */
-      case "code":
-        return `\`${children}\``;
-
-      /**
-       * 未知 HTML
-       */
-      default:
-        return children;
-    }
+    const converter = nodeConverters[tag];
+    return converter ? converter(element, children) : children;
   };
 
   return Array.from(container.childNodes)
