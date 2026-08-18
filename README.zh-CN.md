@@ -20,6 +20,7 @@
 - [4. 内置插件](#built-in-plugins)
 - [5. 媒体上传](#media-upload)
 - [6. 国际化 (i18n)](#i18n)
+- [7. SSR 支持](#ssr-support)
 
 ---
 
@@ -1238,5 +1239,75 @@ i18n.setLocale("ja-JP");
 i18n.addMessages("ko-KR", koKR);
 i18n.setLocale("ko-KR");
 ```
+
+---
+
+## 🖥️ <a id="ssr-support"></a>7. SSR 支持
+
+FreeEditor 支持在服务端渲染（SSR）环境中安全加载，适用于 Vue SSR、Nuxt、Vite SSR 以及 Node.js 等场景。在服务端 `import` 该 npm 包不会触发任何浏览器专属 API（如 `window`、`document`、`navigator` 等）；浏览器专属逻辑被延迟到真正执行相关功能时，因此不会因服务端加载主入口而报错。
+
+### 7.1 使用原则
+
+在 SSR 环境下使用编辑器时，请遵循以下原则：
+
+- **服务端（SSR 阶段）**：仅安全地 `import` 该包（例如读取类型或 `i18n`），**不要**创建编辑器实例。
+- **浏览器端（客户端）**：在组件挂载完成后（如 Vue 的 `onMounted`、React 的 `useEffect`）调用 `new Editor()` 创建编辑器。
+- 若在服务端误调用 `new Editor()`，将抛出明确的环境错误提示，以帮助定位问题。
+- 导出与导入（如 Word、PDF）所需的重型依赖（`docx`、`mammoth`、`html2canvas`、`jspdf` 等）采用动态 `import()` 按需加载，仅在调用相关功能时才会被加载。
+
+### 7.2 Vue 3 示例
+
+在 Vue 3 中，建议在 `onMounted` 中创建编辑器，并在组件卸载时销毁：
+
+```vue
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { Editor } from "@catmasks/free-editor";
+
+let editor: Editor | null = null;
+const editorEl = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  // 仅在浏览器端创建编辑器实例
+  if (editorEl.value) {
+    editor = new Editor(editorEl.value, {
+      content: "<p>Hello World</p>",
+    });
+  }
+});
+
+onBeforeUnmount(() => {
+  editor?.destroy();
+  editor = null;
+});
+</script>
+
+<template>
+  <div ref="editorEl"></div>
+</template>
+```
+
+### 7.3 Nuxt 提示
+
+在使用 Nuxt 时，建议通过内置的 `<ClientOnly>` 组件包裹编辑器，或在 `<script setup>` 中结合 `import.meta.client` 判断，确保编辑器只在客户端渲染与挂载。
+
+### 7.4 纯服务端加载验证
+
+以下示例可运行于 Node.js 环境，验证 SSR 服务端能够安全加载该 npm 包：
+
+```typescript
+import { Editor, i18n } from "@catmasks/free-editor";
+
+// 允许在服务端读取语言等信息（不依赖浏览器）
+console.log(i18n.locale);
+
+// 若无 DOM，不应在此调用 new Editor()
+```
+
+### 7.5 注意事项
+
+- `style.css` 需在客户端单独引入。
+- 构建产物中的动态 `chunks/` 目录需与 `index.js` 一起部署。
+- 在 SSR 环境引入时，请确保编辑器实例仅在浏览器端创建。
 
 ---

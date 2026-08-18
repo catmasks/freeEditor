@@ -20,6 +20,7 @@
 - [4. 組み込みプラグイン](#built-in-plugins)
 - [5. メディアアップロード](#media-upload)
 - [6. 国際化 (i18n)](#i18n)
+- [7. SSR サポート](#ssr-support)
 
 ---
 
@@ -1218,5 +1219,75 @@ i18n.setLocale("ja-JP");
 i18n.addMessages("ko-KR", koKR);
 i18n.setLocale("ko-KR");
 ```
+
+---
+
+## 🖥️ <a id="ssr-support"></a>7. SSR サポート
+
+FreeEditor は、サーバーサイドレンダリング（SSR）環境でも安全に読み込むことができます。Vue SSR、Nuxt、Vite SSR、Node.js などのシーンに対応しています。サーバー側で npm パッケージを `import` しても、`window`、`document`、`navigator` などのブラウザ専用 API には一切触れません。ブラウザ固有のロジックは、実際に該当機能が実行されるまで遅延されるため、サーバー側でメインエントリを読み込んでもエラーにはなりません。
+
+### 7.1 使用上の原則
+
+SSR 環境でエディタを使用する場合は、以下の原則に従ってください。
+
+- **サーバー側（SSR フェーズ）**：パッケージを安全に `import` するだけに留め（例：型や `i18n` の参照）、エディタインスタンスを**作成しない**でください。
+- **ブラウザ側（クライアント）**：コンポーネントのマウント後（Vue の `onMounted`、React の `useEffect` など）に `new Editor()` で作成してください。
+- サーバー側で誤って `new Editor()` を呼び出した場合は、問題の特定に役立つ明確な環境エラーが発生します。
+- エクスポート・インポート（Word、PDF など）に必要な重い依存関係（`docx`、`mammoth`、`html2canvas`、`jspdf` など）は、動的 `import()` により必要時にのみ読み込まれます。
+
+### 7.2 Vue 3 の例
+
+Vue 3 では、`onMounted` でエディタを作成し、コンポーネントのアンマウント時に破棄することを推奨します。
+
+```vue
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { Editor } from "@catmasks/free-editor";
+
+let editor: Editor | null = null;
+const editorEl = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  // エディタインスタンスはブラウザ側でのみ作成
+  if (editorEl.value) {
+    editor = new Editor(editorEl.value, {
+      content: "<p>Hello World</p>",
+    });
+  }
+});
+
+onBeforeUnmount(() => {
+  editor?.destroy();
+  editor = null;
+});
+</script>
+
+<template>
+  <div ref="editorEl"></div>
+</template>
+```
+
+### 7.3 Nuxt のヒント
+
+Nuxt を使用する場合は、ビルトインの `<ClientOnly>` コンポーネントでエディタをラップするか、`<script setup>` 内で `import.meta.client` を確認し、エディタがクライアント側でのみレンダリング・マウントされるようにしてください。
+
+### 7.4 サーバー側読み込みの検証
+
+次の例は Node.js 環境で実行でき、SSR サーバーが npm パッケージを安全に読み込めることを検証します。
+
+```typescript
+import { Editor, i18n } from "@catmasks/free-editor";
+
+// サーバー側で言語などを読み取ることは可能（ブラウザに依存しない）
+console.log(i18n.locale);
+
+// DOM が存在しない限り、ここで new Editor() を呼び出してはいけません
+```
+
+### 7.5 注意事項
+
+- `style.css` はクライアント側で個別に読み込む必要があります。
+- ビルド成果物の動的 `chunks/` ディレクトリは、`index.js` と一緒にデプロイする必要があります。
+- SSR 環境で読み込む場合は、エディタインスタンスがブラウザ側でのみ作成されるようにしてください。
 
 ---

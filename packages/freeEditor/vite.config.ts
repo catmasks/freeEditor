@@ -22,23 +22,28 @@ const externalPackages = [
   "prosemirror-markdown",
 ];
 
+/**
+ * 统一 CSS 文件名称。
+ *
+ * 保持单文件样式入口 style.css，供各输出格式复用。
+ */
+function cssAssetName(assetInfo: {
+  name?: string;
+}): string {
+  const name = assetInfo.name;
+
+  if (name === "style.css" || name?.endsWith(".css")) {
+    return "style.css";
+  }
+
+  return name || "assets/[name][extname]";
+}
+
 export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
       name: "FreeEditor",
-      formats: ["es", "cjs"],
-      fileName: (format) => {
-        if (format === "es") {
-          return "index.js";
-        }
-
-        if (format === "cjs") {
-          return "index.cjs";
-        }
-
-        return "index.js";
-      },
     },
 
     /**
@@ -60,30 +65,36 @@ export default defineConfig({
         );
       },
 
-      output: {
-        /**
-         * 使用 named exports。
-         */
-        exports: "named",
-
-        /**
-         * 将动态加载产生的 JS chunk 统一放入 chunks 目录。
-
-         */
-        chunkFileNames: "chunks/[name]-[hash].js",
-        /**
-         * 统一 CSS 文件名称。
-         */
-        assetFileNames: (assetInfo) => {
-          const name = assetInfo.name;
-
-          if (name === "style.css" || name?.endsWith(".css")) {
-            return "style.css";
-          }
-
-          return name || "assets/[name][extname]";
+      /**
+       * 分格式输出：es 格式的 chunk 使用 .js，cjs 格式的 chunk 使用 .cjs。
+       *
+       * 由于本包 package.json 声明了 "type": "module"，若 cjs 构建产生的
+       * 共享 runtime chunk 也使用 .js 扩展名，Node 会将其按 ESM 解析，
+       * 导致 require() 时 "exports is not defined" 崩溃（SSR/CommonJS 场景）。
+       *
+       * 因此这里通过输出数组为不同格式指定各自的 chunk 扩展名：
+       * - es 格式：.js（浏览器/CDN 的 MIME 兼容）
+       * - cjs 格式：.cjs（被 require() 正确识别为 CommonJS）
+       *
+       * 注意：当提供 output 数组时，Vite/Rolldown 会忽略 build.lib.formats，
+       * 因此需要在每个输出上显式声明 format，否则二者都会按 es 构建并互相覆盖。
+       */
+      output: [
+        {
+          format: "es",
+          entryFileNames: "index.js",
+          exports: "named",
+          chunkFileNames: "chunks/[name]-[hash].js",
+          assetFileNames: cssAssetName,
         },
-      },
+        {
+          format: "cjs",
+          entryFileNames: "index.cjs",
+          exports: "named",
+          chunkFileNames: "chunks/[name]-[hash].cjs",
+          assetFileNames: cssAssetName,
+        },
+      ],
     },
   },
 

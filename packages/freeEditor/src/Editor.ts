@@ -102,6 +102,8 @@ export class Editor {
    * @param options - 编辑器配置选项 / Editor configuration options
    */
   constructor(el: HTMLElement, options: EditorOptions = {}) {
+    this.assertBrowserEnvironment();
+
     const { initialDisabled, initialReadonly } = this.initRuntimeState(options);
 
     this.initDOM(el, options);
@@ -119,6 +121,24 @@ export class Editor {
     this.mounted = true;
 
     this.applyInitialStates(initialDisabled, initialReadonly);
+  }
+
+  /**
+   * 运行时环境守卫 / Runtime environment guard
+   *
+   * 该库的根元素挂载与 ProseMirror 视图依赖真实的浏览器 DOM。
+   * 在 SSR（服务端渲染）环境返回响应之前不会调用构造函数；
+   * 若被误调用，这里给出明确错误而不是晦涩的 "document is not defined"。
+   */
+  private assertBrowserEnvironment(): void {
+    if (typeof document === "undefined") {
+      throw new Error(
+        "[FreeEditor] 编辑器的 DOM 初始化只支持在浏览器（客户端）运行时执行。" +
+          " 请确保只在浏览器端调用 new Editor()（例如在 onMounted 或 useEffect 中）。" +
+          " / Editor DOM initialization is only supported in the browser (client) runtime." +
+          " Please only call new Editor() on the client side (e.g. in onMounted or useEffect).",
+      );
+    }
   }
 
   /**

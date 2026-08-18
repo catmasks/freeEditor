@@ -20,6 +20,7 @@
 - [4. Built‑in Plugins](#built-in-plugins)
 - [5. Media Upload](#media-upload)
 - [6. Internationalization (i18n)](#i18n)
+- [7. SSR Support](#ssr-support)
 
 ---
 
@@ -1218,5 +1219,75 @@ And also register and use custom ones:
 i18n.addMessages("ko-KR", koKR);
 i18n.setLocale("ko-KR");
 ```
+
+---
+
+## 🖥️ <a id="ssr-support"></a>7. SSR Support
+
+FreeEditor can be safely loaded in server-side rendering (SSR) environments, including Vue SSR, Nuxt, Vite SSR, and Node.js. Importing the npm package on the server does not touch any browser‑only APIs (such as `window`, `document`, or `navigator`); browser‑specific logic is deferred until the relevant feature is actually executed, so loading the main entry on the server does not cause errors.
+
+### 7.1 Usage Principles
+
+When using the editor in an SSR environment, follow these principles:
+
+- **On the server (SSR phase)**: only `import` the package safely (for example, to read types or `i18n`); do **not** create an editor instance.
+- **In the browser (client)**: create the editor with `new Editor()` after the component is mounted (such as in Vue's `onMounted` or React's `useEffect`).
+- If `new Editor()` is mistakenly called on the server, an explicit environment error is thrown to help you locate the issue.
+- Heavy dependencies required for export and import (such as `docx`, `mammoth`, `html2canvas`, and `jspdf`) are loaded on demand through dynamic `import()`, and are only loaded when the corresponding feature is invoked.
+
+### 7.2 Vue 3 Example
+
+In Vue 3, it is recommended to create the editor in `onMounted` and destroy it when the component unmounts:
+
+```vue
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { Editor } from "@catmasks/free-editor";
+
+let editor: Editor | null = null;
+const editorEl = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  // Only create the editor instance in the browser
+  if (editorEl.value) {
+    editor = new Editor(editorEl.value, {
+      content: "<p>Hello World</p>",
+    });
+  }
+});
+
+onBeforeUnmount(() => {
+  editor?.destroy();
+  editor = null;
+});
+</script>
+
+<template>
+  <div ref="editorEl"></div>
+</template>
+```
+
+### 7.3 Nuxt Tips
+
+When using Nuxt, it is recommended to wrap the editor with the built‑in `<ClientOnly>` component, or to check `import.meta.client` in `<script setup>`, so that the editor is rendered and mounted only on the client.
+
+### 7.4 Server‑Side Loading Verification
+
+The following example runs in a Node.js environment and verifies that the npm package can be safely loaded on the SSR server:
+
+```typescript
+import { Editor, i18n } from "@catmasks/free-editor";
+
+// Reading locale and other info on the server is allowed (no browser dependency)
+console.log(i18n.locale);
+
+// Do not call new Editor() here unless a DOM is present
+```
+
+### 7.5 Notes
+
+- `style.css` needs to be imported separately on the client.
+- The dynamic `chunks/` directory in the build output must be deployed together with `index.js`.
+- When importing in an SSR environment, ensure that the editor instance is created only in the browser.
 
 ---
