@@ -1,6 +1,6 @@
 packages:
   - "packages/*"
-  - "playground"
+  - "csrTest"
   - "ssrTest"
 allowBuilds:
   '@parcel/watcher': true

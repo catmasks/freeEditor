@@ -192,78 +192,113 @@ const defaultEditorProps: EditorProps = {
  * @param propsList editorProps 数组 / EditorProps array
  * @returns 合并后的 editorProps / Merged editorProps
  */
+/**
+ * 事件拦截类型 / Event interception handler keys
+ */
+const BOOLEAN_HANDLERS = new Set<string>([
+  "handlePaste",
+  "handleDrop",
+  "handleKeyDown",
+  "handleKeyPress",
+  "handleKeyUp",
+  "handleClick",
+  "handleDoubleClick",
+  "handleDOMEvents",
+]);
+
+/**
+ * 数据转换类型 / Data transform handler keys
+ */
+const TRANSFORM_HANDLERS = new Set<string>([
+  "transformPastedHTML",
+  "transformPastedText",
+]);
+
 function mergeEditorProps(propsList: EditorProps[]): EditorProps {
   const result: EditorProps = {};
 
-  /**
-   * 事件拦截类型
-   */
-  const booleanHandlers = new Set([
-    "handlePaste",
-    "handleDrop",
-    "handleKeyDown",
-    "handleKeyPress",
-    "handleKeyUp",
-    "handleClick",
-    "handleDoubleClick",
-    "handleDOMEvents",
-  ]);
-
-  /**
-   * 数据转换类型
-   */
-  const transformHandlers = new Set([
-    "transformPastedHTML",
-    "transformPastedText",
-  ]);
-
   for (const props of propsList) {
     for (const key in props) {
-      const k = key as keyof EditorProps;
-
-      const prev = result[k];
-
-      const next = props[k];
-
-      if (typeof prev === "function" && typeof next === "function") {
-        /**
-         * 事件处理函数合并
-         */
-        if (booleanHandlers.has(key)) {
-          result[k] = function (...args: any[]) {
-            const prevResult = (prev as any)(...args);
-
-            if (prevResult === true) {
-              return true;
-            }
-
-            return (next as any)(...args);
-          } as any;
-
-          continue;
-        }
-
-        /**
-         * 转换函数合并
-         */
-        if (transformHandlers.has(key)) {
-          result[k] = function (value: any, ...args: any[]) {
-            const prevValue = (prev as any)(value, ...args);
-
-            return (next as any)(prevValue, ...args);
-          } as any;
-
-          continue;
-        }
-      }
-
-      if (next !== undefined) {
-        result[k] = next as any;
-      }
+      assignMergedProp(result, key, props[key as keyof EditorProps]);
     }
   }
 
   return result;
+}
+
+/**
+ * 合并单个 editorProps 键。
+ *
+ * 抽出自 mergeEditorProps 的每个键处理逻辑，降低主函数认知复杂度。
+ */
+function assignMergedProp(
+  result: EditorProps,
+  key: string,
+  value: EditorProps[keyof EditorProps] | undefined,
+): void {
+  const prev = result[key as keyof EditorProps];
+
+  if (typeof prev === "function" && typeof value === "function") {
+    /**
+     * 事件处理函数合并
+     */
+    if (BOOLEAN_HANDLERS.has(key)) {
+      (result as Record<string, unknown>)[key] = createBooleanHandler(
+        prev as (...args: unknown[]) => unknown,
+        value as (...args: unknown[]) => unknown,
+      );
+      return;
+    }
+
+    /**
+     * 转换函数合并
+     */
+    if (TRANSFORM_HANDLERS.has(key)) {
+      (result as Record<string, unknown>)[key] = createTransformHandler(
+        prev as (v: unknown, ...args: unknown[]) => unknown,
+        value as (v: unknown, ...args: unknown[]) => unknown,
+      );
+      return;
+    }
+  }
+
+  if (value !== undefined) {
+    (result as Record<string, unknown>)[key] = value;
+  }
+}
+
+/**
+ * 事件处理函数合并器。
+ *
+ * 任一处理函数返回 true 则停止后续处理。
+ */
+function createBooleanHandler(
+  prev: (...args: unknown[]) => unknown,
+  next: (...args: unknown[]) => unknown,
+): (...args: unknown[]) => unknown {
+  return (...args: unknown[]): unknown => {
+    if (prev(...args) === true) {
+      return true;
+    }
+
+    return next(...args);
+  };
+}
+
+/**
+ * 数据转换函数合并器。
+ *
+ * 前一个处理函数的输出作为后一个处理函数的输入。
+ */
+function createTransformHandler(
+  prev: (value: unknown, ...args: unknown[]) => unknown,
+  next: (value: unknown, ...args: unknown[]) => unknown,
+): (value: unknown, ...args: unknown[]) => unknown {
+  return (value: unknown, ...args: unknown[]): unknown => {
+    const prevValue = prev(value, ...args);
+
+    return next(prevValue, ...args);
+  };
 }
 
 /**

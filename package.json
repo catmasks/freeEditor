@@ -7,19 +7,21 @@
   },
   "workspaces": [
     "packages/*",
-    "playground"
+    "csrTest"
   ],
   "scripts": {
-    "dev": "pnpm --filter playground dev",
+    "dev": "pnpm --filter csrTest dev",
     "build": "pnpm --filter @catmasks/free-editor build",
     "lint:packages": "eslint packages/*/src/**/*.ts",
-    "lint:playground": "eslint playground/src/**/*.ts",
+    "lint:csrTest": "eslint csrTest",
+    "lint:ssrTest": "eslint ssrTest",
     "type-check:packages": "pnpm --filter @catmasks/free-editor type-check",
     "prebuild": "pnpm run type-check:packages && pnpm run lint:packages"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.8.1",
+    "eslint-plugin-sonarjs": "^4.2.0",
     "globals": "^17.11.0",
     "typescript-eslint": "^8.67.0"
   }

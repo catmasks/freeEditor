@@ -1,13 +1,13 @@
 <h4 align="right"><strong>English</strong> | <a href="./README.zh-CN.md">简体中文</a> | <a href="./README.ja-JP.md">日本語</a></h4>
 <br/>
 <p align="center">
-  <img src="./playground/src/assets/logo.png" alt="logo">
+  <img src="./csrTest/src/assets/logo.png" alt="logo">
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">A lightweight rich text editor built on the TipTap core</h4>
 <h4 align="center">Out‑of‑the‑box, supports all front‑end frameworks, with built‑in Chinese, English, and Japanese</h4>
 <p align="center">
-  <img src="./playground/src/assets/freeEditor.png" alt="freeEditor">
+  <img src="./csrTest/src/assets/freeEditor.png" alt="freeEditor">
 </p>
 
 ---

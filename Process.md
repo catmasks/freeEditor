@@ -3,24 +3,24 @@
 ### 卸载 freeEditor 库 / uninstall freeEditor library
 
 ```bash
-cd playground
+cd csrTest
 pnpm remove @catmasks/free-editor
 ```
 
 ```typescript
 /**
- * 在 playground 项目中的 main.ts 顶部注释以下代码
- * comment the following code to the main.ts file of the playground project
+ * 在 csrTest 项目中的 main.ts 顶部注释以下代码
+ * comment the following code to the main.ts file of the csrTest project
  */
 import "@catmasks/free-editor/style.css";
 ```
 
-### 添加 freeEditor 库到 playground 项目的 vite.config.ts 中 / add freeEditor library to playground project's vite.config.ts
+### 添加 freeEditor 库到 csrTest 项目的 vite.config.ts 中 / add freeEditor library to csrTest project's vite.config.ts
 
 ```typescript
 /**
- * 在 playground 演示项目的 vite.config.ts 中添加以下配置
- * add the following configuration to the playground project's vite.config.ts
+ * 在 csrTest 演示项目的 vite.config.ts 中添加以下配置
+ * add the following configuration to the csrTest project's vite.config.ts
  */
 resolve:{
      alias: {
@@ -45,8 +45,8 @@ pnpm run build
 
 ```typescript
 /**
- * 在 playground 演示项目的 vite.config.ts 中添加以下配置
- * add the following configuration to the playground project's vite.config.ts
+ * 在 csrTest 演示项目的 vite.config.ts 中添加以下配置
+ * add the following configuration to the csrTest project's vite.config.ts
  */
 resolve:{
      alias: {
@@ -60,8 +60,8 @@ resolve:{
 
 ```typescript
 /**
- * 在 playground 项目中的 main.ts 顶部添加以下代码
- * add the following code to the main.ts file of the playground project
+ * 在 csrTest 项目中的 main.ts 顶部添加以下代码
+ * add the following code to the main.ts file of the csrTest project
  */
 import "@catmasks/free-editor/style.css";
 ```
@@ -80,22 +80,22 @@ pnpm pack --out free-editor.tgz
 - 确保只有一个 .tgz 文件
 
 ```bash
-cd playground
+cd csrTest
 pnpm add ../packages/freeEditor/free-editor.tgz
 ```
 
-### 运行 playground 项目 / run playground project
+### 运行 csrTest 项目 / run csrTest project
 
 ```typescript
 /**
- * 在 playground 项目中的 main.ts 顶部添加以下代码
- * add the following code to the main.ts file of the playground project
+ * 在 csrTest 项目中的 main.ts 顶部添加以下代码
+ * add the following code to the main.ts file of the csrTest project
  */
 import "@catmasks/free-editor/style.css";
 ```
 
 ```bash
-cd playground
+cd csrTest
 pnpm run dev
 ```
 

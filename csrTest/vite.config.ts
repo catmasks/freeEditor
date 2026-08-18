@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 import path from "node:path";
 
 /**
- * playground vite config
+ * csrTest vite config
  */
 export default defineConfig({
   resolve: {

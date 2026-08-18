@@ -1,13 +1,13 @@
 <h4 align="right"><a href="./README.md">English</a> | <strong>简体中文</strong> | <a href="./README.ja-JP.md">日本語</a></h4>
 <br/>
 <p align="center">
-  <img src="./playground/src/assets/logo.png" alt="logo">
+  <img src="./csrTest/src/assets/logo.png" alt="logo">
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">一个基于 TipTap 内核开发的轻量级富文本编辑器</h4>
 <h4 align="center">开箱即用，支持所有前端框架，内置中英日三种语言</h4>
 <p align="center">
-  <img src="./playground/src/assets/freeEditor.png" alt="freeEditor">
+  <img src="./csrTest/src/assets/freeEditor.png" alt="freeEditor">
 </p>
 
 ---

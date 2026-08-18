@@ -1,11 +1,11 @@
 import js from "@eslint/js"; // ESLint 内置 JS 规则
 import tseslint from "typescript-eslint"; // TypeScript ESLint 解析器与规则
 import globals from "globals"; // 预定义全局变量
-import { fileURLToPath } from "node:url"; // 获取当前目录
+import sonarjs from "eslint-plugin-sonarjs"; // Sonar 认知复杂度插件
 
-// 获取当前文件所在目录（用于 tsconfigRootDir）
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
-
+/**
+ * 一个「项目包」对应一个独立的规则块
+ */
 export default [
   // 全局忽略配置
   {
@@ -19,24 +19,33 @@ export default [
     ],
   },
 
-  // 基础规则推荐配置
+  // 通用基座
   js.configs.recommended, // ESLint 核心推荐规则
   ...tseslint.configs.recommended, // TypeScript 推荐规则
 
-  // 针对源码库的配置 (packages/*/src/**/*.ts)
+  // 通用质量规则
   {
-    files: ["packages/*/src/**/*.ts"], // 匹配所有子包的源码文件
+    files: ["{csrTest,ssrTest,packages/freeEditor}/**/*.{ts,js,mjs,cjs}"],
+    plugins: { sonarjs },
+    rules: {
+      // 圈复杂度：限制函数的圈复杂度为 10
+      complexity: ["error", { max: 10 }],
+      // 认知复杂度：上限为 15
+      "sonarjs/cognitive-complexity": ["error", 15],
+    },
+  },
+
+  // 包：@catmasks/free-editor
+  {
+    files: ["packages/freeEditor/**/*.{ts,js,mjs,cjs}"],
 
     languageOptions: {
-      ecmaVersion: "latest", // 使用最新 ECMAScript 语法
-      sourceType: "module", // 使用 ES Module 模块系统
+      ecmaVersion: "latest",
+      sourceType: "module",
       globals: {
-        ...globals.browser, // 提供浏览器环境的全局变量（如 window, document）
-        ...globals.node, // 提供 Node.js 全局变量（如 process, __dirname）
-      },
-      parserOptions: {
-        projectService: true, // 启用 TypeScript 类型检查（自动查找 tsconfig.json）
-        tsconfigRootDir: __dirname, // 指定 TypeScript 配置文件的根目录
+        ...globals.browser, // 库运行时使用浏览器全局变量（window, document 等）
+        ...globals.node, // 构建脚本、vite 配置使用 Node 全局变量（process, console 等）
+        ...globals.es2021, // 提供 Promise, Map 等 ES2021 全局变量
       },
     },
 
@@ -59,54 +68,44 @@ export default [
         },
       ],
 
-      "no-console": ["error", { allow: ["warn", "error"] }], //仅允许 warn 和 error 方法
-
-      // 圈复杂度, 限制函数的圈复杂度为 10
-      complexity: ["error", { max: 10 }],
+      // 仅允许 warn/error
+      "no-console": ["error", { allow: ["warn", "error"] }],
     },
   },
 
-  //针对 Vite 配置文件的配置 (vite.config.ts / vite.config.mts)
+  // 包：csrTest
   {
-    files: ["**/vite.config.ts", "**/vite.config.mts"],
+    files: ["csrTest/**/*.{ts,js,mjs,cjs}"],
 
     languageOptions: {
       globals: {
-        ...globals.node, // 提供 Node.js 全局变量（如 process, __dirname）
-        ...globals.es2021, // 提供 ES2021 全局变量（如 Promise, Map）
-      },
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: __dirname,
+        ...globals.browser, // 浏览器全局变量
       },
     },
 
     rules: {
-      // Vite 配置中可能使用 require()，关闭该规则避免误报
-      "@typescript-eslint/no-var-requires": "off",
-      // Vite 配置中允许使用 console 进行调试
+      // csrTest 中允许使用 any，但给出警告以提示潜在类型问题
+      "@typescript-eslint/no-explicit-any": "warn",
+      // csrTest 中允许使用 console 方便调试演示
       "no-console": "off",
     },
   },
 
-  // 针对 Playground 源码的配置 (playground/src/**/*.ts)
+  // 包：ssrTest
   {
-    files: ["playground/src/**/*.ts"],
+    files: ["ssrTest/**/*.{ts,js,mjs,cjs}"],
 
     languageOptions: {
       globals: {
-        ...globals.browser, // 提供浏览器全局变量
-      },
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: __dirname,
+        ...globals.browser, // 浏览器端客户端挂载逻辑
+        ...globals.node, // Node.js 服务端逻辑（SSR 渲染）
       },
     },
 
     rules: {
-      // Playground 中允许使用 any，但给出警告以提示潜在类型问题
+      // ssrTest 中允许使用 any，但给出警告以提示潜在类型问题
       "@typescript-eslint/no-explicit-any": "warn",
-      // Playground 中允许使用 console 方便调试演示
+      // ssrTest 中允许使用 console 输出 SSR 服务日志
       "no-console": "off",
     },
   },

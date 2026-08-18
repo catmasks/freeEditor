@@ -154,6 +154,33 @@ function captureOtherMarks(editor: Editor): CapturedMark[] {
   return marks;
 }
 
+/** 属性值是否有实际内容 / Whether an attribute value is meaningful. */
+function isValidAttrValue(value: unknown): boolean {
+  return (
+    value !== null && value !== undefined && value !== 0 && value !== ""
+  );
+}
+
+/** 从单个节点上按配置采集命中的属性 / Collect matched node attrs from a single node. */
+function captureNodeAttrForNode(node: {
+  type: { name: string };
+  attrs: Record<string, unknown>;
+}): CapturedNodeAttr[] {
+  const captured: CapturedNodeAttr[] = [];
+
+  for (const [attrName, targetTypes] of Object.entries(NODE_ATTR_CONFIG)) {
+    if (targetTypes.includes(node.type.name)) {
+      const value = node.attrs[attrName];
+
+      if (isValidAttrValue(value)) {
+        captured.push({ name: attrName, value });
+      }
+    }
+  }
+
+  return captured;
+}
+
 /**
  * 捕获节点属性（alignment, lineHeight, indent）/ Capture node attributes
  *
@@ -168,21 +195,7 @@ function captureNodeAttributes(editor: Editor): CapturedNodeAttr[] {
     const node = $from.node(d);
 
     if (node) {
-      for (const [attrName, targetTypes] of Object.entries(NODE_ATTR_CONFIG)) {
-        if (targetTypes.includes(node.type.name)) {
-          const value = node.attrs[attrName];
-
-          if (
-            value !== null &&
-            value !== undefined &&
-            value !== 0 &&
-            value !== ""
-          ) {
-            nodeAttrs.push({ name: attrName, value });
-          }
-        }
-      }
-
+      nodeAttrs.push(...captureNodeAttrForNode(node));
       break;
     }
   }
