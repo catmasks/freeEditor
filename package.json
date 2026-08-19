@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "dev:csr": "pnpm --filter csrTest dev",
-    "dev:ssr": "pnpm --filter ssrTest dev",
+    "dev:ssr": "node ssrTest/server.js",
     "dev:cdn": "node cdnTest/cdn-server.mjs",
     "build": "pnpm --filter @catmasks/free-editor build",
     "lint:packages": "eslint packages/*/src/**/*.ts",
