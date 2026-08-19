@@ -157,6 +157,8 @@ interface EditorOptions {
   include?: EditorPluginKey[];
   exclude?: EditorPluginKey[];
   uploader?: MediaUploaderOptions;
+  onChange?: (html: string) => void;
+  onCreated?: () => void;
 }
 ```
 
@@ -280,6 +282,42 @@ exclude: ["codeBlock"];
 uploader?: MediaUploaderOptions
 ```
 
+### `onChange`
+
+内容变化回调。当文档内容变化时触发（如输入、执行命令、媒体上传等），回调参数为变化后的 HTML 字符串。
+
+```typescript
+onChange?: (html: string) => void
+```
+
+**示例：**
+
+```typescript
+const editor = new Editor(el, {
+  onChange: (html) => {
+    console.log("内容已变化：", html);
+  },
+});
+```
+
+### `onCreated`
+
+创建完成回调（无参数）。编辑器已挂载并完成初始化时触发。
+
+```typescript
+onCreated?: () => void
+```
+
+**示例：**
+
+```typescript
+const editor = new Editor(el, {
+  onCreated: () => {
+    console.log("编辑器已挂载初始化完成");
+  },
+});
+```
+
 ---
 
 ## 🧩 <a id="instance-properties-methods"></a>3. 实例属性与方法
@@ -393,6 +431,30 @@ getJson(): string
 ```
 
 **返回值：** `string` - JSON 字符串  
+**抛出：** 如果编辑器已销毁，抛出 `Error: Editor has been destroyed`
+
+#### `setHtml(html)`
+
+设置编辑器 HTML 内容，调用后编辑器内容即被替换；传空字符串时清空内容。
+
+```typescript
+setHtml(html: string): void
+```
+
+| 参数   | 类型     | 说明                |
+| ------ | -------- | ------------------- |
+| `html` | `string` | HTML 字符串，可为空 |
+
+**示例：**
+
+```typescript
+// 替换内容
+editor.setHtml("<p>新的内容</p>");
+
+// 清空内容
+editor.setHtml("");
+```
+
 **抛出：** 如果编辑器已销毁，抛出 `Error: Editor has been destroyed`
 
 #### `setDisabled(disabled)`

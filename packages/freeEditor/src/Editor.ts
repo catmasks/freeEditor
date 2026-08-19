@@ -121,6 +121,9 @@ export class Editor {
     this.mounted = true;
 
     this.applyInitialStates(initialDisabled, initialReadonly);
+
+    /** 编辑器已挂载并初始化完成*/
+    options.onCreated?.();
   }
 
   /**
@@ -198,6 +201,25 @@ export class Editor {
 
     this.content.addEventListener("pointerdown", () => {
       ensureEditorFocus(this.core.editor);
+    });
+
+    this.subscribeChange(options);
+  }
+
+  /**
+   * 注册内容变化回调 / Subscribe to content change callback
+   */
+  private subscribeChange(options: EditorOptions): void {
+    const onChange = options.onChange;
+    if (!onChange) return;
+
+    const onUpdate = (): void => {
+      onChange(this.getHtml());
+    };
+
+    this.core.editor.on("update", onUpdate);
+    this.destroyHooks.push(() => {
+      this.core.editor.off("update", onUpdate);
     });
   }
 
@@ -740,6 +762,17 @@ export class Editor {
     }
 
     return this.core.getHtml();
+  }
+  /**
+   * 设置编辑器内容 / Set editor content
+   * @param html - HTML 字符串 / HTML string
+   */
+  setHtml(html?: string): void {
+    if (this.destroyed) {
+      throw new Error("Editor has been destroyed");
+    }
+
+    this.core.setHtml(html ?? "");
   }
   /**
    * 获取 JSON 内容 / Get JSON content

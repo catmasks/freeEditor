@@ -104,6 +104,12 @@ export function initEditor(): void {
         upload: mockUpload(2000),
       },
     },
+    onChange: (html: string) => {
+      console.log("onChange", html);
+    },
+    onCreated: () => {
+      console.log("onCreated");
+    },
   });
 
   updateDemoTexts("zh-CN");

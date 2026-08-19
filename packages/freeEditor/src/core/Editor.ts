@@ -109,6 +109,13 @@ export class CoreEditor {
     return this.editor.getHTML();
   }
   /**
+   * 设置编辑器内容 / Set editor content
+   * @param html - HTML 字符串 / HTML string
+   */
+  setHtml(html?: string): void {
+    this.editor.commands.setContent(html ?? "", { emitUpdate: true });
+  }
+  /**
    * 获取 JSON 内容 / Get JSON content
    * @returns JSON 字符串 / JSON string
    */

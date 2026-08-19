@@ -2,12 +2,6 @@ import { Node, mergeAttributes } from "@tiptap/core";
 
 /**
  * 分割线节点 / Divider (horizontal rule) node
- *
- * 在文档中插入一条水平分割线，用于分隔内容区块。
- * 渲染为 HTML 的 &lt;hr&gt; 标签。
- *
- * Inserts a horizontal rule in the document to separate content sections.
- * Renders as the HTML &lt;hr&gt; tag.
  */
 export const Divider = Node.create({
   name: "divider",
@@ -60,11 +54,6 @@ export const Divider = Node.create({
     return {
       /**
        * 插入分割线 / Insert divider
-       *
-       * 在光标位置插入一条水平分割线，并将光标移动到分割线下方的新段落。
-       *
-       * Inserts a horizontal rule at the cursor position and moves the cursor
-       * to a new paragraph below the divider.
        *
        * @returns 命令函数 / Command function
        */
@@ -125,11 +114,6 @@ declare module "@tiptap/core" {
     divider: {
       /**
        * 插入分割线 / Insert divider
-       *
-       * 在光标位置插入一条水平分割线，并将光标移动到分割线下方的新段落。
-       *
-       * Inserts a horizontal rule at the cursor position and moves the cursor
-       * to a new paragraph below the divider.
        *
        * @returns 返回值类型 / Return type
        */

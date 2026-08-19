@@ -157,6 +157,8 @@ interface EditorOptions {
   include?: EditorPluginKey[];
   exclude?: EditorPluginKey[];
   uploader?: MediaUploaderOptions;
+  onChange?: (html: string) => void;
+  onCreated?: () => void;
 }
 ```
 
@@ -280,6 +282,42 @@ Media upload configuration, supporting independent settings for images, videos, 
 uploader?: MediaUploaderOptions
 ```
 
+### `onChange`
+
+Content change callback. Triggered whenever the document content changes (e.g., typing, executing commands, media upload). The callback receives the updated HTML string.
+
+```typescript
+onChange?: (html: string) => void
+```
+
+**Example:**
+
+```typescript
+const editor = new Editor(el, {
+  onChange: (html) => {
+    console.log("Content changed:", html);
+  },
+});
+```
+
+### `onCreated`
+
+Created callback (no arguments). Triggered once the editor has been mounted and fully initialized.
+
+```typescript
+onCreated?: () => void
+```
+
+**Example:**
+
+```typescript
+const editor = new Editor(el, {
+  onCreated: () => {
+    console.log("Editor is mounted and initialized");
+  },
+});
+```
+
 ---
 
 ## 🧩 <a id="instance-properties-methods"></a>3. Instance Properties and Methods
@@ -393,6 +431,30 @@ getJson(): string
 ```
 
 **Returns:** `string` – JSON string  
+**Throws:** If the editor has been destroyed, throws `Error: Editor has been destroyed`
+
+#### `setHtml(html)`
+
+Sets the editor HTML content. The editor content is replaced immediately; passing an empty string clears the content.
+
+```typescript
+setHtml(html: string): void
+```
+
+| Parameter | Type     | Description                    |
+| --------- | -------- | ------------------------------ |
+| `html`    | `string` | HTML string, may be empty      |
+
+**Example:**
+
+```typescript
+// Replace content
+editor.setHtml("<p>New content</p>");
+
+// Clear content
+editor.setHtml("");
+```
+
 **Throws:** If the editor has been destroyed, throws `Error: Editor has been destroyed`
 
 #### `setDisabled(disabled)`

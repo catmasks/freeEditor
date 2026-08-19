@@ -28,16 +28,6 @@ export interface PlaceholderTarget {
 /**
  * 获取 Placeholder 目标节点 / Get Placeholder target node
  *
- * Placeholder 属于编辑器级别的占位提示，
- * 因此只允许挂载到 Document 的直接子级空文本块。
- *
- * 不会进入：
- * - table cell
- * - table header
- * - blockquote
- * - list item
- * - nested custom node
- *
  * @param doc ProseMirror Document 节点 / ProseMirror document node
  * @returns Placeholder 目标节点，不存在时返回 null
  */
@@ -51,9 +41,6 @@ export function getPlaceholderTarget(doc: Node): PlaceholderTarget | null {
 
   /**
    * 只检查 Document 的直接子节点。
-   *
-   * 不使用 descendants()，
-   * 避免进入 table、blockquote、list 等嵌套结构。
    */
   let target: PlaceholderTarget | null = null;
 
@@ -74,9 +61,6 @@ export function getPlaceholderTarget(doc: Node): PlaceholderTarget | null {
 
     /**
      * 当前文本块存在实际内容时跳过。
-     *
-     * 这里使用 content.size 判断即可，
-     * 因为 isEmptyDocument 已经确认整个文档没有有效内容。
      */
     if (node.content.size > 0) {
       return;

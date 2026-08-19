@@ -11,16 +11,12 @@ interface BlockNode {
 /** 是否为需要处理对齐的块级节点 / Whether the node handles alignment. */
 function isAlignedBlock(node: BlockNode | null | undefined): node is BlockNode {
   return Boolean(
-    node &&
-      node.type &&
-      ["paragraph", "heading"].includes(node.type.name),
+    node && node.type && ["paragraph", "heading"].includes(node.type.name),
   );
 }
 
 /**
  * 在选区范围内统一更新块级节点属性，并在空选区时顺沿祖先上溯。
- *
- * 抽出自 setAlignment / unsetAlignment 的公共逻辑，避免两处重复并降低认知复杂度。
  *
  * @param tr 事务对象 / The transaction
  * @param selection 当前选区 / The current selection

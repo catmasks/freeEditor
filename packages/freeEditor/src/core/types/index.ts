@@ -238,6 +238,17 @@ export interface EditorOptions {
   placeholder?: string;
 
   /**
+   * 内容变化回调 / Content change callback
+   * @param html 变化后的 HTML 字符串 / HTML string after change
+   */
+  onChange?: (html: string) => void;
+
+  /**
+   * 初始化完成回调 / Initialized callback
+   */
+  onCreated?: () => void;
+
+  /**
    * 包含的插件 / Included plugins
    */
   include?: EditorPluginKey[];

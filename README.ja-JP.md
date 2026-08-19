@@ -157,6 +157,8 @@ interface EditorOptions {
   include?: EditorPluginKey[];
   exclude?: EditorPluginKey[];
   uploader?: MediaUploaderOptions;
+  onChange?: (html: string) => void;
+  onCreated?: () => void;
 }
 ```
 
@@ -280,6 +282,42 @@ exclude: ["codeBlock"];
 uploader?: MediaUploaderOptions
 ```
 
+### `onChange`
+
+コンテンツ変更コールバック。ドキュメントのコンテンツが変更されたときに呼び出されます（入力、コマンドの実行、メディアアップロードなど）。コールバックは変更後の HTML 文字列を受け取ります。
+
+```typescript
+onChange?: (html: string) => void
+```
+
+**例:**
+
+```typescript
+const editor = new Editor(el, {
+  onChange: (html) => {
+    console.log("コンテンツが変更されました:", html);
+  },
+});
+```
+
+### `onCreated`
+
+作成完了コールバック（引数なし）。エディタがマウントされ、初期化が完了したときに呼び出されます。
+
+```typescript
+onCreated?: () => void
+```
+
+**例:**
+
+```typescript
+const editor = new Editor(el, {
+  onCreated: () => {
+    console.log("エディタがマウントされ、初期化が完了しました");
+  },
+});
+```
+
 ---
 
 ## 🧩 <a id="instance-properties-methods"></a>3. インスタンスのプロパティとメソッド
@@ -393,6 +431,30 @@ getJson(): string
 ```
 
 **戻り値:** `string` – JSON 文字列  
+**スロー:** エディタが破棄されている場合、`Error: Editor has been destroyed` をスローします。
+
+#### `setHtml(html)`
+
+エディタの HTML コンテンツを設定します。呼び出すとエディタのコンテンツが即座に置き換えられます。空文字列を渡すとコンテンツがクリアされます。
+
+```typescript
+setHtml(html: string): void
+```
+
+| 引数   | 型       | 説明                          |
+| ------ | -------- | ----------------------------- |
+| `html` | `string` | HTML 文字列、空でも可         |
+
+**例:**
+
+```typescript
+// コンテンツを置き換える
+editor.setHtml("<p>新しいコンテンツ</p>");
+
+// コンテンツをクリアする
+editor.setHtml("");
+```
+
 **スロー:** エディタが破棄されている場合、`Error: Editor has been destroyed` をスローします。
 
 #### `setDisabled(disabled)`
