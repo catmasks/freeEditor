@@ -5,7 +5,7 @@
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">TipTap コアをベースに構築された軽量リッチテキストエディタ</h4>
-<h4 align="center">すぐに使え、すべてのフロントエンドフレームワークをサポートし、中国語・英語・日本語を内蔵し、SSR サポートを提供</h4>
+<h4 align="center">すぐに使え、すべてのフロントエンドフレームワークをサポートし、中国語・英語・日本語を内蔵し、SSR と互換性がある</h4>
 <p align="center">
   <img src="./csrTest/src/assets/freeEditor.png" alt="freeEditor">
 </p>

@@ -5,7 +5,7 @@
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">一个基于 TipTap 内核开发的轻量级富文本编辑器</h4>
-<h4 align="center">开箱即用，支持所有前端框架，内置中英日三种语言，支持 SSR</h4>
+<h4 align="center">开箱即用，支持所有前端框架，内置中英日三种语言，兼容SSR</h4>
 <p align="center">
   <img src="./csrTest/src/assets/freeEditor.png" alt="freeEditor">
 </p>

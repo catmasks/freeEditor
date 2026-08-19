@@ -5,7 +5,7 @@
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">A lightweight rich text editor built on the TipTap core</h4>
-<h4 align="center">Out‑of‑the‑box, supports all front‑end frameworks, with built‑in Chinese, English, and Japanese languages, and supports SSR</h4>
+<h4 align="center">Out‑of‑the‑box, supports all front‑end frameworks, with built‑in Chinese, English, and Japanese languages, and is compatible with SSR</h4>
 <p align="center">
   <img src="./csrTest/src/assets/freeEditor.png" alt="freeEditor">
 </p>
