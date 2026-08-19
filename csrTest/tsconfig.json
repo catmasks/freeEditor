@@ -33,12 +33,7 @@
     /**
      * vite + node 类型
      */
-    "types": ["vite/client", "node"],
-
-    /**
-     * 路径基准
-     */
-    "baseUrl": "."
+    "types": ["vite/client", "node"]
   },
 
   "include": ["src", "vite.config.ts"]

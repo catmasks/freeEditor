@@ -5,7 +5,7 @@
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">A lightweight rich text editor built on the TipTap core</h4>
-<h4 align="center">Out‑of‑the‑box, supports all front‑end frameworks, with built‑in Chinese, English, and Japanese</h4>
+<h4 align="center">Out‑of‑the‑box, supports all front‑end frameworks, with built‑in Chinese, English, and Japanese languages, and supports SSR</h4>
 <p align="center">
   <img src="./csrTest/src/assets/freeEditor.png" alt="freeEditor">
 </p>
@@ -81,7 +81,7 @@ If your project does not use build tools such as Vite or Webpack, you can levera
 
     <link
       rel="stylesheet"
-      href="https://esm.sh/@catmasks/free-editor@0.0.5/style.css"
+      href="https://esm.sh/@catmasks/free-editor@1.0.0/style.css"
     />
   </head>
 
@@ -89,7 +89,7 @@ If your project does not use build tools such as Vite or Webpack, you can levera
     <div id="editor"></div>
 
     <script type="module">
-      import { Editor } from "https://esm.sh/@catmasks/free-editor@0.0.5";
+      import { Editor } from "https://esm.sh/@catmasks/free-editor@1.0.0";
 
       const editor = new Editor(document.getElementById("editor"), {
         content: "<p>Hello World</p>",
@@ -117,7 +117,9 @@ In such cases, you must use an `importmap` to map the external dependencies:
   {
     "imports": {
       "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
-      "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
+      "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
+      "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
+      "@tiptap/pm/history": "https://esm.sh/@tiptap/pm@3.26.1/history",
       "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
       "docx": "https://esm.sh/docx@9.7.1",
       "jspdf": "https://esm.sh/jspdf@4.2.1",

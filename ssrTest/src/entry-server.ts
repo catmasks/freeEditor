@@ -1,30 +1,19 @@
-import { i18n } from "@catmasks/free-editor";
+import { createSSRApp } from "vue";
+import App from "./App.vue";
 
 /**
- * 服务端渲染函数（原生 TS）。
+ * 服务端渲染入口（原生 TS + Vue SSR）。
  *
- * 由 server.js 通过 vite.ssrLoadModule 在 Node 环境加载执行；
- * 仅返回 HTML 字符串，不创建任何 DOM。读取 i18n.locale 用于证明：
- * SSR 服务端可以安全 import @catmasks/free-editor。
+ * 由 server.js 通过 vite.ssrLoadModule 在 Node 环境加载执行。
+ * 这里把 App.vue「真实地执行一遍」，用 renderToString 产出真实的标记字符串，
+ * 而不是拼接硬编码 HTML —— 这才是真正的 SSR。
+ *
+ * FreeEditor 的编辑器实例不会在此创建，它只在客户端 hydrate 后挂载。
  */
 export async function render(): Promise<{ appHtml: string }> {
-  // 服务端 SSR 阶段读取的语言（来自包内 i18n 单例）
-  const locale = i18n.locale;
-
-  const appHtml = `
-  <h1>原生 TypeScript SSR + @catmasks/free-editor</h1>
-  <p class="note">
-    <span class="ssr-badge">SSR</span>
-    这段内容由「服务端」生成：SSR 语言(locale) = <code>${locale}</code>
-    —— 说明服务端已安全加载 <code>@catmasks/free-editor</code>。
-  </p>
-  <hr />
-  <p class="note">
-    <span class="ssr-badge">Client</span>
-    下方编辑器由「浏览器端」通过 <code>new Editor(el)</code> 挂载：
-  </p>
-  <div id="editor" style="border:1px solid #d0d7de;border-radius:6px"></div>
-  `;
+  const { renderToString } = await import("vue/server-renderer");
+  const app = createSSRApp(App);
+  const appHtml = await renderToString(app);
 
   return { appHtml };
 }

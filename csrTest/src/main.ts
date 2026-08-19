@@ -1,4 +1,5 @@
-// import "@catmasks/free-editor/style.css";
+import "@catmasks/free-editor/style.css";
+import "./style.css";
 
 import { initEditor, destroyEditor } from "./editor";
 import { initCustomI18n, updateButtonTexts } from "./i18n";
@@ -11,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const app = document.getElementById("app");
   if (app) {
-    app.classList.toggle("dark");
+    app.classList.add("dark");
   }
 
   initEventListeners();

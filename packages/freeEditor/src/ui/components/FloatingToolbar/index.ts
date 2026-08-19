@@ -662,13 +662,20 @@ export class FloatingToolbar {
 
     toolbar.style.display = "flex";
 
+    // 允许表单控件（输入框/文本域）获得焦点，其余位置才拦截默认行为，避免编辑器选区丢失
+    const isFormControl = (target: EventTarget | null): boolean =>
+      target instanceof HTMLElement &&
+      !!target.closest("input, textarea, select");
+
     toolbar.addEventListener("pointerdown", (e) => {
       e.stopPropagation();
+      if (isFormControl(e.target)) return;
       e.preventDefault();
     });
 
     toolbar.addEventListener("mousedown", (e) => {
       e.stopPropagation();
+      if (isFormControl(e.target)) return;
       e.preventDefault();
     });
 

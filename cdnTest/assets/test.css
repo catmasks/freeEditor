@@ -1,0 +1,233 @@
+/* FreeEditor CDN 测试页公共样式（与编辑器自身样式隔离） */
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --border: #e3e6ea;
+  --text: #1f2329;
+  --muted: #8a919f;
+  --pass: #12b76a;
+  --fail: #f04438;
+  --pending: #667085;
+  --accent: #2563eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px 16px 48px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  line-height: 1.6;
+}
+
+.wrap {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+
+header p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+/* 测试总览（点击卡片切换显示测试结果） */
+.summary {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.summary .card {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  user-select: none;
+}
+
+.summary .card:hover {
+  border-color: var(--accent);
+}
+
+.summary .card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.summary .num {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.summary .label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.summary .num.total {
+  color: var(--accent);
+}
+.summary .num.passed {
+  color: var(--pass);
+}
+.summary .num.failed {
+  color: var(--fail);
+}
+
+/* 测试结果列表：默认隐藏，点击总览卡片后显示 */
+.test-list {
+  display: none;
+  max-height: 500px;
+  overflow-y: auto;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.test-list.visible {
+  display: block;
+}
+
+.test-list .test-row.hidden {
+  display: none;
+}
+
+.test-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.test-row:last-child {
+  border-bottom: none;
+}
+
+.test-group {
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.test-name {
+  flex: 1;
+}
+
+.test-status {
+  flex-shrink: 0;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.test-status.pending {
+  color: var(--pending);
+}
+.test-status.pass {
+  color: var(--pass);
+}
+.test-status.fail {
+  color: var(--fail);
+}
+
+/* 区块 */
+section.card {
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+section.card h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.demo-editor {
+  margin-top: 8px;
+}
+
+/* 入口页导航卡片 */
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.nav-card {
+  display: block;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.nav-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.nav-card h2 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  color: var(--accent);
+}
+
+.nav-card p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* import map 代码展示 */
+pre.importmap-demo {
+  margin: 8px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 12px;
+  overflow-x: auto;
+}

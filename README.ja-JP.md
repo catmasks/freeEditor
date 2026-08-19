@@ -5,7 +5,7 @@
 </p>
 <h1 align="center">FreeEditor</h1>
 <h4 align="center">TipTap コアをベースに構築された軽量リッチテキストエディタ</h4>
-<h4 align="center">すぐに使え、すべてのフロントエンドフレームワークをサポートし、中国語・英語・日本語を内蔵</h4>
+<h4 align="center">すぐに使え、すべてのフロントエンドフレームワークをサポートし、中国語・英語・日本語を内蔵し、SSR サポートを提供</h4>
 <p align="center">
   <img src="./csrTest/src/assets/freeEditor.png" alt="freeEditor">
 </p>
@@ -81,7 +81,7 @@ pnpm add @catmasks/free-editor
 
     <link
       rel="stylesheet"
-      href="https://esm.sh/@catmasks/free-editor@0.0.5/style.css"
+      href="https://esm.sh/@catmasks/free-editor@1.0.0/style.css"
     />
   </head>
 
@@ -89,7 +89,7 @@ pnpm add @catmasks/free-editor
     <div id="editor"></div>
 
     <script type="module">
-      import { Editor } from "https://esm.sh/@catmasks/free-editor@0.0.5";
+      import { Editor } from "https://esm.sh/@catmasks/free-editor@1.0.0";
 
       const editor = new Editor(document.getElementById("editor"), {
         content: "<p>Hello World</p>",
@@ -117,7 +117,9 @@ import { Editor } from "@tiptap/core";
   {
     "imports": {
       "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
-      "@tiptap/pm": "https://esm.sh/@tiptap/pm@3.26.1",
+      "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
+      "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
+      "@tiptap/pm/history": "https://esm.sh/@tiptap/pm@3.26.1/history",
       "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
       "docx": "https://esm.sh/docx@9.7.1",
       "jspdf": "https://esm.sh/jspdf@4.2.1",

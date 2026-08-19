@@ -18,14 +18,23 @@ export default [
       "eslint.config.js", // 本配置文件自身
     ],
   },
-
   // 通用基座
   js.configs.recommended, // ESLint 核心推荐规则
   ...tseslint.configs.recommended, // TypeScript 推荐规则
-
   // 通用质量规则
   {
-    files: ["{csrTest,ssrTest,packages/freeEditor}/**/*.{ts,js,mjs,cjs}"],
+    files: [
+      "{cdnTest,csrTest,ssrTest,packages/freeEditor}/**/*.{ts,js,mjs,cjs}",
+    ],
+    languageOptions: {
+      ecmaVersion: "latest", // 最新的 ECMAScript 版本
+      sourceType: "module", // 模块类型
+      globals: {
+        ...globals.browser, // 浏览器全局变量（window, document 等）
+        ...globals.node, // 构建脚本、vite 配置使用 Node 全局变量（process, console 等）
+        ...globals.es2021, // 提供 Promise, Map 等 ES2021 全局变量
+      },
+    },
     plugins: { sonarjs },
     rules: {
       // 圈复杂度：限制函数的圈复杂度为 10
@@ -34,31 +43,16 @@ export default [
       "sonarjs/cognitive-complexity": ["error", 15],
     },
   },
-
   // 包：@catmasks/free-editor
   {
     files: ["packages/freeEditor/**/*.{ts,js,mjs,cjs}"],
-
-    languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
-      globals: {
-        ...globals.browser, // 库运行时使用浏览器全局变量（window, document 等）
-        ...globals.node, // 构建脚本、vite 配置使用 Node 全局变量（process, console 等）
-        ...globals.es2021, // 提供 Promise, Map 等 ES2021 全局变量
-      },
-    },
-
     rules: {
       // 强制所有函数显式声明返回类型，提高代码可读性
       "@typescript-eslint/explicit-function-return-type": "error",
-
       // 强制使用 `import type` 导入类型，避免运行时额外加载
       "@typescript-eslint/consistent-type-imports": "error",
-
       // 允许使用 any 类型，避免类型检查错误
       "@typescript-eslint/no-explicit-any": "off",
-
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -67,7 +61,6 @@ export default [
           caughtErrorsIgnorePattern: "^_", // 以 _ 开头的 catch 错误变量忽略检查
         },
       ],
-
       // 仅允许 warn/error
       "no-console": ["error", { allow: ["warn", "error"] }],
     },
@@ -76,17 +69,10 @@ export default [
   // 包：csrTest
   {
     files: ["csrTest/**/*.{ts,js,mjs,cjs}"],
-
-    languageOptions: {
-      globals: {
-        ...globals.browser, // 浏览器全局变量
-      },
-    },
-
     rules: {
-      // csrTest 中允许使用 any，但给出警告以提示潜在类型问题
+      //允许使用 any，但给出警告以提示潜在类型问题
       "@typescript-eslint/no-explicit-any": "warn",
-      // csrTest 中允许使用 console 方便调试演示
+      // 允许使用 console
       "no-console": "off",
     },
   },
@@ -94,18 +80,10 @@ export default [
   // 包：ssrTest
   {
     files: ["ssrTest/**/*.{ts,js,mjs,cjs}"],
-
-    languageOptions: {
-      globals: {
-        ...globals.browser, // 浏览器端客户端挂载逻辑
-        ...globals.node, // Node.js 服务端逻辑（SSR 渲染）
-      },
-    },
-
     rules: {
-      // ssrTest 中允许使用 any，但给出警告以提示潜在类型问题
+      // 允许使用 any，但给出警告以提示潜在类型问题
       "@typescript-eslint/no-explicit-any": "warn",
-      // ssrTest 中允许使用 console 输出 SSR 服务日志
+      // 允许使用 console
       "no-console": "off",
     },
   },

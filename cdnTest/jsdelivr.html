@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreeEditor CDN-jsDelivr</title>
+
+    <!--
+      方式二：jsDelivr / unpkg + import map
+      直接加载包内 dist/index.js，其中 external 的 npm 裸导入
+      （如 import { Editor } from "@tiptap/core"）浏览器无法解析，
+      必须通过 <script type="importmap"> 手动映射这些依赖。
+      动态 import() 生成的 dist/chunks/ 目录由 jsDelivr 按包内路径提供。
+    -->
+
+    <!-- 编辑器样式：jsDelivr CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@catmasks/free-editor@1.0.0/dist/style.css"
+    />
+    <!-- 公共样式 -->
+    <link rel="stylesheet" href="assets/test.css" />
+
+    <!-- 手动映射 external 依赖（映射到 esm.sh 即可） -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
+          "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
+          "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
+          "@tiptap/pm/history": "https://esm.sh/@tiptap/pm@3.26.1/history",
+          "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
+          "docx": "https://esm.sh/docx@9.7.1",
+          "jspdf": "https://esm.sh/jspdf@4.2.1",
+          "markdown-it": "https://esm.sh/markdown-it@14.1.0",
+          "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>方式二：jsDelivr + import map 引入测试</h1>
+        <p>
+          入口与样式来自
+          <code>https://cdn.jsdelivr.net/npm/@catmasks/free-editor@1.0.0</code
+          >， external 依赖经 <code>import map</code> 手动映射到 esm.sh。
+          <a href="index.html">← 返回方式导航</a>
+        </p>
+      </header>
+
+      <!-- 测试总览（点击卡片切换显示测试结果） -->
+      <div class="summary">
+        <div class="card" data-filter="all" title="点击查看全部用例">
+          <div class="num total" id="summary-total">0</div>
+          <div class="label">用例总数</div>
+        </div>
+        <div class="card" data-filter="pass" title="点击仅查看通过的用例">
+          <div class="num passed" id="summary-passed">0</div>
+          <div class="label">通过</div>
+        </div>
+        <div class="card" data-filter="fail" title="点击仅查看失败的用例">
+          <div class="num failed" id="summary-failed">0</div>
+          <div class="label">失败</div>
+        </div>
+      </div>
+
+      <!-- 测试结果列表 -->
+      <section class="card">
+        <h2>测试结果</h2>
+        <div class="test-list" id="test-list"></div>
+        <p class="hint" id="test-hint">
+          正在通过 jsDelivr CDN 加载编辑器模块并执行测试…
+        </p>
+      </section>
+
+      <!-- 在线演示 -->
+      <section class="card">
+        <h2>编辑器</h2>
+        <p class="hint">
+          以下编辑器由 jsDelivr 加载的
+          <code>Editor</code> 创建，可直接编辑体验。
+        </p>
+        <div class="demo-editor" id="editor-demo"></div>
+      </section>
+    </div>
+
+    <script type="module">
+      // 从 jsDelivr CDN 引入（依赖经 import map 解析）
+      import {
+        Editor,
+        i18n,
+      } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@1.0.0/dist/index.js";
+      import { assert, defineTest, runTests } from "./test-runner.mjs";
+
+      const VERSION = "1.0.0";
+
+      // ---------- 在线演示编辑器 ----------
+      const demoEditor = new Editor(document.getElementById("editor-demo"), {
+        content:
+          "<p>CDN Hello FreeEditor，来自 jsDelivr 的编辑器已成功加载！</p>",
+        placeholder: "请输入内容…",
+      });
+      window.demoEditor = demoEditor;
+
+      // ============ 测试用例（重点验证引入可用性） ============
+      defineTest("CDN 加载", "Editor 构造函数已从 jsDelivr 导出", () => {
+        assert(
+          typeof Editor === "function",
+          `Editor 类型异常：${typeof Editor}`,
+        );
+      });
+
+      defineTest("CDN 加载", "i18n 单例已从 jsDelivr 导出", () => {
+        assert(!!i18n, "i18n 未导出");
+        assert(typeof i18n.t === "function", "i18n.t 不是函数");
+      });
+
+      defineTest("生命周期", "编辑器已挂载且未销毁", () => {
+        assert(
+          demoEditor.isMounted === true,
+          `isMounted=${demoEditor.isMounted}`,
+        );
+        assert(
+          demoEditor.isDestroyed === false,
+          `isDestroyed=${demoEditor.isDestroyed}`,
+        );
+      });
+
+      defineTest("生命周期", "渲染出可编辑的 ProseMirror 编辑区", () => {
+        const pm = document.querySelector(
+          "#editor-demo .free-editor__content .ProseMirror",
+        );
+        assert(!!pm, "未找到 .ProseMirror 编辑区");
+        assert(pm.isContentEditable === true, "编辑区不可编辑");
+      });
+
+      defineTest("生命周期", "工具栏已渲染", () => {
+        const toolbar = document.querySelector(
+          "#editor-demo .free-editor__toolbar",
+        );
+        assert(!!toolbar, "未找到工具栏 .free-editor__toolbar");
+        const count = toolbar.querySelectorAll(
+          ".free-editor__toolbar__item",
+        ).length;
+        assert(count > 0, "工具栏无按钮");
+      });
+
+      defineTest("内容", "初始 content 生效", () => {
+        const html = demoEditor.getHtml();
+        assert(html.includes("jsDelivr"), `getHtml() 未包含初始内容：${html}`);
+      });
+
+      defineTest("内容", "getJson 返回 doc 结构", () => {
+        const json = demoEditor.getJson();
+        assert(json && json.type === "doc", `json.type=${json?.type}`);
+        assert(
+          Array.isArray(json.content) && json.content.length > 0,
+          "json.content 为空",
+        );
+      });
+
+      defineTest("销毁", "destroy 后标记已销毁且移除 DOM", () => {
+        const mount = document.createElement("div");
+        mount.style.display = "none";
+        document.body.appendChild(mount);
+        const temp = new Editor(mount, { content: "<p>temp</p>" });
+        temp.destroy();
+        assert(temp.isDestroyed === true, "isDestroyed 应为 true");
+        assert(
+          !mount.querySelector(".free-editor__container"),
+          "销毁后容器未移除",
+        );
+        mount.remove();
+      });
+
+      // 执行测试
+      runTests(VERSION);
+    </script>
+  </body>
+</html>

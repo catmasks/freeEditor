@@ -63,29 +63,52 @@ export function getPageText(locale: Locale, key: string): string {
   return pageI18n[locale]?.[key] || key;
 }
 
+/** 映射：页面标签元素 id → 对应语言包 key */
+const LABEL_MAP: [string, string][] = [
+  ["demo-title", "demoTitle"],
+  ["current-locale-label", "currentLocaleLabel"],
+  ["bold-label", "boldLabel"],
+  ["italic-label", "italicLabel"],
+  ["placeholder-label", "placeholderLabel"],
+  ["confirm-label", "confirmLabel"],
+  ["cancel-label", "cancelLabel"],
+  ["heading-label", "headingLabel"],
+];
+
+/** 映射：翻译示例元素 id → 编辑器内置 i18n key */
+const DEMO_KEY_MAP: [string, string][] = [
+  ["demo-bold", "toolbar.bold"],
+  ["demo-italic", "toolbar.italic"],
+  ["demo-placeholder", "common.placeholder"],
+  ["demo-confirm", "common.confirm"],
+  ["demo-cancel", "common.cancel"],
+  ["demo-heading-body", "heading.body"],
+];
+
 export function updateDemoTexts(locale: Locale): void {
-  setText("demo-title", getPageText(locale, "demoTitle"));
-  setText("current-locale-label", getPageText(locale, "currentLocaleLabel"));
   setText("current-locale", locale);
-  setText("bold-label", getPageText(locale, "boldLabel"));
-  setText("italic-label", getPageText(locale, "italicLabel"));
-  setText("placeholder-label", getPageText(locale, "placeholderLabel"));
-  setText("confirm-label", getPageText(locale, "confirmLabel"));
-  setText("cancel-label", getPageText(locale, "cancelLabel"));
-  setText("heading-label", getPageText(locale, "headingLabel"));
-  setText("demo-bold", i18n.t("toolbar.bold"));
-  setText("demo-italic", i18n.t("toolbar.italic"));
-  setText("demo-placeholder", i18n.t("common.placeholder"));
-  setText("demo-confirm", i18n.t("common.confirm"));
-  setText("demo-cancel", i18n.t("common.cancel"));
-  setText("demo-heading-body", i18n.t("heading.body"));
+
+  LABEL_MAP.forEach(([id, key]) => {
+    setText(id, getPageText(locale, key));
+  });
+
+  DEMO_KEY_MAP.forEach(([id, key]) => {
+    setText(id, i18n.t(key));
+  });
 }
 
+/** 映射：按钮元素 id → 对应语言包 key */
+const BUTTON_MAP: [string, string][] = [
+  ["theme-toggle", "themeToggle"],
+  ["get-html-btn", "getHtml"],
+  ["locale-label", "localeLabel"],
+  ["extend-i18n-btn", "extendI18n"],
+];
+
 export function updateButtonTexts(locale: Locale): void {
-  setText("theme-toggle", getPageText(locale, "themeToggle"));
-  setText("get-html-btn", getPageText(locale, "getHtml"));
-  setText("locale-label", getPageText(locale, "localeLabel"));
-  setText("extend-i18n-btn", getPageText(locale, "extendI18n"));
+  BUTTON_MAP.forEach(([id, key]) => {
+    setText(id, getPageText(locale, key));
+  });
 }
 
 export function updateLocaleButtons(locale: Locale): void {

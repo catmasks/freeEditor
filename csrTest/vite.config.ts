@@ -7,13 +7,21 @@ import path from "node:path";
  */
 export default defineConfig({
   resolve: {
-    alias: {
-      "@catmasks/free-editor": path.resolve(
-        __dirname,
-        "../packages/freeEditor/src",
-        // "../packages/freeEditor/dist",
-      ),
-    },
+    alias: [
+      // style.css 子路径需放在包入口别名之前
+      {
+        find: "@catmasks/free-editor/style.css",
+        replacement: path.resolve(
+          __dirname,
+          "../packages/freeEditor/dist/style.css",
+        ),
+      },
+      //csrTest 开发时直接调试库源码
+      {
+        find: "@catmasks/free-editor",
+        replacement: path.resolve(__dirname, "../packages/freeEditor/src"),
+      },
+    ],
     /**
      * 强制去重
      */

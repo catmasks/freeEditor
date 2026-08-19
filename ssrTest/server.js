@@ -71,7 +71,7 @@ const server = createHttpServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.group(`  原生 TypeScript SSR 测试服务已启动`);
+  console.group(` SSR 测试服务已启动`);
   console.log(`  浏览器打开: http://localhost:${PORT}/`);
   console.log(`  服务端可正常 import @catmasks/free-editor，SSR 渲染成功。`);
   console.log(`  （编辑器实例由浏览器端在入口脚本中创建）`);

@@ -2,35 +2,18 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FreeEditor_SSR</title>
-    <style>
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        margin: 2rem auto;
-        max-width: 760px;
-        padding: 0 1rem;
-        color: #1f2328;
-      }
-      .ssr-badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 12px;
-        background: #e7f5ff;
-        color: #0969da;
-      }
-      .note {
-        color: #57606a;
-        font-size: 14px;
-      }
-    </style>
+    <meta
+      name="description"
+      content="验证 @catmasks/free-editor 的 SSR 兼容性"
+    />
   </head>
   <body>
-    <div id="app"></div>
+    <!-- 服务端 renderToString 产生的真实标记将注入到此容器内，客户端对其 hydrate -->
+    <div id="app"><!--ssr-app-html--></div>
+
     <script type="module" src="/src/entry-client.ts"></script>
   </body>
 </html>

@@ -1,17 +1,17 @@
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
 /**
- * 原生 TypeScript SSR 测试包。
+ * Vue 3 SSR（渲染 + hydrate）测试包。
  *
- * 本包通过 Vite 别名直接消费 packages/freeEditor 的构建产物（dist），
- * 从而模拟真实场景中 "import { Editor } from '@catmasks/free-editor'"，
- * 用于验证该 npm 包在 SSR 环境下的兼容性。
- *
- * 由于沙箱环境无法为 workspace 依赖创建软链，这里改用显示别名，
- * 并同时映射 style.css 子路径（否则会绕过 exports 子路径解析）。
+ * 通过 Vite 别名直接消费 packages/freeEditor 的构建产物（dist），
+ * 模拟真实场景中 "import { Editor } from '@catmasks/free-editor'"，
+ * 用于验证该 npm 包在 Vue SSR 环境下的兼容性。
  */
 export default defineConfig({
+  plugins: [vue()],
+
   resolve: {
     alias: [
       // 注意：style.css 子路径需放在包入口别名之前（更具体匹配）
@@ -39,6 +39,6 @@ export default defineConfig({
   },
 
   server: {
-    port: 5200,
+    port: 2002,
   },
 });

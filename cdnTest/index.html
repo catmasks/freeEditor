@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreeEditor CDN</title>
+
+    <!-- 公共样式 -->
+    <link rel="stylesheet" href="assets/test.css" />
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>FreeEditor CDN 引入测试</h1>
+        <p>
+          npm 包 <code>@catmasks/free-editor@1.0.0</code> 支持两种 CDN
+          引入方式， 选择下方一种进入对应测试页。
+        </p>
+      </header>
+
+      <!-- 两种引入方式导航 -->
+      <div class="nav-grid">
+        <a class="nav-card" href="esm-sh.html">
+          <h2>方式一：esm.sh（推荐）</h2>
+          <p>
+            esm.sh 自动解析并打包本包的 npm 依赖，无需手动配置 import map，
+            包含完整测试用例（24 条）。
+          </p>
+          <code>https://esm.sh/@catmasks/free-editor@1.0.0</code>
+        </a>
+        <a class="nav-card" href="jsdelivr.html">
+          <h2>方式二：jsDelivr + import map</h2>
+          <p>
+            直接加载包内 dist/index.js，external 依赖需用 import map 手动映射，
+            包含引入可用性测试用例。
+          </p>
+          <code
+            >https://cdn.jsdelivr.net/npm/@catmasks/free-editor@1.0.0/dist/index.js</code
+          >
+        </a>
+      </div>
+
+      <!-- 方式二依赖映射说明 -->
+      <section class="card">
+        <h2>说明：jsDelivr / unpkg 需手动映射依赖</h2>
+        <p class="hint">
+          直接加载 <code>dist/index.js</code> 时，external
+          依赖无法被浏览器识别为 npm 裸导入，需在页面中声明
+          <code>import map</code>（映射到 esm.sh 即可）。 动态
+          <code>import()</code> 生成的 <code>dist/chunks/</code> 目录必须随
+          <code>index.js</code> 一起部署（jsDelivr/unpkg
+          会按包内路径原样提供该目录）。
+        </p>
+        <pre class="importmap-demo">
+&lt;script type="importmap"&gt;
+  {
+    "imports": {
+      "@tiptap/core": "https://esm.sh/@tiptap/core@3.26.1",
+      "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@3.26.1/state",
+      "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@3.26.1/view",
+      "@tiptap/pm/history": "https://esm.sh/@tiptap/pm@3.26.1/history",
+      "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
+      "docx": "https://esm.sh/docx@9.7.1",
+      "jspdf": "https://esm.sh/jspdf@4.2.1",
+      "markdown-it": "https://esm.sh/markdown-it@14.1.0",
+      "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
+    }
+  }
+&lt;/script&gt;
+
+&lt;script type="module"&gt;
+  // 入口与样式均从 jsDelivr 加载，dist/chunks/ 由 jsDelivr 按包内路径提供
+  import { Editor } from "https://cdn.jsdelivr.net/npm/@catmasks/free-editor@1.0.0/dist/index.js";
+&lt;/script&gt;</pre
+        >
+        <p class="hint">
+          注意：本目录页面使用浏览器原生 ESM，必须通过 HTTP 服务访问 （<code
+            >file://</code
+          >
+          无法加载）；生产环境建议使用 npm/pnpm + 构建工具引入。
+        </p>
+      </section>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreeEditor CDN-esm.sh</title>
+
+    <!--
+      方式一：esm.sh（推荐）
+      esm.sh 会自动解析并打包本包的 npm 依赖（@tiptap/core、@tiptap/pm、
+      @tiptap/extension-gapcursor、docx、jspdf、markdown-it、
+      prosemirror-markdown 等 external 依赖），无需手动配置 import map。
+    -->
+
+    <!-- 编辑器样式：esm.sh CDN -->
+    <link
+      rel="stylesheet"
+      href="https://esm.sh/@catmasks/free-editor@1.0.0/style.css"
+    />
+    <!-- 公共样式 -->
+    <link rel="stylesheet" href="assets/test.css" />
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>方式一：esm.sh CDN 引入测试</h1>
+        <p>
+          通过 <code>https://esm.sh/@catmasks/free-editor@1.0.0</code> 引入，
+          自动解析 npm 依赖。测试用例在下方自动执行。
+          <a href="index.html">← 返回方式导航</a>
+        </p>
+      </header>
+
+      <!-- 测试总览 -->
+      <div class="summary">
+        <div class="card" data-filter="all" title="点击查看全部用例">
+          <div class="num total" id="summary-total">0</div>
+          <div class="label">用例总数</div>
+        </div>
+        <div class="card" data-filter="pass" title="点击仅查看通过的用例">
+          <div class="num passed" id="summary-passed">0</div>
+          <div class="label">通过</div>
+        </div>
+        <div class="card" data-filter="fail" title="点击仅查看失败的用例">
+          <div class="num failed" id="summary-failed">0</div>
+          <div class="label">失败</div>
+        </div>
+      </div>
+
+      <!-- 测试结果列表 -->
+      <section class="card">
+        <h2>测试结果</h2>
+        <div class="test-list" id="test-list"></div>
+        <p class="hint" id="test-hint">
+          正在通过 esm.sh CDN 加载编辑器模块并执行测试…
+        </p>
+      </section>
+
+      <!-- 在线演示 -->
+      <section class="card">
+        <h2>编辑器</h2>
+        <p class="hint">
+          以下编辑器由 CDN 加载的 <code>Editor</code> 创建，可直接编辑体验。
+        </p>
+        <div class="demo-editor" id="editor-demo"></div>
+      </section>
+
+      <!-- 插件控制测试的隐藏挂载区 -->
+      <div id="plugin-test-area" style="display: none"></div>
+    </div>
+
+    <script type="module">
+      // 从 esm.sh CDN 引入（推荐，自动解析 npm 依赖）
+      import { Editor, i18n } from "https://esm.sh/@catmasks/free-editor@1.0.0";
+      import { assert, defineTest, runTests } from "./test-runner.mjs";
+
+      const VERSION = "1.0.0";
+
+      // 创建在线编辑器
+      const demoEditor = new Editor(document.getElementById("editor-demo"), {
+        content:
+          "<p>CDN Hello FreeEditor，来自 esm.sh 的编辑器已成功加载！</p>",
+        placeholder: "请输入内容…",
+      });
+      window.demoEditor = demoEditor;
+
+      // ============ 测试用例 ============
+      // ---- 1. CDN 模块加载 ----
+      defineTest("CDN 加载", "Editor 构造函数已从 CDN 导出", () => {
+        assert(
+          typeof Editor === "function",
+          `Editor 类型异常：${typeof Editor}`,
+        );
+      });
+
+      defineTest("CDN 加载", "i18n 单例已从 CDN 导出", () => {
+        assert(!!i18n, "i18n 未导出");
+        assert(typeof i18n.t === "function", "i18n.t 不是函数");
+        assert(typeof i18n.setLocale === "function", "i18n.setLocale 不是函数");
+      });
+
+      // ---- 2. 编辑器生命周期 ----
+      defineTest("生命周期", "编辑器已挂载且未销毁", () => {
+        assert(
+          demoEditor.isMounted === true,
+          `isMounted=${demoEditor.isMounted}`,
+        );
+        assert(
+          demoEditor.isDestroyed === false,
+          `isDestroyed=${demoEditor.isDestroyed}`,
+        );
+      });
+
+      defineTest("生命周期", "渲染出可编辑的 ProseMirror 编辑区", () => {
+        const pm = document.querySelector(
+          "#editor-demo .free-editor__content .ProseMirror",
+        );
+        assert(!!pm, "未找到 .ProseMirror 编辑区");
+        assert(pm.isContentEditable === true, "编辑区不可编辑");
+      });
+
+      defineTest("生命周期", "工具栏已渲染且包含按钮", () => {
+        const toolbar = document.querySelector(
+          "#editor-demo .free-editor__toolbar",
+        );
+        assert(!!toolbar, "未找到工具栏 .free-editor__toolbar");
+        const count = toolbar.querySelectorAll(
+          ".free-editor__toolbar__item",
+        ).length;
+        assert(count > 5, `工具栏按钮过少：${count}`);
+      });
+
+      defineTest("生命周期", "初始 content 生效", () => {
+        const html = demoEditor.getHtml();
+        assert(
+          html.includes("CDN Hello FreeEditor"),
+          `getHtml() 未包含初始内容：${html}`,
+        );
+      });
+
+      // ---- 3. 内容读取 ----
+      defineTest("内容", "getJson 返回 doc 结构", () => {
+        const json = demoEditor.getJson();
+        assert(json && json.type === "doc", `json.type=${json?.type}`);
+        assert(
+          Array.isArray(json.content) && json.content.length > 0,
+          "json.content 为空",
+        );
+      });
+
+      defineTest("内容", "getHtml 返回富文本 HTML", () => {
+        const html = demoEditor.getHtml();
+        assert(
+          typeof html === "string" && html.startsWith("<"),
+          "HTML 格式异常",
+        );
+        assert(html.includes("CDN Hello FreeEditor"), "HTML 缺少预期文本");
+      });
+
+      // ---- 4. 国际化 i18n ----
+      defineTest("国际化", "默认语言为 zh-CN", () => {
+        assert(i18n.locale === "zh-CN", `i18n.locale=${i18n.locale}`);
+      });
+
+      defineTest("国际化", "内置三种语言齐全", () => {
+        const locales = i18n.getLocales();
+        for (const locale of ["zh-CN", "en", "ja-JP"]) {
+          assert(locales.includes(locale), `缺少语言：${locale}`);
+        }
+      });
+
+      defineTest("国际化", "翻译函数 t() 正常返回", () => {
+        const text = i18n.t("toolbar.bold");
+        assert(!!text && text !== "toolbar.bold", `t("toolbar.bold")=${text}`);
+      });
+
+      defineTest("国际化", "setLocale 切换语言生效", () => {
+        i18n.setLocale("en");
+        assert(
+          i18n.locale === "en",
+          `setLocale('en') 后 locale=${i18n.locale}`,
+        );
+        const bold = i18n.t("toolbar.bold");
+        assert(bold === "Bold", `英文下 toolbar.bold=${bold}`);
+      });
+
+      defineTest("国际化", "subscribe 语言变更通知", () => {
+        const received = [];
+        const unsubscribe = i18n.subscribe((locale) => received.push(locale));
+        i18n.setLocale("ja-JP");
+        unsubscribe();
+        assert(received.includes("ja-JP"), `收到通知：${received.join(",")}`);
+      });
+
+      defineTest("国际化", "hasLocale 判断正确", () => {
+        assert(
+          i18n.hasLocale("zh-CN") === true,
+          "hasLocale('zh-CN') 应为 true",
+        );
+        assert(
+          i18n.hasLocale("ko-KR") === false,
+          "hasLocale('ko-KR') 应为 false",
+        );
+      });
+
+      // 恢复中文，保持后续演示一致
+      i18n.setLocale("zh-CN");
+
+      // ---- 5. 主题 ----
+      defineTest("主题", "默认主题为 light", () => {
+        assert(demoEditor.theme === "light", `theme=${demoEditor.theme}`);
+        assert(demoEditor.isDark === false, "isDark 应为 false");
+      });
+
+      defineTest("主题", "setTheme('dark') 切换暗色", () => {
+        demoEditor.setTheme("dark");
+        assert(demoEditor.isDark === true, `isDark=${demoEditor.isDark}`);
+        assert(
+          document.documentElement.dataset.theme === "dark",
+          "data-theme 未更新",
+        );
+      });
+
+      defineTest("主题", "toggleTheme 回到亮色", () => {
+        demoEditor.toggleTheme();
+        assert(
+          demoEditor.isDark === false,
+          `toggleTheme 后 isDark=${demoEditor.isDark}`,
+        );
+      });
+
+      // ---- 6. 禁用 / 只读 ----
+      defineTest("禁用/只读", "setDisabled(true) 生效", () => {
+        demoEditor.setDisabled(true);
+        assert(demoEditor.disabled === true, "disabled 应为 true");
+        const root = document.querySelector(
+          "#editor-demo .free-editor__container",
+        );
+        assert(
+          root.classList.contains("free-editor--blocked"),
+          "缺少 blocked 类",
+        );
+        assert(
+          root.getAttribute("data-blocked") === "true",
+          "data-blocked 应为 true",
+        );
+      });
+
+      defineTest("禁用/只读", "setReadonly(true) 生效", () => {
+        demoEditor.setReadonly(true);
+        assert(demoEditor.readonly === true, "readonly 应为 true");
+      });
+
+      defineTest("禁用/只读", "恢复编辑状态后解除锁定", () => {
+        demoEditor.setDisabled(false);
+        demoEditor.setReadonly(false);
+        assert(
+          demoEditor.disabled === false && demoEditor.readonly === false,
+          "状态未恢复",
+        );
+        const root = document.querySelector(
+          "#editor-demo .free-editor__container",
+        );
+        assert(
+          !root.classList.contains("free-editor--blocked"),
+          "blocked 类未移除",
+        );
+        assert(!root.getAttribute("data-blocked"), "data-blocked 未移除");
+      });
+
+      // ---- 7. 插件控制 ----
+      defineTest("插件控制", "exclude: ['codeBlock'] 生效", () => {
+        const mount = document.createElement("div");
+        document.getElementById("plugin-test-area").appendChild(mount);
+        const excluded = new Editor(mount, {
+          content: "<p>exclude 测试</p>",
+          exclude: ["codeBlock"],
+        });
+        const fullCount = document.querySelectorAll(
+          "#editor-demo .free-editor__toolbar__item",
+        ).length;
+        const excludeCount = mount.querySelectorAll(
+          ".free-editor__toolbar__item",
+        ).length;
+        excluded.destroy();
+        assert(
+          excludeCount < fullCount,
+          `exclude 后按钮未减少：${excludeCount} vs ${fullCount}`,
+        );
+      });
+
+      defineTest("插件控制", "include: ['fontBold'] 只渲染粗体按钮", () => {
+        const mount = document.createElement("div");
+        document.getElementById("plugin-test-area").appendChild(mount);
+        const included = new Editor(mount, {
+          content: "<p>include 测试</p>",
+          include: ["fontBold"],
+        });
+        const count = mount.querySelectorAll(
+          ".free-editor__toolbar__item",
+        ).length;
+        included.destroy();
+        assert(count === 1, `include 后按钮数量=${count}，应为 1`);
+      });
+
+      // ---- 8. 销毁 ----
+      defineTest("销毁", "destroy 后标记已销毁且移除 DOM", () => {
+        const mount = document.createElement("div");
+        document.getElementById("plugin-test-area").appendChild(mount);
+        const temp = new Editor(mount, { content: "<p>temp</p>" });
+        temp.destroy();
+        assert(temp.isDestroyed === true, "isDestroyed 应为 true");
+        assert(temp.isMounted === false, "isMounted 应为 false");
+        assert(
+          !mount.querySelector(".free-editor__container"),
+          "销毁后容器未移除",
+        );
+      });
+
+      defineTest("销毁", "重复 destroy 不抛错（幂等）", () => {
+        const mount = document.createElement("div");
+        document.getElementById("plugin-test-area").appendChild(mount);
+        const temp = new Editor(mount, { content: "<p>temp</p>" });
+        temp.destroy();
+        let error = null;
+        try {
+          temp.destroy();
+        } catch (err) {
+          error = err;
+        }
+        assert(error === null, `重复 destroy 抛错：${error?.message}`);
+      });
+
+      // 执行测试
+      runTests(VERSION);
+    </script>
+  </body>
+</html>

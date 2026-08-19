@@ -8,29 +8,44 @@ import { updateDemoTexts } from "./i18n";
 export let editor: Editor | null = null;
 
 /**
+ * 生成一个模拟上传函数：延迟 delay 毫秒后返回文件本地 URL。
+ * 供 image / video / attachment 三种媒体复用，避免重复代码。
+ */
+function mockUpload(delay: number) {
+  return (file: File, ctx: UploadContext) =>
+    new Promise<UploadResult>((resolve, reject) => {
+      setTimeout(() => {
+        if (ctx.signal?.aborted) {
+          reject(new Error("Upload canceled"));
+          return;
+        }
+        resolve({ url: URL.createObjectURL(file) });
+      }, delay);
+    });
+}
+
+/** 上传失败兜底：打印错误并弹出多语言提示。 */
+function alertUploadFailed(error: Error, file: File): void {
+  console.error("[upload error]", error.message, file);
+  alert(i18n.t("upload.uploadFailed"));
+}
+
+/**
  * 更新状态栏文字 / Update status label text
  */
 export function updateEditorStateLabel(): void {
   const label = document.getElementById("editor-state-label");
-  const toggleDisabledBtn = document.getElementById(
-    "toggle-disabled",
-  ) as HTMLButtonElement | null;
-  const toggleReadonlyBtn = document.getElementById(
-    "toggle-readonly",
-  ) as HTMLButtonElement | null;
-
   if (!editor || !label) return;
 
-  const disabled = editor.disabled;
-  const readonly = editor.readonly;
+  const { disabled, readonly } = editor;
 
   /** 同步按钮高亮状态 */
-  if (toggleDisabledBtn) {
-    toggleDisabledBtn.classList.toggle("active", disabled);
-  }
-  if (toggleReadonlyBtn) {
-    toggleReadonlyBtn.classList.toggle("active", readonly);
-  }
+  document
+    .getElementById("toggle-disabled")
+    ?.classList.toggle("active", disabled);
+  document
+    .getElementById("toggle-readonly")
+    ?.classList.toggle("active", readonly);
 
   if (readonly) {
     label.textContent = "只读模式（不可编辑 / 工具栏已隐藏）";
@@ -48,10 +63,6 @@ export function toggleDisabled(): void {
   if (!editor) return;
   editor.setDisabled(!editor.disabled);
   updateEditorStateLabel();
-  console.log(
-    "[toggleDisabled] 切换禁用 →",
-    editor.disabled ? "禁用(不可编辑，工具栏可见" : "正常",
-  );
 }
 
 /**
@@ -61,10 +72,6 @@ export function toggleReadonly(): void {
   if (!editor) return;
   editor.setReadonly(!editor.readonly);
   updateEditorStateLabel();
-  console.log(
-    "[toggleReadonly] 切换只读 →",
-    editor.readonly ? "只读(不可编辑，工具栏隐藏)" : "正常",
-  );
 }
 
 /**
@@ -72,96 +79,29 @@ export function toggleReadonly(): void {
  */
 export function initEditor(): void {
   const container = document.getElementById("editor-container");
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
   editor = new Editor(container, {
     theme: "dark",
     locale: "zh-CN",
-    height: 300,
     uploader: {
       image: {
         maxSize: 5 * 1024 * 1024,
         accept: ["png"],
-        format(result: any) {
-          console.log("响应数据", result);
-          return {
-            url: result.data,
-          };
+        format(result: { data: string }) {
+          return { url: result.data };
         },
-        async upload(file: File, ctx: UploadContext) {
-          console.log("[image upload]", file);
-
-          return new Promise<UploadResult>((resolve, reject) => {
-            setTimeout(() => {
-              if (ctx.signal?.aborted) {
-                reject(new Error("Upload canceled"));
-
-                return;
-              }
-              resolve({
-                url: URL.createObjectURL(file),
-              });
-            }, 3000);
-          });
-        },
+        upload: mockUpload(3000),
       },
-
       video: {
         maxSize: 500 * 1024 * 1024,
         accept: ["video/*"],
-        onUploadError(error: any, file: File) {
-          console.error("[video upload error]", error.message, file);
-          alert(i18n.t("upload.uploadFailed"));
-        },
-        onSuccess(result: UploadResult, file: File) {
-          console.log("[video upload success]", result, file);
-        },
-        async upload(file: File, ctx: UploadContext) {
-          console.log("[video upload]", file);
-
-          return new Promise<UploadResult>((resolve, reject) => {
-            setTimeout(() => {
-              if (ctx.signal?.aborted) {
-                reject(new Error("Upload canceled"));
-
-                return;
-              }
-
-              resolve({
-                url: URL.createObjectURL(file),
-              });
-            }, 3000);
-          });
-        },
+        onUploadError: alertUploadFailed,
+        upload: mockUpload(3000),
       },
       attachment: {
-        onUploadError(error: any, file: File) {
-          console.error("[file upload error]", error.message, file);
-          alert(i18n.t("upload.uploadFailed"));
-        },
-        onSuccess(result: any, file: File) {
-          console.log("[file upload success]", result, file);
-        },
-        async upload(file: File, ctx: UploadContext) {
-          console.log("[file upload]", file);
-
-          return new Promise<UploadResult>((resolve, reject) => {
-            setTimeout(() => {
-              if (ctx.signal?.aborted) {
-                reject(new Error("Upload canceled"));
-
-                return;
-              }
-
-              resolve({
-                url: URL.createObjectURL(file),
-              });
-            }, 2000);
-          });
-        },
+        onUploadError: alertUploadFailed,
+        upload: mockUpload(2000),
       },
     },
   });

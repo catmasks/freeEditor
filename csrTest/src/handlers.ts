@@ -12,13 +12,20 @@ import {
 } from "./i18n";
 
 /**
+ * 绑定点击事件到指定元素 / Bind a click handler to an element.
+ */
+function onClick(id: string, handler: () => void): void {
+  document.getElementById(id)?.addEventListener("click", handler);
+}
+
+/**
  * 设置语言 / Set locale
  */
 export function setLocale(locale: Locale): void {
   if (editor) {
     editor.setLocale(locale);
   } else {
-    i18n.setLocale(locale); // [I18N-PUBLISH] 发布语言变化通知
+    i18n.setLocale(locale);
   }
 
   updateLocaleButtons(locale);
@@ -30,54 +37,27 @@ export function setLocale(locale: Locale): void {
  * 初始化事件监听器 / Initialize event listeners
  */
 export function initEventListeners(): void {
-  const toggleBtn = document.getElementById("theme-toggle");
+  onClick("theme-toggle", () => editor?.toggleTheme());
 
-  if (toggleBtn) {
-    toggleBtn.addEventListener("click", () => {
-      editor?.toggleTheme();
-    });
-  }
+  onClick("get-html-btn", () => {
+    const html = editor?.getHtml();
+    const preview = document.getElementById("preview");
+    if (!preview || !html) return;
 
-  const getHtmlBtn = document.getElementById("get-html-btn");
+    preview.classList.add("visible");
+    preview.innerHTML = `<div class="preview-label">获取的HTML：</div><pre></pre>`;
+    const pre = preview.querySelector("pre");
+    if (pre) pre.textContent = html;
+  });
 
-  if (getHtmlBtn) {
-    getHtmlBtn.addEventListener("click", () => {
-      const html = editor?.getHtml();
-      const json = editor?.getJson();
-      console.log(json);
-      if (html) {
-        const preview = document.getElementById("preview");
-        if (preview) {
-          preview.textContent = html;
-        }
-      }
-    });
-  }
-
-  const localeButtons =
-    document.querySelectorAll<HTMLButtonElement>(".locale-btn");
-  localeButtons.forEach((btn) => {
+  document.querySelectorAll<HTMLButtonElement>(".locale-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const locale = btn.getAttribute("data-locale") as Locale;
-      if (locale) {
-        setLocale(locale);
-      }
+      if (locale) setLocale(locale);
     });
   });
 
-  const extendI18nBtn = document.getElementById("extend-i18n-btn");
-  if (extendI18nBtn) {
-    extendI18nBtn.addEventListener("click", extendI18n);
-  }
-
-  /** 禁用/只读切换按钮 */
-  const toggleDisabledBtn = document.getElementById("toggle-disabled");
-  if (toggleDisabledBtn) {
-    toggleDisabledBtn.addEventListener("click", toggleDisabled);
-  }
-
-  const toggleReadonlyBtn = document.getElementById("toggle-readonly");
-  if (toggleReadonlyBtn) {
-    toggleReadonlyBtn.addEventListener("click", toggleReadonly);
-  }
+  onClick("extend-i18n-btn", extendI18n);
+  onClick("toggle-disabled", toggleDisabled);
+  onClick("toggle-readonly", toggleReadonly);
 }
