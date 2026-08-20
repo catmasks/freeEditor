@@ -159,6 +159,10 @@ interface EditorOptions {
   uploader?: MediaUploaderOptions;
   onChange?: (html: string) => void;
   onCreated?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  onSelectionChange?: () => void;
+  onDestroy?: () => void;
 }
 ```
 
@@ -318,6 +322,42 @@ const editor = new Editor(el, {
 });
 ```
 
+### `onFocus`、`onBlur`、`onSelectionChange`、`onDestroy`
+
+エディタのイベントコールバックです（いずれも引数なし）。フォーカス変化、選択範囲の変化、破棄時のフックに使用します。
+
+```typescript
+onFocus?: () => void
+onBlur?: () => void
+onSelectionChange?: () => void
+onDestroy?: () => void
+```
+
+- `onFocus` —— エディタがフォーカスを得たときに呼び出されます。
+- `onBlur` —— エディタがフォーカスを失ったときに呼び出されます。
+- `onSelectionChange` —— 選択範囲（カーソル）が移動したときに呼び出されます。
+- `onDestroy` —— エディタが破棄され、リソースの後片付けが完了した後に呼び出されます。外部リスナーの購読解除など、副作用の後片付けに適しています。このとき `getHtml()` / `getJson()` などはもはや利用できないことに注意してください。
+
+**例:**
+
+```typescript
+const editor = new Editor(el, {
+  onFocus: () => console.log("フォーカス獲得"),
+  onBlur: () => console.log("フォーカス喪失"),
+  onSelectionChange: () => console.log("選択範囲変更"),
+  onDestroy: () => console.log("破棄されました"),
+});
+```
+
+### 複数インスタンス
+
+> **⚠️ 注意:** `theme`（テーマ）と `locale`（言語）は、ページ上のすべてのエディタインスタンス間で**グローバルに共有**されます（インスタンスごとに分離されていません）。
+
+- **テーマ**はドキュメントルート（`data-theme`）に格納されます。任意のインスタンスで `editor.setTheme()` を呼び出すと、ページ上のすべてのエディタに影響します。複数インスタンスを共存させる場合は、同じテーマを維持してください。
+- **言語**はグローバルな `i18n` シングルトンです。**最初に作成されたエディタ**が自身の `locale` オプションでグローバル言語を引き継ぎます。その後作成されたインスタンスはそれを静かに上書きしないため、後から作成したエディタが先に作成したエディタの言語を意図せず変更することを防ぎます。
+- グローバル言語をいつでも切り替えるには、任意のインスタンスで `editor.setLocale(locale)` を呼び出すか、`i18n.setLocale(locale)` を明示的に呼び出してください。
+- したがって、複数エディタを埋め込む場合は**同じテーマと言語**を使用する（または `setTheme` / `setLocale` / `i18n.setLocale` などの API で統一的に制御する）ことをおすすめします。
+
 ---
 
 ## 🧩 <a id="instance-properties-methods"></a>3. インスタンスのプロパティとメソッド
@@ -424,13 +464,13 @@ getHtml(): string
 
 #### `getJson()`
 
-エディタのコンテンツを JSON 文字列として返します。
+エディタのコンテンツを ProseMirror JSON ドキュメントオブジェクト（`JSONContent`）として返します。構造化された保存や後続の再レンダリングに適しています。
 
 ```typescript
-getJson(): string
+getJson(): JSONContent
 ```
 
-**戻り値:** `string` – JSON 文字列  
+**戻り値:** `JSONContent` – ProseMirror JSON ドキュメントオブジェクト。  
 **スロー:** エディタが破棄されている場合、`Error: Editor has been destroyed` をスローします。
 
 #### `setHtml(html)`
@@ -441,9 +481,9 @@ getJson(): string
 setHtml(html: string): void
 ```
 
-| 引数   | 型       | 説明                          |
-| ------ | -------- | ----------------------------- |
-| `html` | `string` | HTML 文字列、空でも可         |
+| 引数   | 型       | 説明                  |
+| ------ | -------- | --------------------- |
+| `html` | `string` | HTML 文字列、空でも可 |
 
 **例:**
 
@@ -457,6 +497,49 @@ editor.setHtml("");
 
 **スロー:** エディタが破棄されている場合、`Error: Editor has been destroyed` をスローします。
 
+> **⚠️ 注意:** `setHtml()` はコンテンツ変更トランザクションでコンテンツを置き換えるため、**`onChange` コールバックが発火します**。
+
+#### `focus()`
+
+エディタにフォーカスを当て、カーソルをコンテンツ領域に配置します。
+
+```typescript
+focus(): void
+```
+
+#### `getSelectedText()`
+
+現在選択（ハイライト）されているプレーンテキストを返します。選択がない場合は空文字列を返します。
+
+```typescript
+getSelectedText(): string
+```
+
+```typescript
+const selected = editor.getSelectedText();
+// 例: "こんにちは"
+```
+
+#### `getText()`
+
+HTML タグを取り除いたプレーンテキストのコンテンツを返します。下記のカウント系メソッドと組み合わせて利用できます。
+
+```typescript
+getText(): string
+```
+
+#### `getCharacterCount()`
+
+プレーンテキストの文字数を返します（空白と改行を含む）。
+
+```typescript
+getCharacterCount(): number
+```
+
+```typescript
+const count = editor.getCharacterCount();
+```
+
 #### `pauseAllVideos()`
 
 エディタ内のすべての動画を一時停止します。一時停止結果と動画の総数を返します。
@@ -465,10 +548,10 @@ editor.setHtml("");
 pauseAllVideos(): { state: boolean; total: number }
 ```
 
-| フィールド | 型        | 説明                            |
-| ---------- | --------- | ------------------------------- |
+| フィールド | 型        | 説明                                     |
+| ---------- | --------- | ---------------------------------------- |
 | `state`    | `boolean` | すべての動画が正常に一時停止したかどうか |
-| `total`    | `number`  | エディタ内の動画の総数          |
+| `total`    | `number`  | エディタ内の動画の総数                   |
 
 **例:**
 
@@ -1225,17 +1308,17 @@ i18n.getLocales();
 
 ### 6.4 API サマリー
 
-| API                    | 型                            | 説明                                           |
-| ---------------------- | ----------------------------- | ---------------------------------------------- |
-| `locale`               | `Locale`                      | 現在のロケール                                 |
-| `t()`                  | `string`                      | キーの翻訳を取得                               |
-| `setLocale()`          | `void`                        | 現在のロケールを切り替え                       |
-| `getLocales()`         | `Locale[]`                    | 登録されているすべてのロケールを取得           |
-| `hasLocale()`          | `boolean`                     | ロケールが登録されているか確認                 |
-| `getMessages()`        | `LocaleMessages \| undefined` | 指定言語の完全なメッセージを取得（拡張込み）   |
-| `addMessages()`        | `void`                        | 新しいロケールを登録（既存のものは上書き不可） |
-| `extend()`             | `void`                        | 現在のロケールメッセージを拡張                 |
-| `subscribe()`          | `() => void`                  | 言語変更を購読                                 |
+| API             | 型                            | 説明                                           |
+| --------------- | ----------------------------- | ---------------------------------------------- |
+| `locale`        | `Locale`                      | 現在のロケール                                 |
+| `t()`           | `string`                      | キーの翻訳を取得                               |
+| `setLocale()`   | `void`                        | 現在のロケールを切り替え                       |
+| `getLocales()`  | `Locale[]`                    | 登録されているすべてのロケールを取得           |
+| `hasLocale()`   | `boolean`                     | ロケールが登録されているか確認                 |
+| `getMessages()` | `LocaleMessages \| undefined` | 指定言語の完全なメッセージを取得（拡張込み）   |
+| `addMessages()` | `void`                        | 新しいロケールを登録（既存のものは上書き不可） |
+| `extend()`      | `void`                        | 現在のロケールメッセージを拡張                 |
+| `subscribe()`   | `() => void`                  | 言語変更を購読                                 |
 
 ### 6.5 組み込みロケールとカスタムロケール
 

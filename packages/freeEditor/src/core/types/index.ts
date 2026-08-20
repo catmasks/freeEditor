@@ -249,6 +249,26 @@ export interface EditorOptions {
   onCreated?: () => void;
 
   /**
+   * 聚焦回调 / Focus callback
+   */
+  onFocus?: () => void;
+
+  /**
+   * 失焦回调 / Blur callback
+   */
+  onBlur?: () => void;
+
+  /**
+   * 选区变化回调 / Selection change callback
+   */
+  onSelectionChange?: () => void;
+
+  /**
+   * 销毁回调 / Destroy callback
+   */
+  onDestroy?: () => void;
+
+  /**
    * 包含的插件 / Included plugins
    */
   include?: EditorPluginKey[];
@@ -271,26 +291,6 @@ export interface EditorOptions {
    * 只读 / Read-only
    */
   readonly?: boolean;
-}
-
-/**
- * 编辑器配置（内部使用） / Editor configuration (internal use)
- */
-export interface EditorConfig {
-  /**
-   * 内容 / Content
-   */
-  content?: string;
-
-  /**
-   * 扩展 / Extensions
-   */
-  extensions?: AnyExtension[];
-
-  /**
-   * 编辑器属性 / Editor properties
-   */
-  editorProps?: EditorProps;
 }
 
 /**

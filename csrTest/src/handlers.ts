@@ -38,7 +38,6 @@ export function setLocale(locale: Locale): void {
  */
 export function initEventListeners(): void {
   onClick("theme-toggle", () => editor?.toggleTheme());
-
   onClick("get-html-btn", () => {
     const html = editor?.getHtml();
     const preview = document.getElementById("preview");
@@ -48,7 +47,24 @@ export function initEventListeners(): void {
     const pre = preview.querySelector("pre");
     if (pre) pre.textContent = html;
   });
-
+  onClick("get-json-btn", () => {
+    const json = editor?.getJson();
+    console.log(json);
+  });
+  onClick("get-text-content-btn", () => {
+    const text = editor?.getText();
+    console.log(text);
+  });
+  onClick("get-selected-text-btn", () => {
+    const selectedText = editor?.getSelectedText();
+    console.log("当前选中文本:", selectedText);
+  });
+  onClick("get-character-count-btn", () => {
+    const count = editor?.getCharacterCount();
+    console.log("当前字符数:", count);
+  });
+  onClick("focus-btn", () => editor?.focus());
+  onClick("blur-btn", () => editor?.blur());
   onClick("destroy-editor-btn", () => {
     editor?.destroy();
   });

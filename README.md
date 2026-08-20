@@ -159,6 +159,10 @@ interface EditorOptions {
   uploader?: MediaUploaderOptions;
   onChange?: (html: string) => void;
   onCreated?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  onSelectionChange?: () => void;
+  onDestroy?: () => void;
 }
 ```
 
@@ -318,6 +322,42 @@ const editor = new Editor(el, {
 });
 ```
 
+### `onFocus`, `onBlur`, `onSelectionChange`, `onDestroy`
+
+Event callbacks (all take no arguments) for editor focus changes, selection changes, and teardown.
+
+```typescript
+onFocus?: () => void
+onBlur?: () => void
+onSelectionChange?: () => void
+onDestroy?: () => void
+```
+
+- `onFocus` – Triggered when the editor gains focus.
+- `onBlur` – Triggered when the editor loses focus.
+- `onSelectionChange` – Triggered when the selection (cursor) moves.
+- `onDestroy` – Triggered after the editor has been destroyed and its resources cleaned up. Use it for side‑effect teardown (e.g., unsubscribe external listeners); note that `getHtml()` / `getJson()` etc. are no longer valid inside it.
+
+**Example:**
+
+```typescript
+const editor = new Editor(el, {
+  onFocus: () => console.log("Focused"),
+  onBlur: () => console.log("Blurred"),
+  onSelectionChange: () => console.log("Selection changed"),
+  onDestroy: () => console.log("Destroyed"),
+});
+```
+
+### Multiple Instances
+
+> **⚠️ Note:** `theme` and `locale` are **global/shared** across all editor instances on the page (they are not isolated per instance).
+
+- **Theme** is stored on the document root (`data-theme`). Calling `editor.setTheme()` on any instance affects every editor on the page; back‑end code must keep instances on the same theme.
+- **Locale** is a global `i18n` singleton. The **first created editor** claims the global locale from its `locale` option; subsequently created instances no longer silently overwrite it. This prevents a later editor from unexpectedly changing the language of earlier ones.
+- To switch the global language at any time, call `editor.setLocale(locale)` (on any instance) or `i18n.setLocale(locale)` explicitly.
+- Therefore, when embedding multiple editors, keep them on the **same theme and locale** (or drive both through the documented `setTheme` / `setLocale` / `i18n.setLocale` APIs) to get predictable results.
+
 ---
 
 ## 🧩 <a id="instance-properties-methods"></a>3. Instance Properties and Methods
@@ -424,13 +464,13 @@ getHtml(): string
 
 #### `getJson()`
 
-Returns the editor content as a JSON string.
+Returns the editor content as a ProseMirror JSON document object (a `JSONContent`), suitable for structured storage or later re-rendering.
 
 ```typescript
-getJson(): string
+getJson(): JSONContent
 ```
 
-**Returns:** `string` – JSON string  
+**Returns:** `JSONContent` – a ProseMirror JSON document object  
 **Throws:** If the editor has been destroyed, throws `Error: Editor has been destroyed`
 
 #### `setHtml(html)`
@@ -441,9 +481,9 @@ Sets the editor HTML content. The editor content is replaced immediately; passin
 setHtml(html: string): void
 ```
 
-| Parameter | Type     | Description                    |
-| --------- | -------- | ------------------------------ |
-| `html`    | `string` | HTML string, may be empty      |
+| Parameter | Type     | Description               |
+| --------- | -------- | ------------------------- |
+| `html`    | `string` | HTML string, may be empty |
 
 **Example:**
 
@@ -457,6 +497,49 @@ editor.setHtml("");
 
 **Throws:** If the editor has been destroyed, throws `Error: Editor has been destroyed`
 
+> **⚠️ Note:** `setHtml()` replaces the content through a content‑changing transaction, so it **triggers the `onChange` callback**.
+
+#### `focus()`
+
+Focuses the editor, placing the cursor in the content area.
+
+```typescript
+focus(): void
+```
+
+#### `getSelectedText()`
+
+Returns the currently selected (highlighted) plain text. Returns an empty string when there is no selection.
+
+```typescript
+getSelectedText(): string
+```
+
+```typescript
+const selected = editor.getSelectedText();
+// e.g. "Hello"
+```
+
+#### `getText()`
+
+Returns the editor content as plain text (HTML tags removed). Useful together with the count helpers below.
+
+```typescript
+getText(): string
+```
+
+#### `getCharacterCount()`
+
+Returns the number of characters in the plain‑text content (including whitespace and newlines).
+
+```typescript
+getCharacterCount(): number
+```
+
+```typescript
+const count = editor.getCharacterCount();
+```
+
 #### `pauseAllVideos()`
 
 Pauses all videos inside the editor. Returns an object with the pause result and the total number of videos.
@@ -465,10 +548,10 @@ Pauses all videos inside the editor. Returns an object with the pause result and
 pauseAllVideos(): { state: boolean; total: number }
 ```
 
-| Field   | Type      | Description                                |
-| ------- | --------- | ------------------------------------------ |
-| `state` | `boolean` | Whether all videos paused successfully     |
-| `total` | `number`  | Total number of videos in the editor       |
+| Field   | Type      | Description                            |
+| ------- | --------- | -------------------------------------- |
+| `state` | `boolean` | Whether all videos paused successfully |
+| `total` | `number`  | Total number of videos in the editor   |
 
 **Example:**
 
@@ -1225,17 +1308,17 @@ i18n.getLocales();
 
 ### 6.4 API Summary
 
-| API                    | Type                          | Description                                      |
-| ---------------------- | ----------------------------- | ------------------------------------------------ |
-| `locale`               | `Locale`                      | Current locale                                   |
-| `t()`                  | `string`                      | Translate a key                                  |
-| `setLocale()`          | `void`                        | Switch the current locale                        |
-| `getLocales()`         | `Locale[]`                    | Get all registered locales                       |
-| `hasLocale()`          | `boolean`                     | Check if a locale is registered                  |
-| `getMessages()`        | `LocaleMessages \| undefined` | Get the messages for a locale (incl. extensions) |
-| `addMessages()`        | `void`                        | Register a new locale (cannot override existing) |
-| `extend()`             | `void`                        | Extend the current locale messages               |
-| `subscribe()`          | `() => void`                  | Subscribe to language changes                    |
+| API             | Type                          | Description                                      |
+| --------------- | ----------------------------- | ------------------------------------------------ |
+| `locale`        | `Locale`                      | Current locale                                   |
+| `t()`           | `string`                      | Translate a key                                  |
+| `setLocale()`   | `void`                        | Switch the current locale                        |
+| `getLocales()`  | `Locale[]`                    | Get all registered locales                       |
+| `hasLocale()`   | `boolean`                     | Check if a locale is registered                  |
+| `getMessages()` | `LocaleMessages \| undefined` | Get the messages for a locale (incl. extensions) |
+| `addMessages()` | `void`                        | Register a new locale (cannot override existing) |
+| `extend()`      | `void`                        | Extend the current locale messages               |
+| `subscribe()`   | `() => void`                  | Subscribe to language changes                    |
 
 ### 6.5 Built‑in and Custom Locales
 

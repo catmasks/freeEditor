@@ -20,4 +20,10 @@ export const editorRuntimeState = {
    * Active plugin key set (null means no restriction, all plugins available)
    */
   activePluginKeys: null as Set<string> | null,
+
+  /**
+   * 当前存活的编辑器实例数（用于判断是否是首个/唯一编辑器的认领语言）
+   * Number of alive editor instances (used to decide locale claiming)
+   */
+  activeEditorCount: 0,
 };

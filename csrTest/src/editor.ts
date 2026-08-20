@@ -104,11 +104,20 @@ export function initEditor(): void {
         upload: mockUpload(2000),
       },
     },
+    onBlur: () => {
+      console.log("blur");
+    },
+    onFocus: () => {
+      console.log("onFocus");
+    },
     onChange: (html: string) => {
       console.log(html);
     },
     onCreated: () => {
       console.log("onCreated");
+    },
+    onDestroy: () => {
+      console.log("onDestroy");
     },
   });
   updateDemoTexts("zh-CN");

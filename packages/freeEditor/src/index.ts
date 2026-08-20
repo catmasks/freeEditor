@@ -1,6 +1,5 @@
 import "./ui/styles/editor.scss";
-import { Editor } from "./Editor";
-import { i18n } from "./core/index";
+import { i18n, Editor } from "./core/index";
 import type {
   EditorOptions,
   EditorTheme,

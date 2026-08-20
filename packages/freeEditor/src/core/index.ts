@@ -26,6 +26,7 @@ export type {
 } from "./types/index";
 
 export { i18n } from "./i18n";
+export { Editor } from "./Editor";
 
 export {
   isEmptyDocument,

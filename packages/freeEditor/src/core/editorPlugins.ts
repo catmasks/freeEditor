@@ -425,5 +425,3 @@ export function createEditorPlugins(
     setup,
   };
 }
-
-export { CoreEditor } from "./Editor";

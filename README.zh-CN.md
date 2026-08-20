@@ -159,6 +159,10 @@ interface EditorOptions {
   uploader?: MediaUploaderOptions;
   onChange?: (html: string) => void;
   onCreated?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  onSelectionChange?: () => void;
+  onDestroy?: () => void;
 }
 ```
 
@@ -318,6 +322,42 @@ const editor = new Editor(el, {
 });
 ```
 
+### `onFocus`、`onBlur`、`onSelectionChange`、`onDestroy`
+
+编辑器事件回调（均无参数），用于焦点变化、选区变化与销毁时的钩子。
+
+```typescript
+onFocus?: () => void
+onBlur?: () => void
+onSelectionChange?: () => void
+onDestroy?: () => void
+```
+
+- `onFocus` —— 编辑器获得焦点时触发。
+- `onBlur` —— 编辑器失去焦点时触发。
+- `onSelectionChange` —— 选区（光标）移动时触发。
+- `onDestroy` —— 编辑器销毁且资源清理完成后触发。适合做外部副作用清理（如取消订阅外部监听）；注意此时 `getHtml()` / `getJson()` 等已不再有效。
+
+**示例：**
+
+```typescript
+const editor = new Editor(el, {
+  onFocus: () => console.log("获得焦点"),
+  onBlur: () => console.log("失去焦点"),
+  onSelectionChange: () => console.log("选区变化"),
+  onDestroy: () => console.log("已销毁"),
+});
+```
+
+### 多实例
+
+> **⚠️ 注意：** `theme`（主题）和 `locale`（语言）在页面所有编辑器实例之间是**全局共享**的，并非每个实例独立隔离。
+
+- **主题**存储在文档根节点（`data-theme`）。在任意实例上调用 `editor.setTheme()` 会影响页面上的所有编辑器；多实例共存时应让它们保持在同一个主题。
+- **语言**是全局 `i18n` 单例。**第一个创建的编辑器**会根据它的 `locale` 选项认领全局语言；随后创建的实例不再静默覆盖它，从而避免后建编辑器意外改动先建编辑器的语言。
+- 如需随时切换全局语言，请在任意实例上调用 `editor.setLocale(locale)`，或显式调用 `i18n.setLocale(locale)`。
+- 因此在嵌入多个编辑器时，建议让它们使用**相同的主题和语言**（或统一通过 `setTheme` / `setLocale` / `i18n.setLocale` 等 API 驱动），以获得可预期的效果。
+
 ---
 
 ## 🧩 <a id="instance-properties-methods"></a>3. 实例属性与方法
@@ -424,13 +464,13 @@ getHtml(): string
 
 #### `getJson()`
 
-获取编辑器 JSON 内容。
+获取编辑器的 ProseMirror JSON 文档对象（`JSONContent`），适合结构化存储或后续重新渲染。
 
 ```typescript
-getJson(): string
+getJson(): JSONContent
 ```
 
-**返回值：** `string` - JSON 字符串  
+**返回值：** `JSONContent` - ProseMirror JSON 文档对象。  
 **抛出：** 如果编辑器已销毁，抛出 `Error: Editor has been destroyed`
 
 #### `setHtml(html)`
@@ -457,6 +497,49 @@ editor.setHtml("");
 
 **抛出：** 如果编辑器已销毁，抛出 `Error: Editor has been destroyed`
 
+> **⚠️ 注意：** `setHtml()` 通过内容变更事务替换内容，因此**会触发 `onChange` 回调**。
+
+#### `focus()`
+
+聚焦编辑器，将光标置于内容区。
+
+```typescript
+focus(): void
+```
+
+#### `getSelectedText()`
+
+获取当前选中（高亮）的纯文本。没有选中时返回空字符串。
+
+```typescript
+getSelectedText(): string
+```
+
+```typescript
+const selected = editor.getSelectedText();
+// 例如 "你好"
+```
+
+#### `getText()`
+
+获取去除了 HTML 标签的纯文本内容，可配合下面的计数方法使用。
+
+```typescript
+getText(): string
+```
+
+#### `getCharacterCount()`
+
+获取纯文本的字符数（含空白与换行）。
+
+```typescript
+getCharacterCount(): number
+```
+
+```typescript
+const count = editor.getCharacterCount();
+```
+
 #### `pauseAllVideos()`
 
 暂停编辑器内全部视频。返回对象包含暂停结果与视频总数。
@@ -465,10 +548,10 @@ editor.setHtml("");
 pauseAllVideos(): { state: boolean; total: number }
 ```
 
-| 字段    | 类型     | 说明                                        |
-| ------- | -------- | ------------------------------------------- |
-| `state` | `boolean` | 是否全部成功暂停                            |
-| `total` | `number`  | 编辑器内视频总数                            |
+| 字段    | 类型      | 说明             |
+| ------- | --------- | ---------------- |
+| `state` | `boolean` | 是否全部成功暂停 |
+| `total` | `number`  | 编辑器内视频总数 |
 
 **示例：**
 
@@ -1244,17 +1327,17 @@ i18n.getLocales();
 
 ### 6.4 API 总览
 
-| API                    | 类型                          | 说明                             |
-| ---------------------- | ----------------------------- | -------------------------------- |
-| `locale`               | `Locale`                      | 当前语言                         |
-| `t()`                  | `string`                      | 获取翻译文本                     |
-| `setLocale()`          | `void`                        | 切换当前语言                     |
-| `getLocales()`         | `Locale[]`                    | 获取所有已注册语言               |
-| `hasLocale()`          | `boolean`                     | 判断语言是否已注册               |
-| `getMessages()`        | `LocaleMessages \| undefined` | 获取指定语言的完整语言包（含扩展）     |
-| `addMessages()`        | `void`                        | 注册新的语言，不允许覆盖已有语言 |
-| `extend()`             | `void`                        | 扩展当前语言消息                 |
-| `subscribe()`          | `() => void`                  | 订阅语言变化                     |
+| API             | 类型                          | 说明                               |
+| --------------- | ----------------------------- | ---------------------------------- |
+| `locale`        | `Locale`                      | 当前语言                           |
+| `t()`           | `string`                      | 获取翻译文本                       |
+| `setLocale()`   | `void`                        | 切换当前语言                       |
+| `getLocales()`  | `Locale[]`                    | 获取所有已注册语言                 |
+| `hasLocale()`   | `boolean`                     | 判断语言是否已注册                 |
+| `getMessages()` | `LocaleMessages \| undefined` | 获取指定语言的完整语言包（含扩展） |
+| `addMessages()` | `void`                        | 注册新的语言，不允许覆盖已有语言   |
+| `extend()`      | `void`                        | 扩展当前语言消息                   |
+| `subscribe()`   | `() => void`                  | 订阅语言变化                       |
 
 ### 6.5 内置语言与自定义语言
 
