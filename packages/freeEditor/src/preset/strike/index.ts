@@ -1,7 +1,7 @@
 import { Strike, StrikeSchema } from "./extension";
 
 import { createStrikeToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 删除线插件 / Strike plugin

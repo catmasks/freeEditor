@@ -13,6 +13,8 @@ export type {
   FloatingPlacement,
 } from "./floatingToolbar/index";
 
+export { EmptyTextSelectionFix } from "./emptyTextSelectionFix/index";
+
 export { ListItem } from "./listItem/index";
 
 export { TaskItem } from "./taskItem/index";

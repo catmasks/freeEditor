@@ -1,4 +1,5 @@
 import { FloatingManager } from "./FloatingManager";
+import { appendContent, clamp, isFormControl } from "../../utils/dom";
 
 /**
  * 浮动工具栏放置位置 / Floating toolbar placement
@@ -155,13 +156,7 @@ export class FloatingToolbar {
 
     el.setAttribute("data-toolbar-id", this.id);
 
-    const content = this.options.content;
-
-    if (typeof content === "string") {
-      el.innerHTML = content;
-    } else {
-      el.appendChild(content);
-    }
+    appendContent(el, this.options.content);
 
     document.body.appendChild(el);
 
@@ -366,10 +361,7 @@ export class FloatingToolbar {
    * @param toolbarRect - 工具栏矩形 / Toolbar rectangle.
    * @returns 计算出的 left 值 / Calculated left value.
    */
-  private calculateLeft(
-    targetRect: DOMRect,
-    toolbarRect: DOMRect,
-  ): number {
+  private calculateLeft(targetRect: DOMRect, toolbarRect: DOMRect): number {
     const alignType = this.getAlignType();
 
     switch (alignType) {
@@ -460,8 +452,7 @@ export class FloatingToolbar {
    * @returns 约束后的 left 值 / Clamped left value.
    */
   private clampHorizontalPosition(left: number, toolbarWidth: number): number {
-    left = Math.max(8, left);
-    return Math.min(window.innerWidth - toolbarWidth - 8, left);
+    return clamp(left, 8, Math.max(8, window.innerWidth - toolbarWidth - 8));
   }
 
   /**
@@ -663,10 +654,6 @@ export class FloatingToolbar {
     toolbar.style.display = "flex";
 
     // 允许表单控件（输入框/文本域）获得焦点，其余位置才拦截默认行为，避免编辑器选区丢失
-    const isFormControl = (target: EventTarget | null): boolean =>
-      target instanceof HTMLElement &&
-      !!target.closest("input, textarea, select");
-
     toolbar.addEventListener("pointerdown", (e) => {
       e.stopPropagation();
       if (isFormControl(e.target)) return;
@@ -823,11 +810,7 @@ export class FloatingToolbar {
 
     el.innerHTML = "";
 
-    if (typeof content === "string") {
-      el.innerHTML = content;
-    } else {
-      el.appendChild(content);
-    }
+    appendContent(el, content);
 
     if (this.visible) {
       this.updatePosition();
@@ -911,3 +894,4 @@ export class FloatingToolbar {
     this.toolbarEl = null;
   }
 }
+export { FloatingManager };

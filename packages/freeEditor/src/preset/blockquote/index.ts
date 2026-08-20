@@ -1,7 +1,7 @@
 import { Blockquote, BlockquoteSchema } from "./extension";
 
 import { createBlockquoteToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 引用插件 / Blockquote plugin

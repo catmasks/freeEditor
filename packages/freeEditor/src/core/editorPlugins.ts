@@ -19,6 +19,7 @@ import {
   TaskItem,
   FloatingToolbarPlugin,
   PlaceholderPlugin,
+  EmptyTextSelectionFix,
 } from "../preset/index";
 
 import {
@@ -118,6 +119,7 @@ function createBaseExtensions(placeholder?: string): AnyExtension[] {
     ListItem,
     TaskItem,
     Gapcursor,
+    EmptyTextSelectionFix,
     PlaceholderPlugin.configure({
       placeholder: placeholder || "",
     }),

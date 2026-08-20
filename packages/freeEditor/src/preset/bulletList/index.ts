@@ -1,7 +1,7 @@
 import { BulletList, BulletListSchema } from "./extension";
 
 import { createBulletListToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 无序列表插件 / Bullet list plugin
@@ -24,5 +24,3 @@ export const BulletListPlugin: EditorPlugin = {
    */
   toolbar: createBulletListToolbar,
 };
-
-

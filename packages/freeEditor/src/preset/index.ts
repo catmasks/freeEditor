@@ -1,13 +1,10 @@
-/**
- * 编辑器预设插件导出 / Editor preset plugin exports
- */
-
 export {
   CustomDocument,
   CustomParagraph,
   CustomText,
   PlaceholderPlugin,
   FloatingToolbarPlugin,
+  EmptyTextSelectionFix,
   ListItem,
   TaskItem,
 } from "./defaultPlugin/index";
@@ -17,7 +14,7 @@ export type {
   FloatingPlacement,
 } from "./defaultPlugin/index";
 
-/* ==================== 功能插件 ==================== */
+/* 功能插件 */
 export { BoldPlugin } from "./fontBold/index";
 export { ItalicPlugin } from "./fontItalic/index";
 export { HeadingPlugin } from "./heading/index";

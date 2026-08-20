@@ -1,7 +1,7 @@
 import type { Editor } from "@tiptap/core";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 
-import { createSimpleToolbar } from "../toolbar";
+import { createSimpleToolbar } from "../../ui/index";
 import { i18n } from "../../core/index";
 
 /**

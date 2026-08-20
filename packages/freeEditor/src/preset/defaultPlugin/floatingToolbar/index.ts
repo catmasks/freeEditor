@@ -1,15 +1,14 @@
 import { Extension } from "@tiptap/core";
 
-import { FloatingToolbar } from "../../../ui/components/FloatingToolbar/index";
-import { FloatingManager } from "../../../ui/components/FloatingToolbar/FloatingManager";
+import { FloatingToolbar, FloatingManager } from "../../../ui/index";
 
-import { editorRuntimeState } from "../../../core/editorRuntimeState";
+import { editorRuntimeState } from "../../../core/index";
 
 import type {
   FloatingPlacement,
   FloatingToolbarItem,
   FloatingToolbarAPI,
-} from "../../../core";
+} from "../../../core/index";
 
 import type { Editor } from "@tiptap/core";
 

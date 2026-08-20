@@ -1,6 +1,6 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 import { Plugin } from "@tiptap/pm/state";
-import { editorRuntimeState } from "../../core/editorRuntimeState";
+import { editorRuntimeState } from "../../core/index";
 
 /**
  * 链接标记 / Link mark

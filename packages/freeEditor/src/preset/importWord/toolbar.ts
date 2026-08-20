@@ -1,9 +1,5 @@
-/**
- * 导入 Word 工具栏按钮
- */
-
 import type { Editor } from "@tiptap/core";
-import { createSimpleToolbar } from "../toolbar";
+import { createSimpleToolbar } from "../../ui/index";
 import { i18n } from "../../core/index";
 
 /**

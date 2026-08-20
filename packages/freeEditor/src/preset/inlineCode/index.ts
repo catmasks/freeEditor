@@ -1,7 +1,7 @@
 import { InlineCode, InlineCodeSchema } from "./extension";
 
 import { createInlineCodeToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 行内代码插件 / Inline code plugin

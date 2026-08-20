@@ -1,7 +1,7 @@
 import { CustomFontFamily, CustomFontFamilySchema } from "./extension";
 
 import { createFontFamilyToolbar } from "./toolbar";
-import { Style, type EditorPlugin } from "../../core";
+import { Style, type EditorPlugin } from "../../core/index";
 
 /**
  * 字体插件 / Font family plugin

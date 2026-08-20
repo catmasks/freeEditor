@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import { createColorPickerToolbar } from "../toolbar";
+import { createColorPickerToolbar } from "../../ui/index";
 
 import { i18n } from "../../core/index";
 

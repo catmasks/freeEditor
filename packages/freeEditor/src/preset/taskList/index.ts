@@ -1,7 +1,7 @@
 import { TaskList, TaskListSchema } from "./extension";
 
 import { createTaskListToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 任务列表插件 / Task list plugin
@@ -24,5 +24,3 @@ export const TaskListPlugin: EditorPlugin = {
    */
   toolbar: createTaskListToolbar,
 };
-
-

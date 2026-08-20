@@ -1,4 +1,4 @@
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 import { Markdown } from "./Markdown";
 
 /**

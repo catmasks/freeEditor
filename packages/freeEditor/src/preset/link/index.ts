@@ -1,9 +1,8 @@
-import { CustomLink, CustomLinkSchema } from "./extension";
-
-import { createLinkToolbar } from "./toolbar";
-import { i18n } from "../../core";
-import type { EditorPlugin, EditorPluginContext } from "../../core";
 import type { Editor } from "@tiptap/core";
+import { CustomLink, CustomLinkSchema } from "./extension";
+import { createLinkToolbar } from "./toolbar";
+import { i18n } from "../../core/index";
+import type { EditorPlugin, EditorPluginContext } from "../../core/index";
 
 const createFloatingToolbarContent = (editor: Editor): HTMLElement => {
   const wrap = document.createElement("div");

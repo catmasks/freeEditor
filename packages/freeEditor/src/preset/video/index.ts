@@ -1,13 +1,12 @@
+import type { Editor } from "@tiptap/core";
+
 import { CustomVideo, CustomVideoSchema } from "./extension";
 
 import { createVideoToolbar } from "./toolbar";
 
-import { handleUploadFiles } from "../../core/utils/useMediaUploader";
+import { handleUploadFiles, i18n } from "../../core/index";
 
-import { i18n } from "../../core";
-
-import type { EditorPlugin, EditorPluginContext } from "../../core";
-import type { Editor } from "@tiptap/core";
+import type { EditorPlugin, EditorPluginContext } from "../../core/index";
 
 const createMediaFloatingToolbarContent = (
   editor: Editor,

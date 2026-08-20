@@ -23,11 +23,12 @@ export type {
   FloatingToolbarItem,
   FloatingToolbarAPI,
   FloatingPlacement,
+  UploadGenerator,
 } from "./types/index";
 
 export { i18n } from "./i18n";
 export { Editor } from "./Editor";
-
+export { editorRuntimeState } from "./editorRuntimeState";
 export {
   isEmptyDocument,
   downloadFile,

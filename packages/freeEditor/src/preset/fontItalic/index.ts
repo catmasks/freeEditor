@@ -1,7 +1,7 @@
 import { Italic, ItalicSchema } from "./extension";
 
 import { createItalicToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 斜体插件 / Italic plugin

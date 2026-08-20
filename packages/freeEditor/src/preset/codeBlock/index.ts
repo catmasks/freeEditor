@@ -1,7 +1,7 @@
 import { CustomCodeBlock, CustomCodeBlockSchema } from "./extension";
 
 import { createCodeBlockToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 代码块插件 / Code block plugin

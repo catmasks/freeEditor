@@ -1,8 +1,4 @@
-/**
- * ExportPdf 插件入口
- */
-
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 import { ExportPdf } from "./extension";
 import { createExportPdfToolbar } from "./toolbar";
 

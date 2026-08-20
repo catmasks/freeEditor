@@ -1,7 +1,7 @@
 import { LineBreak, LineBreakSchema } from "./extension";
 
 import { createLineBreakToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 软换行插件 / Line break plugin

@@ -1,5 +1,5 @@
 import { createFormatPainterToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 格式刷插件 / Format painter plugin

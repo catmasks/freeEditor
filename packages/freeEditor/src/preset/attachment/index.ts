@@ -2,11 +2,9 @@ import { CustomAttachment, CustomAttachmentSchema } from "./extension";
 
 import { createAttachmentToolbar } from "./toolbar";
 
-import { handleUploadFiles } from "../../core/utils/useMediaUploader";
+import { i18n, handleUploadFiles } from "../../core/index";
 
-import { i18n } from "../../core";
-
-import type { EditorPlugin, EditorPluginContext } from "../../core";
+import type { EditorPlugin, EditorPluginContext } from "../../core/index";
 import type { Editor } from "@tiptap/core";
 
 const createMediaFloatingToolbarContent = (

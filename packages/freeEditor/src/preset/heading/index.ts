@@ -1,7 +1,7 @@
 import { CustomHeading, CustomHeadingSchema } from "./extension";
 
 import { createHeadingToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 标题插件 / Heading plugin

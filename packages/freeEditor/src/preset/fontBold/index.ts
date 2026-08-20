@@ -1,7 +1,7 @@
 import { Bold, BoldSchema } from "./extension";
 
 import { createBoldToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 粗体插件 / Bold plugin

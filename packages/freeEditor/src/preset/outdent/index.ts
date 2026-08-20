@@ -1,7 +1,7 @@
 import { IndentSchema, OutdentFeature } from "../indent/extension";
 
 import { createOutdentToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 减少缩进插件 / Outdent plugin

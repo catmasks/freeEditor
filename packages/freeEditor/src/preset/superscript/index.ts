@@ -1,7 +1,7 @@
 import { Superscript, SuperscriptSchema } from "./extension";
 
 import { createSuperscriptToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 上标插件 / Superscript plugin

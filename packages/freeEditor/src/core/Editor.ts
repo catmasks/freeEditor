@@ -408,7 +408,8 @@ export class Editor {
   private subscribeLocale(): void {
     this.unsubscribeLocale = i18n.subscribe(() => {
       this.rebuildToolbar();
-      this.refreshPlaceholder();
+      /** 派发空事务刷新占位符（forceRefreshView 已包含） */
+      this.forceRefreshView();
     });
   }
 
@@ -749,22 +750,9 @@ export class Editor {
   }
 
   /**
-   * 刷新占位符显示 / Refresh placeholder display
-   */
-  private refreshPlaceholder(): void {
-    const editor = this.editor;
-    if (!editor || editor.isDestroyed) {
-      return;
-    }
-
-    const { state, view } = editor;
-    view.dispatch(state.tr);
-  }
-
-  /**
    * 强制刷新编辑器视图 / Force refresh editor view
    *
-   * 可编辑状态的唯一同步出口：
+   * 可编辑状态的唯一同步出口，同时负责占位符等视图刷新：
    * - editor.setEditable()：同步 Tiptap 内部 editable 选项
    * - 空事务派发：让 ProseMirror 依据 editorProps.editable 判定重算 contenteditable
    * - contenteditable 属性兜底：确保对所有浏览器生效

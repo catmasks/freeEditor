@@ -1,5 +1,5 @@
 import { createClearFormatToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 清除格式插件 / Clear format plugin

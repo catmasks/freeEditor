@@ -1,7 +1,7 @@
 import { Underline, UnderlineSchema } from "./extension";
 
 import { createUnderlineToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 下划线插件 / Underline plugin

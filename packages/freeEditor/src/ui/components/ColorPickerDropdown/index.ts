@@ -1,6 +1,7 @@
 import { FloatingToolbar, type FloatingPlacement } from "../FloatingToolbar";
 import { hexToHsv, hsvToHex } from "./color";
 import { i18n } from "../../../core/index";
+import { clamp } from "../../utils/dom";
 
 /**
  * HSV 颜色对象 / HSV color object
@@ -235,8 +236,8 @@ export class ColorPickerDropdown {
 
     const color = hsvToHex(
       hsv.h,
-      Math.max(0, Math.min(1, s)),
-      Math.max(0, Math.min(1, v)),
+      clamp(s, 0, 1),
+      clamp(v, 0, 1),
     );
 
     this.emitChange(color);
@@ -255,7 +256,7 @@ export class ColorPickerDropdown {
 
     const hsv = this.hsv;
 
-    const color = hsvToHex(Math.max(0, Math.min(360, h)), hsv.s, hsv.v);
+    const color = hsvToHex(clamp(h, 0, 360), hsv.s, hsv.v);
 
     this.emitChange(color);
   };

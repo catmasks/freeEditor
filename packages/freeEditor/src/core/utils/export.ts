@@ -1,4 +1,38 @@
 import type { Node } from "@tiptap/pm/model";
+import type { MediaType } from "../types";
+import type { Editor } from "@tiptap/core";
+
+/**
+ * 确保编辑器获得焦点 / Ensure editor is focused
+ * @param editor 编辑器实例 / Editor instance
+ */
+export function ensureEditorFocus(editor: Editor): void {
+  if (editor.isFocused) {
+    return;
+  }
+
+  editor.commands.focus();
+}
+
+/**
+ * 根据文件 MIME 类型解析媒体类型 / Resolve media type from file MIME type
+ *
+ * 供媒体上传、拖拽粘贴分流等场景统一使用。
+ *
+ * @param file 文件对象 / File object
+ * @returns 媒体类型 / Media type
+ */
+export function resolveMediaType(file: File): MediaType {
+  if (file.type.startsWith("image/")) {
+    return "image";
+  }
+
+  if (file.type.startsWith("video/")) {
+    return "video";
+  }
+
+  return "attachment";
+}
 
 /**
  * 下载文件 / Download file

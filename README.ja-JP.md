@@ -123,7 +123,7 @@ import { Editor } from "@tiptap/core";
       "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
       "docx": "https://esm.sh/docx@9.7.1",
       "jspdf": "https://esm.sh/jspdf@4.2.1",
-      "markdown-it": "https://esm.sh/markdown-it@14.1.0",
+      "markdown-it": "https://esm.sh/markdown-it@14.3.0",
       "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
     }
   }
@@ -505,6 +505,14 @@ editor.setHtml("");
 
 ```typescript
 focus(): void
+```
+
+#### `blur()`
+
+エディタのフォーカスを外します。
+
+```typescript
+blur(): void
 ```
 
 #### `getSelectedText()`
@@ -1035,11 +1043,11 @@ i18n.setLocale("en");
 i18n.setLocale("ja-JP");
 ```
 
-指定されたロケールが登録されていない場合、この呼び出しは何も変更しません。
+指定されたロケールが登録されていない場合、`setLocale()` はエラーをスローします。
 
 ```typescript
 i18n.setLocale("ko-KR");
-// "ko-KR" が addMessages() で登録されていない場合は何も起こらない
+// "ko-KR" が addMessages() で登録されていない場合はエラーがスローされる
 ```
 
 切り替え後、`subscribe()` で登録されたすべての購読者に通知されます。

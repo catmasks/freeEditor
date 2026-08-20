@@ -1,11 +1,10 @@
 import type { Editor } from "@tiptap/core";
-import {
-  createToolbarButton,
-  createIcon,
-  ColorPickerDropdown,
-  Select,
-} from "../ui/index";
-import type { SelectOption, TooltipType } from "../ui/index";
+import { createToolbarButton } from "../components/button/index";
+import { createIcon } from "../components/icon/index";
+import { ColorPickerDropdown } from "../components/ColorPickerDropdown/index";
+import { Select } from "../components/select/index";
+import type { SelectOption } from "../components/select/index";
+import type { TooltipType } from "../components/button/index";
 
 /**
  * 简单工具栏按钮配置项 / Configuration options for a simple toolbar button
@@ -239,3 +238,4 @@ export function createSelectToolbar(
 
   return select.el;
 }
+

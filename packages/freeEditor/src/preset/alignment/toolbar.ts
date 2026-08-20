@@ -1,9 +1,7 @@
 import type { Editor } from "@tiptap/core";
-import { createSelectToolbar } from "../toolbar";
+import { createSelectToolbar } from "../../ui/index";
+import { createIcon } from "../../ui/index";
 import type { SelectOption } from "../../ui/index";
-
-import { createIcon } from "../../ui/components/icon";
-
 import { i18n } from "../../core/index";
 
 /**

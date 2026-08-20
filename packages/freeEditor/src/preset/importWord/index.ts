@@ -1,4 +1,4 @@
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 import { UploadPlaceholder, UploadPlaceholderSchema } from "../../core/index";
 import { ImportWord } from "./extension";
 import { createImportWordToolbar } from "./toolbar";

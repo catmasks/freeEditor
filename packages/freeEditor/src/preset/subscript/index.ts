@@ -1,7 +1,7 @@
 import { Subscript, SubscriptSchema } from "./extension";
 
 import { createSubscriptToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 下标插件 / Subscript plugin

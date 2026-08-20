@@ -1,4 +1,5 @@
 import type { MediaType } from "../types";
+import { resolveMediaType } from "./export";
 
 /**
  * 媒体拖拽粘贴处理器类型 / Media drop handler type
@@ -23,17 +24,6 @@ interface TypedHandler<T> {
    * 处理函数 / Handler function
    */
   handler: T;
-}
-
-/**
- * 判断文件的媒体类型 / Determine media type of a file
- * @param file 文件对象 / File object
- * @returns 媒体类型 / Media type
- */
-function getMediaType(file: File): MediaType {
-  if (file.type.startsWith("image/")) return "image";
-  if (file.type.startsWith("video/")) return "video";
-  return "attachment";
 }
 
 /**
@@ -202,7 +192,7 @@ export class MediaEngine {
       if (typeHandlers.length === 0) continue;
 
       const filesOfType = remainingFiles.filter(
-        (f) => getMediaType(f) === type,
+        (f) => resolveMediaType(f) === type,
       );
       if (filesOfType.length === 0) continue;
 

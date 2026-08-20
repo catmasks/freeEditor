@@ -1,11 +1,5 @@
-/**
- * 导出 Word 工具栏按钮
- *
- * 点击后调用 editor.commands.exportWord() 导出当前内容为 Word 文档
- */
-
 import type { Editor } from "@tiptap/core";
-import { createSimpleToolbar } from "../toolbar";
+import { createSimpleToolbar } from "../../ui/index";
 import { i18n } from "../../core/index";
 
 /**

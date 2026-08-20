@@ -1,7 +1,7 @@
 import { History } from "../undo/extension";
 
 import { createRedoToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 重做插件 / Redo plugin

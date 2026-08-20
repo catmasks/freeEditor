@@ -1,6 +1,6 @@
 import { Extension } from "@tiptap/core";
 import type { Editor, CommandProps } from "@tiptap/core";
-import type { UploadGenerator } from "../../core/types";
+import type { UploadGenerator } from "../../core/index";
 import type mammoth from "mammoth";
 /**
  * Data URL 图片数据结构。

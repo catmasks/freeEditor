@@ -123,7 +123,7 @@ In such cases, you must use an `importmap` to map the external dependencies:
       "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
       "docx": "https://esm.sh/docx@9.7.1",
       "jspdf": "https://esm.sh/jspdf@4.2.1",
-      "markdown-it": "https://esm.sh/markdown-it@14.1.0",
+      "markdown-it": "https://esm.sh/markdown-it@14.3.0",
       "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
     }
   }
@@ -505,6 +505,14 @@ Focuses the editor, placing the cursor in the content area.
 
 ```typescript
 focus(): void
+```
+
+#### `blur()`
+
+Removes focus from the editor.
+
+```typescript
+blur(): void
 ```
 
 #### `getSelectedText()`
@@ -1035,11 +1043,11 @@ i18n.setLocale("en");
 i18n.setLocale("ja-JP");
 ```
 
-If the specified locale has not been registered, the call has no effect.
+If the specified locale has not been registered, `setLocale()` throws an error.
 
 ```typescript
 i18n.setLocale("ko-KR");
-// No change if "ko-KR" has not been registered via addMessages()
+// Throws an error if "ko-KR" has not been registered via addMessages()
 ```
 
 After switching, all subscribers registered via `subscribe()` will be notified.

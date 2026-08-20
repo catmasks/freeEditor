@@ -123,7 +123,7 @@ import { Editor } from "@tiptap/core";
       "@tiptap/extension-gapcursor": "https://esm.sh/@tiptap/extension-gapcursor@3.26.1",
       "docx": "https://esm.sh/docx@9.7.1",
       "jspdf": "https://esm.sh/jspdf@4.2.1",
-      "markdown-it": "https://esm.sh/markdown-it@14.1.0",
+      "markdown-it": "https://esm.sh/markdown-it@14.3.0",
       "prosemirror-markdown": "https://esm.sh/prosemirror-markdown@1.13.5"
     }
   }
@@ -505,6 +505,14 @@ editor.setHtml("");
 
 ```typescript
 focus(): void
+```
+
+#### `blur()`
+
+使编辑器失去焦点。
+
+```typescript
+blur(): void
 ```
 
 #### `getSelectedText()`
@@ -1037,11 +1045,11 @@ i18n.setLocale("en");
 i18n.setLocale("ja-JP");
 ```
 
-如果指定的语言尚未注册，则不会进行切换。
+如果指定的语言尚未注册，`setLocale()` 会抛出异常。
 
 ```typescript
 i18n.setLocale("ko-KR");
-// 如果 ko-KR 尚未通过 addMessages() 注册，则不会发生任何变化
+// 如果 ko-KR 尚未通过 addMessages() 注册，会抛出异常
 ```
 
 切换语言后，已经通过 `subscribe()` 注册的订阅者会收到语言变化通知。

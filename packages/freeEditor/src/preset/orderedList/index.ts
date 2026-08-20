@@ -1,7 +1,7 @@
 import { OrderedList, OrderedListSchema } from "./extension";
 
 import { createOrderedListToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 有序列表插件 / Ordered list plugin
@@ -24,5 +24,3 @@ export const OrderedListPlugin: EditorPlugin = {
    */
   toolbar: createOrderedListToolbar,
 };
-
-

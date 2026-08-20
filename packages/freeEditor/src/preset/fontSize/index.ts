@@ -1,7 +1,7 @@
 import { CustomFontSize, CustomFontSizeSchema } from "./extension";
 
 import { createFontSizeToolbar } from "./toolbar";
-import { Style, type EditorPlugin } from "../../core";
+import { Style, type EditorPlugin } from "../../core/index";
 
 /**
  * 字号插件 / Font size plugin

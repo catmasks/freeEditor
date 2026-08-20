@@ -1,10 +1,8 @@
 import type { Editor } from "@tiptap/core";
 
-import { createSimpleToolbar } from "../toolbar";
+import { createSimpleToolbar } from "../../ui/index";
 
-import { i18n } from "../../core/index";
-
-import { handleUploadFiles } from "../../core/utils/useMediaUploader";
+import { i18n, handleUploadFiles } from "../../core/index";
 
 /**
  * 附件图标 SVG / Attachment icon SVG

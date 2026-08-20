@@ -1,7 +1,7 @@
 import { Divider, DividerSchema } from "./extension";
 
 import { createDividerToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 分割线插件 / Divider plugin
@@ -24,5 +24,3 @@ export const DividerPlugin: EditorPlugin = {
    */
   toolbar: createDividerToolbar,
 };
-
-

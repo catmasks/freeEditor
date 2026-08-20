@@ -1,7 +1,7 @@
 import { IndentFeature, IndentSchema } from "./extension";
 
 import { createIndentToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 增加缩进插件 / Indent plugin

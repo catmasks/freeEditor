@@ -2,11 +2,9 @@ import { CustomImage, CustomImageSchema } from "./extension";
 
 import { createImageToolbar } from "./toolbar";
 
-import { handleUploadFiles } from "../../core/utils/useMediaUploader";
+import { handleUploadFiles, i18n } from "../../core/index";
 
-import { i18n } from "../../core";
-
-import type { EditorPlugin, EditorPluginContext } from "../../core";
+import type { EditorPlugin, EditorPluginContext } from "../../core/index";
 import type { Editor } from "@tiptap/core";
 
 const createMediaFloatingToolbarContent = (

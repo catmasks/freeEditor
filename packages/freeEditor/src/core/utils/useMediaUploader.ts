@@ -1,4 +1,6 @@
 import type { Editor } from "@tiptap/core";
+import type { Node } from "@tiptap/pm/model";
+import type { Transaction } from "@tiptap/pm/state";
 
 import type {
   MediaType,
@@ -14,6 +16,7 @@ import type {
 
 import { i18n } from "../i18n";
 import { markNonContent } from "./nonContentTransaction";
+import { resolveMediaType } from "./export";
 
 /**
  * 媒体上传错误码。
@@ -56,24 +59,6 @@ class MediaUploadError extends Error {
     this.code = code;
   }
 }
-
-/**
- * 解析媒体类型。
- * Resolve media type.
- *
- * @param file 文件对象 / The file object.
- */
-const resolveMediaType = (file: File): MediaType => {
-  if (file.type.startsWith("image/")) {
-    return "image";
-  }
-
-  if (file.type.startsWith("video/")) {
-    return "video";
-  }
-
-  return "attachment";
-};
 
 /**
  * 判断文件是否允许上传。
@@ -391,6 +376,58 @@ function getMediaConfig(
 }
 
 /**
+ * 从当前选区插入节点并派发非内容事务。
+ * Insert a node at the current selection and dispatch a non-content transaction.
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param node 要插入的节点 / Node to insert.
+ */
+function insertNodeFromSelection(editor: Editor, node: Node): void {
+  const { from, to } = editor.state.selection;
+
+  const tr =
+    from !== to
+      ? editor.state.tr.replaceSelectionWith(node)
+      : editor.state.tr.insert(from, node);
+
+  editor.view.dispatch(markNonContent(tr));
+}
+
+/**
+ * 按 id 定位文档中的节点，构造事务并派发。
+ * Locate a node by id in the document, build a transaction and dispatch it.
+ *
+ * 若 buildTr 返回 null 则不派发（用于某些条件不满足时跳过）。
+ *
+ * @param editor 编辑器实例 / Editor instance.
+ * @param id 节点 ID / Node ID.
+ * @param buildTr 根据节点和位置构造事务 / Build a transaction from node and position.
+ * @param nonContent 是否标记为非内容事务 / Whether to mark as non-content.
+ * @param predicate 额外的节点过滤条件 / Extra node filter predicate.
+ */
+function mutateNodeById(
+  editor: Editor,
+  id: string,
+  buildTr: (node: Node, pos: number) => Transaction | null,
+  nonContent = false,
+  predicate: (node: Node) => boolean = () => true,
+): void {
+  editor.state.doc.descendants((node, pos) => {
+    if (node.attrs.id !== id || !predicate(node)) {
+      return;
+    }
+
+    const tr = buildTr(node, pos);
+
+    if (tr) {
+      editor.view.dispatch(nonContent ? markNonContent(tr) : tr);
+    }
+
+    return false;
+  });
+}
+
+/**
  * 插入媒体节点。
  * Insert media node.
  *
@@ -414,14 +451,7 @@ function insertMediaNode(editor: Editor, options: InsertOptions): void {
     size: options.size,
   });
 
-  const { from, to } = editor.state.selection;
-
-  const tr =
-    from !== to
-      ? editor.state.tr.replaceSelectionWith(node)
-      : editor.state.tr.insert(from, node);
-
-  editor.view.dispatch(markNonContent(tr));
+  insertNodeFromSelection(editor, node);
 }
 
 /**
@@ -438,20 +468,16 @@ function updateMediaNode(
   attrs: Record<string, unknown>,
   nonContent = false,
 ): void {
-  editor.state.doc.descendants((node, pos) => {
-    if (node.attrs.id !== id) {
-      return;
-    }
-
-    const tr = editor.state.tr.setNodeMarkup(pos, undefined, {
-      ...node.attrs,
-      ...attrs,
-    });
-
-    editor.view.dispatch(nonContent ? markNonContent(tr) : tr);
-
-    return false;
-  });
+  mutateNodeById(
+    editor,
+    id,
+    (node, pos) =>
+      editor.state.tr.setNodeMarkup(pos, undefined, {
+        ...node.attrs,
+        ...attrs,
+      }),
+    nonContent,
+  );
 }
 
 /**
@@ -469,15 +495,11 @@ function replaceMediaNodeWithLink(
   url: string,
   text: string,
 ): void {
-  editor.state.doc.descendants((node, pos) => {
-    if (node.attrs.id !== id) {
-      return;
-    }
-
+  mutateNodeById(editor, id, (node, pos) => {
     const linkType = editor.schema.marks.link;
 
     if (!linkType) {
-      return;
+      return null;
     }
 
     const linkMark = linkType.create({
@@ -488,11 +510,7 @@ function replaceMediaNodeWithLink(
 
     const textNode = editor.schema.text(text, [linkMark]);
 
-    const tr = editor.state.tr.replaceWith(pos, pos + node.nodeSize, textNode);
-
-    editor.view.dispatch(tr);
-
-    return false;
+    return editor.state.tr.replaceWith(pos, pos + node.nodeSize, textNode);
   });
 }
 
@@ -504,17 +522,12 @@ function replaceMediaNodeWithLink(
  * @param id 节点 ID / Node ID.
  */
 function removeMediaNode(editor: Editor, id: string): void {
-  editor.state.doc.descendants((node, pos) => {
-    if (node.attrs.id !== id) {
-      return;
-    }
-
-    const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
-
-    editor.view.dispatch(markNonContent(tr));
-
-    return false;
-  });
+  mutateNodeById(
+    editor,
+    id,
+    (node, pos) => editor.state.tr.delete(pos, pos + node.nodeSize),
+    true,
+  );
 }
 
 /**
@@ -553,14 +566,7 @@ function insertUploadPlaceholder(
     loading: options.loading,
   });
 
-  const { from, to } = editor.state.selection;
-
-  const tr =
-    from !== to
-      ? editor.state.tr.replaceSelectionWith(node)
-      : editor.state.tr.insert(from, node);
-
-  editor.view.dispatch(markNonContent(tr));
+  insertNodeFromSelection(editor, node);
 
   return true;
 }
@@ -579,24 +585,17 @@ function updateUploadPlaceholder(
   attrs: Record<string, unknown>,
   nonContent = false,
 ): void {
-  editor.state.doc.descendants((node, pos) => {
-    if (node.type.name !== "uploadPlaceholder") {
-      return;
-    }
-
-    if (node.attrs.id !== id) {
-      return;
-    }
-
-    const tr = editor.state.tr.setNodeMarkup(pos, undefined, {
-      ...node.attrs,
-      ...attrs,
-    });
-
-    editor.view.dispatch(nonContent ? markNonContent(tr) : tr);
-
-    return false;
-  });
+  mutateNodeById(
+    editor,
+    id,
+    (node, pos) =>
+      editor.state.tr.setNodeMarkup(pos, undefined, {
+        ...node.attrs,
+        ...attrs,
+      }),
+    nonContent,
+    (node) => node.type.name === "uploadPlaceholder",
+  );
 }
 
 /**
@@ -607,21 +606,13 @@ function updateUploadPlaceholder(
  * @param id 节点 ID / Node ID.
  */
 function removeUploadPlaceholder(editor: Editor, id: string): void {
-  editor.state.doc.descendants((node, pos) => {
-    if (node.type.name !== "uploadPlaceholder") {
-      return;
-    }
-
-    if (node.attrs.id !== id) {
-      return;
-    }
-
-    const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
-
-    editor.view.dispatch(markNonContent(tr));
-
-    return false;
-  });
+  mutateNodeById(
+    editor,
+    id,
+    (node, pos) => editor.state.tr.delete(pos, pos + node.nodeSize),
+    true,
+    (node) => node.type.name === "uploadPlaceholder",
+  );
 }
 
 /**

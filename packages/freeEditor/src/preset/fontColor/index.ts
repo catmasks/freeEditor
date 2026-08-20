@@ -1,7 +1,7 @@
 import { CustomFontColor, CustomFontColorSchema } from "./extension";
 
 import { createFontColorToolbar } from "./toolbar";
-import { Style, type EditorPlugin } from "../../core";
+import { Style, type EditorPlugin } from "../../core/index";
 
 /**
  * 字体颜色插件 / Font color plugin

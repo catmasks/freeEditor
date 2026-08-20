@@ -2,7 +2,7 @@ import { History } from "./extensions/history";
 import { UndoShortcut } from "./extensions/undo-shortcut";
 
 import { createUndoToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 撤销插件 / Undo plugin
@@ -28,5 +28,3 @@ export const UndoPlugin: EditorPlugin = {
    */
   toolbar: createUndoToolbar,
 };
-
-

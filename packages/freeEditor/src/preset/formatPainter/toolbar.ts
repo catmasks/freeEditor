@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import { createSimpleToolbar } from "../toolbar";
+import { createSimpleToolbar } from "../../ui/index";
 
 import { i18n } from "../../core/index";
 
@@ -156,9 +156,7 @@ function captureOtherMarks(editor: Editor): CapturedMark[] {
 
 /** 属性值是否有实际内容 / Whether an attribute value is meaningful. */
 function isValidAttrValue(value: unknown): boolean {
-  return (
-    value !== null && value !== undefined && value !== 0 && value !== ""
-  );
+  return value !== null && value !== undefined && value !== 0 && value !== "";
 }
 
 /** 从单个节点上按配置采集命中的属性 / Collect matched node attrs from a single node. */

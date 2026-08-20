@@ -1,7 +1,7 @@
 import { LineHeight, LineHeightSchema } from "./extension";
 
 import { createLineHeightToolbar } from "./toolbar";
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 
 /**
  * 行高插件 / Line height plugin

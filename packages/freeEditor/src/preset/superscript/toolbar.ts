@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import { createSimpleToolbar } from "../toolbar";
+import { createSimpleToolbar } from "../../ui/index";
 
 import { i18n } from "../../core/index";
 

@@ -1,11 +1,5 @@
-/**
- * 导出 PDF 工具栏按钮
- *
- * 点击后调用 editor.commands.exportPdf() 导出当前内容为 PDF 文档
- */
-
 import type { Editor } from "@tiptap/core";
-import { createSimpleToolbar } from "../toolbar";
+import { createSimpleToolbar } from "../../ui/index";
 import { i18n } from "../../core/index";
 
 /**

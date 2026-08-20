@@ -1,7 +1,7 @@
 import { CustomFontHighlight, CustomFontHighlightSchema } from "./extension";
 
 import { createFontHighlightToolbar } from "./toolbar";
-import { Style, type EditorPlugin } from "../../core";
+import { Style, type EditorPlugin } from "../../core/index";
 
 /**
  * 文本高亮插件 / Font highlight plugin

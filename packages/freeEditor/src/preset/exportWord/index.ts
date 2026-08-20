@@ -1,8 +1,4 @@
-/**
- * ExportWord 插件入口
- */
-
-import type { EditorPlugin } from "../../core";
+import type { EditorPlugin } from "../../core/index";
 import { ExportWord } from "./extension";
 import { createExportWordToolbar } from "./toolbar";
 

@@ -2,4 +2,6 @@ export * from "./toolbar/index";
 
 export * from "./components/index";
 
-import "./styles/editor.scss";
+export * from "./utils/export";
+
+export * from "./utils/dom";
