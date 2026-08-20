@@ -457,6 +457,30 @@ editor.setHtml("");
 
 **抛出：** 如果编辑器已销毁，抛出 `Error: Editor has been destroyed`
 
+#### `pauseAllVideos()`
+
+暂停编辑器内全部视频。返回对象包含暂停结果与视频总数。
+
+```typescript
+pauseAllVideos(): { state: boolean; total: number }
+```
+
+| 字段    | 类型     | 说明                                        |
+| ------- | -------- | ------------------------------------------- |
+| `state` | `boolean` | 是否全部成功暂停                            |
+| `total` | `number`  | 编辑器内视频总数                            |
+
+**示例：**
+
+```typescript
+const result = editor.pauseAllVideos();
+// { state: true, total: 2 } —— 成功暂停了 2 个视频
+```
+
+**说明：** 编辑器销毁（`destroy()`）时会自动暂停全部视频，无需手动调用。
+
+**抛出：** 如果编辑器已销毁，抛出 `Error: Editor has been destroyed`
+
 #### `setDisabled(disabled)`
 
 设置编辑器禁用状态。
@@ -1004,7 +1028,7 @@ i18n.hasLocale("ko-KR");
 
 #### `getMessages(locale)`
 
-获取指定语言的原始消息对象。
+获取指定语言的消息对象。
 
 ```typescript
 getMessages(locale: Locale): LocaleMessages | undefined
@@ -1029,48 +1053,7 @@ console.log(messages);
 ```
 
 > **注意：**
-> `getMessages()` 返回的是语言注册时保存的**原始语言包**，不包含 `extend()` 对当前消息对象产生的扩展。
-
----
-
-#### `getCurrentMessages()`
-
-获取当前语言最终使用的消息对象。
-
-```typescript
-getCurrentMessages(): LocaleMessages
-```
-
-与 `getMessages()` 不同，该方法返回的是当前实际使用的 `_messages`，因此包含通过 `extend()` 添加的扩展内容。
-
-**示例：**
-
-```typescript
-i18n.extend({
-  toolbar: {
-    bold: "自定义粗体",
-  },
-});
-
-const messages = i18n.getCurrentMessages();
-
-console.log(messages.toolbar.bold);
-// "自定义粗体"
-```
-
-可以简单理解为：
-
-```text
-getMessages()
-    ↓
-获取指定语言的原始语言包
-
-getCurrentMessages()
-    ↓
-获取当前语言最终使用的语言包
-    ↓
-包含 extend() 的扩展内容
-```
+> `getMessages()` 返回该语言的完整语言包，包含 `extend()` 持久化的扩展。
 
 ---
 
@@ -1181,8 +1164,7 @@ toolbar.strike;
 ```
 
 > **注意：**
-> `extend()` 修改的是当前最终使用的消息对象，不会修改通过 `getMessages()` 获取到的原始语言包。
-> 当调用 `setLocale()` 切换语言后，当前消息对象会重新根据目标语言的原始语言包构建，因此之前针对当前语言的 `extend()` 修改不会自动应用到其他语言。
+> `extend()` 的扩展会持久化到该语言的完整语言包，调用 `setLocale()` 切走再切回后，修改仍然保留。
 
 ---
 
@@ -1269,8 +1251,7 @@ i18n.getLocales();
 | `setLocale()`          | `void`                        | 切换当前语言                     |
 | `getLocales()`         | `Locale[]`                    | 获取所有已注册语言               |
 | `hasLocale()`          | `boolean`                     | 判断语言是否已注册               |
-| `getMessages()`        | `LocaleMessages \| undefined` | 获取指定语言的原始语言包         |
-| `getCurrentMessages()` | `LocaleMessages`              | 获取当前最终使用的语言包         |
+| `getMessages()`        | `LocaleMessages \| undefined` | 获取指定语言的完整语言包（含扩展）     |
 | `addMessages()`        | `void`                        | 注册新的语言，不允许覆盖已有语言 |
 | `extend()`             | `void`                        | 扩展当前语言消息                 |
 | `subscribe()`          | `() => void`                  | 订阅语言变化                     |

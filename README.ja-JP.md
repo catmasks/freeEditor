@@ -457,6 +457,30 @@ editor.setHtml("");
 
 **スロー:** エディタが破棄されている場合、`Error: Editor has been destroyed` をスローします。
 
+#### `pauseAllVideos()`
+
+エディタ内のすべての動画を一時停止します。一時停止結果と動画の総数を返します。
+
+```typescript
+pauseAllVideos(): { state: boolean; total: number }
+```
+
+| フィールド | 型        | 説明                            |
+| ---------- | --------- | ------------------------------- |
+| `state`    | `boolean` | すべての動画が正常に一時停止したかどうか |
+| `total`    | `number`  | エディタ内の動画の総数          |
+
+**例:**
+
+```typescript
+const result = editor.pauseAllVideos();
+// { state: true, total: 2 } —— 2 つの動画を正常に一時停止しました
+```
+
+**補足:** エディタを破棄（`destroy()`）すると自動的にすべての動画が一時停止されるため、このメソッドを呼ぶ必要はありません。
+
+**スロー:** エディタが破棄されている場合、`Error: Editor has been destroyed` をスローします。
+
 #### `setDisabled(disabled)`
 
 エディタの無効状態を設定します。
@@ -1002,7 +1026,7 @@ i18n.hasLocale("ko-KR");
 
 #### `getMessages(locale)`
 
-指定されたロケールの元のメッセージオブジェクトを返します。
+指定されたロケールのメッセージオブジェクトを返します。
 
 ```typescript
 getMessages(locale: Locale): LocaleMessages | undefined
@@ -1027,48 +1051,7 @@ console.log(messages);
 ```
 
 > **注意:**
-> `getMessages()` は、`extend()` による拡張を含まない、登録時の**元の**ロケールメッセージを返します。
-
----
-
-#### `getCurrentMessages()`
-
-現在のロケールで使用されている最終的なメッセージオブジェクトを返します。
-
-```typescript
-getCurrentMessages(): LocaleMessages
-```
-
-`getMessages()` とは異なり、このメソッドは実際に使用されている `_messages` を返すため、`extend()` で追加された拡張が含まれます。
-
-**例:**
-
-```typescript
-i18n.extend({
-  toolbar: {
-    bold: "カスタム太字",
-  },
-});
-
-const messages = i18n.getCurrentMessages();
-
-console.log(messages.toolbar.bold);
-// "カスタム太字"
-```
-
-概念的には:
-
-```text
-getMessages()
-    ↓
-元のロケールメッセージを取得
-
-getCurrentMessages()
-    ↓
-現在使用されている最終メッセージを取得
-    ↓
-extend() による拡張を含む
-```
+> `getMessages()` は、該言語の完全なメッセージ（`extend()` で永続化された拡張を含む）を返します。
 
 ---
 
@@ -1167,7 +1150,7 @@ i18n.extend({
 `toolbar.bold` のみが変更され、`toolbar.italic`、`toolbar.underline`、`toolbar.strike` は影響を受けません。
 
 > **注意:**
-> `extend()` は現在使用されている最終メッセージオブジェクトを変更します。`getMessages()` で返される元のメッセージは変更しません。`setLocale()` が呼び出されると、メッセージオブジェクトはターゲットロケールの元のメッセージから再構築されるため、以前のロケールに対して行われた `extend()` の変更は自動的に引き継がれません。
+> `extend()` による拡張は言語のメッセージに永続化され、`setLocale()` で切り替えて戻しても変更が保持されます。
 
 ---
 
@@ -1249,8 +1232,7 @@ i18n.getLocales();
 | `setLocale()`          | `void`                        | 現在のロケールを切り替え                       |
 | `getLocales()`         | `Locale[]`                    | 登録されているすべてのロケールを取得           |
 | `hasLocale()`          | `boolean`                     | ロケールが登録されているか確認                 |
-| `getMessages()`        | `LocaleMessages \| undefined` | ロケールの元のメッセージを取得                 |
-| `getCurrentMessages()` | `LocaleMessages`              | 現在使用されている最終メッセージを取得         |
+| `getMessages()`        | `LocaleMessages \| undefined` | 指定言語の完全なメッセージを取得（拡張込み）   |
 | `addMessages()`        | `void`                        | 新しいロケールを登録（既存のものは上書き不可） |
 | `extend()`             | `void`                        | 現在のロケールメッセージを拡張                 |
 | `subscribe()`          | `() => void`                  | 言語変更を購読                                 |

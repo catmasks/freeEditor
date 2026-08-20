@@ -2,12 +2,10 @@ import "@catmasks/free-editor/style.css";
 import "./style.css";
 
 import { initEditor, destroyEditor } from "./editor";
-import { initCustomI18n, updateButtonTexts } from "./i18n";
+import { updateButtonTexts } from "./i18n";
 import { initEventListeners } from "./handlers";
 
 document.addEventListener("DOMContentLoaded", () => {
-  initCustomI18n();
-
   initEditor();
 
   const app = document.getElementById("app");

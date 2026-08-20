@@ -1,9 +1,3 @@
-/**
- * ============================
- * Media Node 样式
- * ============================
- */
-
 .free-editor__media-node {
   display: inline;
   max-width: 100%;
@@ -355,5 +349,53 @@
 @keyframes media-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/**
+ * ============================
+ * 全屏图片预览遮罩
+ * ============================
+ */
+
+.free-editor__image-preview {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.85);
+
+  cursor: zoom-out;
+
+  animation: media-preview-fade 0.2s ease;
+
+  img {
+    max-width: 92vw;
+
+    max-height: 92vh;
+
+    object-fit: contain;
+
+    border-radius: 4px;
+
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes media-preview-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }

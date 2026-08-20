@@ -13,6 +13,7 @@ import type {
 } from "../types";
 
 import { i18n } from "../i18n";
+import { markNonContent } from "./nonContentTransaction";
 
 /**
  * 媒体上传错误码。
@@ -420,7 +421,7 @@ function insertMediaNode(editor: Editor, options: InsertOptions): void {
       ? editor.state.tr.replaceSelectionWith(node)
       : editor.state.tr.insert(from, node);
 
-  editor.view.dispatch(tr);
+  editor.view.dispatch(markNonContent(tr));
 }
 
 /**
@@ -435,6 +436,7 @@ function updateMediaNode(
   editor: Editor,
   id: string,
   attrs: Record<string, unknown>,
+  nonContent = false,
 ): void {
   editor.state.doc.descendants((node, pos) => {
     if (node.attrs.id !== id) {
@@ -446,7 +448,7 @@ function updateMediaNode(
       ...attrs,
     });
 
-    editor.view.dispatch(tr);
+    editor.view.dispatch(nonContent ? markNonContent(tr) : tr);
 
     return false;
   });
@@ -509,7 +511,7 @@ function removeMediaNode(editor: Editor, id: string): void {
 
     const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
 
-    editor.view.dispatch(tr);
+    editor.view.dispatch(markNonContent(tr));
 
     return false;
   });
@@ -558,7 +560,7 @@ function insertUploadPlaceholder(
       ? editor.state.tr.replaceSelectionWith(node)
       : editor.state.tr.insert(from, node);
 
-  editor.view.dispatch(tr);
+  editor.view.dispatch(markNonContent(tr));
 
   return true;
 }
@@ -575,6 +577,7 @@ function updateUploadPlaceholder(
   editor: Editor,
   id: string,
   attrs: Record<string, unknown>,
+  nonContent = false,
 ): void {
   editor.state.doc.descendants((node, pos) => {
     if (node.type.name !== "uploadPlaceholder") {
@@ -590,7 +593,7 @@ function updateUploadPlaceholder(
       ...attrs,
     });
 
-    editor.view.dispatch(tr);
+    editor.view.dispatch(nonContent ? markNonContent(tr) : tr);
 
     return false;
   });
@@ -615,7 +618,7 @@ function removeUploadPlaceholder(editor: Editor, id: string): void {
 
     const tr = editor.state.tr.delete(pos, pos + node.nodeSize);
 
-    editor.view.dispatch(tr);
+    editor.view.dispatch(markNonContent(tr));
 
     return false;
   });
@@ -810,7 +813,7 @@ export function useMediaUploader(
 
       updateUploadPlaceholder(editor, taskId, {
         progress: Math.floor(state.progress),
-      });
+      }, true);
     }, 200);
   }
 
@@ -850,7 +853,7 @@ export function useMediaUploader(
 
       updateUploadPlaceholder(editor, taskId, {
         progress: percent,
-      });
+      }, true);
 
       config.onProgress?.(
         {
@@ -929,7 +932,7 @@ export function useMediaUploader(
 
       updateUploadPlaceholder(editor, taskId, {
         progress: 100,
-      });
+      }, true);
 
       config.onSuccess?.(result, finalFile);
 
@@ -1100,7 +1103,7 @@ export function useMediaUploader(
           updateMediaNode(editor, nodeId, {
             loading: false,
             error: true,
-          });
+          }, true);
 
           config.onUploadError?.(error, finalFile);
         };
@@ -1132,7 +1135,7 @@ export function useMediaUploader(
 
           updateMediaNode(editor, nodeId, {
             progress: value,
-          });
+          }, true);
 
           config.onProgress?.(
             {
@@ -1151,7 +1154,7 @@ export function useMediaUploader(
           updateMediaNode(editor, nodeId, {
             loading: true,
             error: false,
-          });
+          }, true);
 
           fakeTimer = window.setInterval(() => {
             if (aborted || hasRealProgress) {
@@ -1170,7 +1173,7 @@ export function useMediaUploader(
 
             updateMediaNode(editor, nodeId, {
               progress,
-            });
+            }, true);
           }, 200);
 
           try {
@@ -1200,7 +1203,7 @@ export function useMediaUploader(
           loading: true,
           error: false,
           progress: 0,
-        });
+        }, true);
 
         aborted = false;
 
@@ -1234,7 +1237,7 @@ export function useMediaUploader(
           updateMediaNode(editor, nodeId, {
             loading: false,
             error: true,
-          });
+          }, true);
         }
 
         taskMap.delete(nodeId);

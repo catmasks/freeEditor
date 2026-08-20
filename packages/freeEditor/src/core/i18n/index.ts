@@ -139,35 +139,19 @@ class I18nStore {
   /**
    * 获取指定语言的原始消息对象。
    *
-   * Gets the original message object for the specified locale.
+   * Gets the message object for the specified locale.
    *
-   * 注意：返回的是原始语言包，不包含 extend() 对当前消息的扩展。
+   * 返回的是该语言的语言包，包含 extend() 对该语言持久化的扩展。
    *
-   * Note: Returns the original locale messages without extensions
-   * applied by extend() to the current messages.
+   * Returns the locale messages, including extensions persisted by
+   * extend() for that locale.
    *
    * @param locale 语言标识 / Locale identifier
-   * @returns 原始消息对象，不存在时返回 undefined /
-   * The original message object, or undefined if not registered
+   * @returns 消息对象，不存在时返回 undefined /
+   * The message object, or undefined if not registered
    */
   getMessages(locale: Locale): LocaleMessages | undefined {
     return this._locales[locale];
-  }
-
-  /**
-   * 获取当前最终使用的消息对象。
-   *
-   * Gets the final message object currently being used.
-   *
-   * 该对象包含当前语言通过 extend() 添加的扩展内容。
-   *
-   * This object includes extensions added to the current locale
-   * through extend().
-   *
-   * @returns 当前最终消息对象 / Current final message object
-   */
-  getCurrentMessages(): LocaleMessages {
-    return this._messages;
   }
 
   /**
@@ -266,19 +250,19 @@ class I18nStore {
   }
 
   /**
-   * 扩展当前语言的消息。
+   * 扩展当前语言的消息，并持久化到该语言的语言包。
    *
-   * Extends the messages of the current locale.
-   *
-   * 该方法不会修改原始语言包，只会修改当前最终使用的消息对象。
-   *
-   * This method does not modify the original locale messages.
-   * It only modifies the final messages currently being used.
+   * Extends the messages of the current locale, persisting the
+   * extension into that locale's registry entry.
    *
    * @param messages 扩展消息 / Message extensions
    */
   extend(messages: DeepPartial<LocaleMessages>): void {
-    this._messages = deepMerge(this._messages, messages);
+    const base = this._locales[this._locale] as LocaleMessages;
+    const merged = deepMerge(base, messages);
+
+    this._locales[this._locale] = merged;
+    this._messages = merged;
 
     this._publish();
   }

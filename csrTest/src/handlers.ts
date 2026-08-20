@@ -43,11 +43,14 @@ export function initEventListeners(): void {
     const html = editor?.getHtml();
     const preview = document.getElementById("preview");
     if (!preview || !html) return;
-
     preview.classList.add("visible");
     preview.innerHTML = `<div class="preview-label">获取的HTML：</div><pre></pre>`;
     const pre = preview.querySelector("pre");
     if (pre) pre.textContent = html;
+  });
+
+  onClick("destroy-editor-btn", () => {
+    editor?.destroy();
   });
 
   document.querySelectorAll<HTMLButtonElement>(".locale-btn").forEach((btn) => {

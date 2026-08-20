@@ -105,13 +105,12 @@ export function initEditor(): void {
       },
     },
     onChange: (html: string) => {
-      console.log("onChange", html);
+      console.log(html);
     },
     onCreated: () => {
       console.log("onCreated");
     },
   });
-
   updateDemoTexts("zh-CN");
   updateEditorStateLabel();
 }

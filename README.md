@@ -457,6 +457,30 @@ editor.setHtml("");
 
 **Throws:** If the editor has been destroyed, throws `Error: Editor has been destroyed`
 
+#### `pauseAllVideos()`
+
+Pauses all videos inside the editor. Returns an object with the pause result and the total number of videos.
+
+```typescript
+pauseAllVideos(): { state: boolean; total: number }
+```
+
+| Field   | Type      | Description                                |
+| ------- | --------- | ------------------------------------------ |
+| `state` | `boolean` | Whether all videos paused successfully     |
+| `total` | `number`  | Total number of videos in the editor       |
+
+**Example:**
+
+```typescript
+const result = editor.pauseAllVideos();
+// { state: true, total: 2 } — successfully paused 2 videos
+```
+
+**Note:** Destroying the editor (`destroy()`) automatically pauses all videos, so calling this method is not required before teardown.
+
+**Throws:** If the editor has been destroyed, throws `Error: Editor has been destroyed`
+
 #### `setDisabled(disabled)`
 
 Sets the disabled state of the editor.
@@ -1002,7 +1026,7 @@ This method is useful for checking before calling `setLocale()` or `addMessages(
 
 #### `getMessages(locale)`
 
-Returns the original message object for the specified locale.
+Returns the message object for the specified locale.
 
 ```typescript
 getMessages(locale: Locale): LocaleMessages | undefined
@@ -1027,48 +1051,7 @@ console.log(messages);
 ```
 
 > **Note:**
-> `getMessages()` returns the **original** locale messages as registered, without any extensions applied via `extend()`.
-
----
-
-#### `getCurrentMessages()`
-
-Returns the final message object used by the current locale.
-
-```typescript
-getCurrentMessages(): LocaleMessages
-```
-
-Unlike `getMessages()`, this method returns the actual `_messages` in use, so it includes any extensions added via `extend()`.
-
-**Example:**
-
-```typescript
-i18n.extend({
-  toolbar: {
-    bold: "Custom Bold",
-  },
-});
-
-const messages = i18n.getCurrentMessages();
-
-console.log(messages.toolbar.bold);
-// "Custom Bold"
-```
-
-Conceptually:
-
-```text
-getMessages()
-    ↓
-Returns the original locale messages
-
-getCurrentMessages()
-    ↓
-Returns the final messages currently in use
-    ↓
-Includes extensions from extend()
-```
+> `getMessages()` returns the complete messages for the locale, including any extensions applied via `extend()`.
 
 ---
 
@@ -1167,7 +1150,7 @@ i18n.extend({
 Only `toolbar.bold` is modified; `toolbar.italic`, `toolbar.underline`, `toolbar.strike` are unaffected.
 
 > **Note:**
-> `extend()` modifies the final message object currently in use. It does **not** modify the original messages returned by `getMessages()`. When `setLocale()` is called, the message object is rebuilt from the target locale's original messages, so any `extend()` modifications made for the previous locale will not automatically carry over.
+> `extend()` persists the extension into the locale's messages. The modification is retained, and calling `setLocale()` to switch away and back still shows the extended texts.
 
 ---
 
@@ -1249,8 +1232,7 @@ i18n.getLocales();
 | `setLocale()`          | `void`                        | Switch the current locale                        |
 | `getLocales()`         | `Locale[]`                    | Get all registered locales                       |
 | `hasLocale()`          | `boolean`                     | Check if a locale is registered                  |
-| `getMessages()`        | `LocaleMessages \| undefined` | Get the original messages for a locale           |
-| `getCurrentMessages()` | `LocaleMessages`              | Get the final messages currently in use          |
+| `getMessages()`        | `LocaleMessages \| undefined` | Get the messages for a locale (incl. extensions) |
 | `addMessages()`        | `void`                        | Register a new locale (cannot override existing) |
 | `extend()`             | `void`                        | Extend the current locale messages               |
 | `subscribe()`          | `() => void`                  | Subscribe to language changes                    |

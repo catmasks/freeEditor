@@ -8,6 +8,62 @@ import {
 } from "../uploadNode/mediaNodeViewShared";
 
 /**
+ * 当前全屏预览的清理函数（模块级单例，避免多个预览叠加）
+ * Cleanup function of the currently active fullscreen preview (module-level singleton)
+ */
+let cleanupActivePreview: (() => void) | null = null;
+
+/**
+ * 打开图片全屏预览
+ * Open an image in fullscreen preview
+ * @param src 图片地址 / Image source URL
+ */
+function previewImage(src: string): void {
+  if (!src) {
+    return;
+  }
+
+  // 关闭先前打开的预览，避免多个节点同时预览叠加
+  cleanupActivePreview?.();
+
+  const overlay = document.createElement("div");
+
+  overlay.className = "free-editor__image-preview";
+
+  const image = document.createElement("img");
+
+  image.src = src;
+
+  image.alt = "";
+
+  overlay.appendChild(image);
+
+  document.body.appendChild(overlay);
+
+  const onKeydown = (e: KeyboardEvent): void => {
+    if (e.key === "Escape") {
+      close();
+    }
+  };
+
+  const close = (): void => {
+    overlay.remove();
+
+    document.removeEventListener("keydown", onKeydown);
+
+    if (cleanupActivePreview === close) {
+      cleanupActivePreview = null;
+    }
+  };
+
+  overlay.addEventListener("click", close);
+
+  document.addEventListener("keydown", onKeydown);
+
+  cleanupActivePreview = close;
+}
+
+/**
  * 调整大小手柄方向 / Resize handle direction
  */
 type HandleDirection =
@@ -127,6 +183,14 @@ export class MediaNodeView {
     }
 
     return true;
+  }
+
+  /**
+   * 是否可点击图片预览（禁用/只读状态）
+   * Whether clicking an image opens the fullscreen preview (disabled/readonly)
+   */
+  private get canPreviewImage(): boolean {
+    return editorRuntimeState.disabled || editorRuntimeState.readonly;
   }
 
   /**
@@ -475,6 +539,19 @@ export class MediaNodeView {
     media.style.display = "block";
 
     media.style.borderRadius = "4px";
+
+    media.addEventListener("click", (e) => {
+      // 仅在禁用/只读状态点击时打开全屏预览
+      if (!this.canPreviewImage) {
+        return;
+      }
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+      previewImage(attrs.src || "");
+    });
 
     mediaWrap.appendChild(media);
 

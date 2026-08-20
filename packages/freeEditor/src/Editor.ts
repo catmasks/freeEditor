@@ -1,7 +1,8 @@
 import { createToolbar } from "./ui/toolbar/index";
 import { createEditorPlugins, CoreEditor } from "./core/editorPlugins";
 import { editorRuntimeState } from "./core/editorRuntimeState";
-import { i18n, ensureEditorFocus } from "./core/index";
+import { i18n, ensureEditorFocus, isNonContentTransaction } from "./core/index";
+import type { Transaction } from "@tiptap/pm/state";
 import type { MediaEngine } from "./core/utils/index";
 
 import type {
@@ -131,7 +132,6 @@ export class Editor {
    *
    * 该库的根元素挂载与 ProseMirror 视图依赖真实的浏览器 DOM。
    * 在 SSR（服务端渲染）环境返回响应之前不会调用构造函数；
-   * 若被误调用，这里给出明确错误而不是晦涩的 "document is not defined"。
    */
   private assertBrowserEnvironment(): void {
     if (typeof document === "undefined") {
@@ -208,12 +208,18 @@ export class Editor {
 
   /**
    * 注册内容变化回调 / Subscribe to content change callback
+   * - 空事务（禁用/只读刷新）docChanged 为 false，直接跳过；
+   * - 被标记为非内容的事务（进度条/加载占位/纯上传占位）直接跳过。
    */
   private subscribeChange(options: EditorOptions): void {
     const onChange = options.onChange;
     if (!onChange) return;
 
-    const onUpdate = (): void => {
+    const onUpdate = (props: { transaction?: Transaction }): void => {
+      /** 空事务不改变文档内容，直接返回 */
+      if (!props.transaction?.docChanged) return;
+      /** 上传处标记的非内容刷新（进度条）不触发 */
+      if (isNonContentTransaction(props.transaction)) return;
       onChange(this.getHtml());
     };
 
@@ -774,6 +780,44 @@ export class Editor {
 
     this.core.setHtml(html ?? "");
   }
+
+  /**
+   * 暂停播放编辑器内全部视频 / Pause all videos in the editor
+   * @returns 暂停结果 / Pause result：
+   * - `state` 是否全部成功暂停 / whether all videos paused successfully
+   * - `total` 编辑器内视频总数 / total number of videos in the editor
+   */
+  pauseAllVideos(): { state: boolean; total: number } {
+    if (this.destroyed) {
+      throw new Error("Editor has been destroyed");
+    }
+
+    return this.pauseAllVideosInternal();
+  }
+
+  /**
+   * 暂停全部视频的内部实现 / Internal implementation of pausing all videos
+   * @returns 暂停结果 / Pause result
+   */
+  private pauseAllVideosInternal(): { state: boolean; total: number } {
+    const videos = Array.from(
+      this.root.querySelectorAll("video"),
+    ) as HTMLVideoElement[];
+    const total = videos.length;
+    let state = true;
+
+    videos.forEach((video) => {
+      try {
+        video.pause();
+      } catch (_e) {
+        /* 单个视频暂停失败不阻断其余视频 */
+        state = false;
+      }
+    });
+
+    return { state, total };
+  }
+
   /**
    * 获取 JSON 内容 / Get JSON content
    * @returns JSON 字符串 / JSON string
@@ -795,13 +839,11 @@ export class Editor {
 
     this.destroyed = true;
     this.mounted = false;
-
     this.unsubscribeLocale?.();
     this.unsubscribeLocale = null;
-
     this.destroyHooks.forEach((fn) => fn());
     this.destroyHooks = [];
-
+    this.pauseAllVideosInternal();
     this.core.destroy();
 
     this.root.remove();

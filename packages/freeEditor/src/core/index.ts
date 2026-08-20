@@ -27,13 +27,15 @@ export type {
 
 export { i18n } from "./i18n";
 
-export { ensureEditorFocus } from "./utils/editor";
-export { Style } from "./utils/style";
-export { MediaNodeViewRenderer } from "./utils/MediaNodeViewRenderer/MediaNodeViewRenderer";
 export {
+  isEmptyDocument,
+  downloadFile,
+  isNonContentTransaction,
+  MediaNodeViewRenderer,
+  ensureEditorFocus,
+  handleUploadFiles,
+  useMediaUploader,
+  Style,
   UploadPlaceholder,
   UploadPlaceholderSchema,
-} from "./utils/uploadNode/UploadPlaceholder";
-export { isEmptyDocument, downloadFile } from "./utils/export";
-
-export { handleUploadFiles, useMediaUploader } from "./utils/useMediaUploader";
+} from "./utils";
